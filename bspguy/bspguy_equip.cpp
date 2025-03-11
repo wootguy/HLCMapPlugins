@@ -1,3 +1,6 @@
+#include "extdll.h"
+#include "util.h"
+#include "CBasePlayerWeapon.h"
 
 namespace bspguy {
 
@@ -6,133 +9,135 @@ namespace bspguy {
 	const int FL_REQUIP_ON_USE = 4;
 	const int FL_ALLOW_MULTI_USE_PER_LIFE = 8;
 	const int FL_REFILL_CLIPS = 16;
+	const int MAX_EQUIP_ITEMS = 64;
 
 	enum respawn_equip_modes {
 		RESPAWN_EQUIP_IF_ON,
 		RESPAWN_EQUIP_ALWAYS
-	}
+	};
 	
 	enum ammo_equip_modes {
 		AMMO_EQUIP_RESTOCK,
 		AMMO_EQUIP_ADD
-	}
+	};
 
 	class EquipItem {
-		string classname;
-		int primaryAmmo = 0;
-		int secondaryAmmo = 0;
+	public:
+		string_t classname;
+		int16_t primaryAmmo = 0;
+		int16_t secondaryAmmo = 0;
 		bool isWeapon = true;
-		
+
 		EquipItem() {}
-		
-		EquipItem(string classname) {
+
+		EquipItem(string_t classname) {
 			this->classname = classname;
 		}
-	}
+	};
 	
-	vector<EHandle> g_equip_ents;
-	bool g_equipHookRegistered = false;
+	std::vector<EHANDLE> g_equip_ents;
 
-	HookReturnCode EquipPlayerSpawn(CBasePlayer* plr) {
-		for (uint i = 0; i < g_equip_ents.size(); i++) {
-			if (g_equip_ents[i].IsValid()) {
-				bspguy_equip* equip = cast<bspguy_equip*>(CastToScriptClass(g_equip_ents[i].GetEntity()));
-				equip.playerUsedAlready[plr->entindex()] = false;
-				if (equip.applyToSpawners)
-					equip.equip_player(plr, true); // bpyass one-use-per-life limit
-			}
-		}
-		return HOOK_CONTINUE;
-	}
+	class CBspguyEquip : public CBaseEntity
+	{
+	public:
+		EquipItem items[MAX_EQUIP_ITEMS];
+		int itemCount;
 
-	class bspguy_equip : ScriptBaseEntity
-	{	
-		vector<EquipItem> items;
-		vector<bool> playerUsedAlready;
+		bool playerUsedAlready[33];
 		bool oneUsePerLife = true;
-		bool applyToSpawners = false;
-		int respawn_equip_mode = RESPAWN_EQUIP_IF_ON;
-		int ammo_equip_mode = AMMO_EQUIP_RESTOCK;
+		bool applyToSpawners;
+		int respawn_equip_mode;
+		int ammo_equip_mode;
 		
-		float newMaxHealth = 0;
-		float newMaxArmor = 0;
-		float setHealth = 0;
-		float setArmor = 0;
+		float newMaxHealth;
+		float newMaxArmor;
+		float setHealth;
+		float setArmor;
 		
-		string best_weapon = "";
+		string_t best_weapon;
 		
 		bool stripSuit = false;
 		
-		bool KeyValue( const string&szKey, const string&szValue )
+		void addItem(EquipItem& item) {
+			if (itemCount >= MAX_EQUIP_ITEMS) {
+				ALERT(at_error, "bspguy_equip max items exceeded!\n");
+				return;
+			}
+
+			items[itemCount++] = item;
+		}
+
+		void KeyValue(KeyValueData* pkvd) override
 		{
-			if (szKey == "set_max_health") {
-				newMaxHealth = atof(szValue);
+			if (FStrEq(pkvd->szKeyName, "set_max_health")) {
+				newMaxHealth = atof(pkvd->szValue);
 			}
-			else if (szKey == "set_max_armor") {
-				newMaxArmor = atof(szValue);
+			else if (FStrEq(pkvd->szKeyName, "set_max_armor")) {
+				newMaxArmor = atof(pkvd->szValue);
 			}
-			else if (szKey == "set_armor") {
-				setArmor = atof(szValue);
+			else if (FStrEq(pkvd->szKeyName, "set_armor")) {
+				setArmor = atof(pkvd->szValue);
 			}
-			else if (szKey == "set_health") {
-				setHealth = atof(szValue);
+			else if (FStrEq(pkvd->szKeyName, "set_health")) {
+				setHealth = atof(pkvd->szValue);
 			}
-			else if (szKey == "nosuit") {
+			else if (FStrEq(pkvd->szKeyName, "nosuit")) {
 				stripSuit = true;
 			}
-			else if (szKey == "respawn_equip_mode") {
-				respawn_equip_mode = atoi(szValue);
+			else if (FStrEq(pkvd->szKeyName, "respawn_equip_mode")) {
+				respawn_equip_mode = atoi(pkvd->szValue);
 				if (respawn_equip_mode == RESPAWN_EQUIP_ALWAYS) {
 					applyToSpawners = true;
 				}
 			}
-			else if (szKey == "best_weapon") {
-				best_weapon = szValue;
+			else if (FStrEq(pkvd->szKeyName, "best_weapon")) {
+				best_weapon = ALLOC_STRING(pkvd->szValue);
 			}
-			else if (szKey.Find("weapon_") == 0) {
-				EquipItem item = EquipItem(szKey);
+			else if (strstr(pkvd->szKeyName, "weapon_") == pkvd->szKeyName) {
+				EquipItem item = EquipItem(ALLOC_STRING(pkvd->szKeyName));
 				item.isWeapon = true;
 				
-				string primaryAmmo = "0";
-				string secondaryAmmo = "0";
+				std::string val = pkvd->szValue;
+				const char* primaryAmmo = "0";
+				const char* secondaryAmmo = "0";
 				
-				int ammoSep = szValue.Find("+");
+				int ammoSep = val.find("+");
 				if (ammoSep != -1) {
-					item.primaryAmmo = atoi( szValue.SubString(0, ammoSep) );
-					item.secondaryAmmo = atoi( szValue.SubString(ammoSep+1) );
+					item.primaryAmmo = atoi(val.substr(0, ammoSep).c_str());
+					item.secondaryAmmo = atoi(val.substr(ammoSep+1).c_str());
 				} else {
-					item.primaryAmmo = atoi(szValue);
+					item.primaryAmmo = atoi(pkvd->szValue);
 				}
 				
-				items.push_back(item);
+				addItem(item);
 			}
-			else if (szKey.Find("item_") == 0) {
-				EquipItem item = EquipItem(szKey);
-				item.isWeapon = false;				
-				items.push_back(item);
+			else if (strstr(pkvd->szKeyName, "item_") == pkvd->szKeyName) {
+				EquipItem item = EquipItem(ALLOC_STRING(pkvd->szKeyName));
+				item.isWeapon = false;
+				addItem(item);
 			}
-			return BaseClass.KeyValue( szKey, szValue );
+			return CBaseEntity::KeyValue(pkvd);
 		}
 		
-		void Spawn()
+		void Spawn() override
 		{
-			if (!g_equipHookRegistered) {
-				g_Hooks.RegisterHook( Hooks::Player::PlayerSpawn, *EquipPlayerSpawn );
-				g_equipHookRegistered = true;
-			}
-				
-			playerUsedAlready.resize(33);
-			
-			g_equip_ents.push_back(self);
+			Precache();
+			g_equip_ents.push_back(EHANDLE(edict()));
 		}
 
-		void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float flValue = 0.0f)
+		void Precache() override
 		{
-			oneUsePerLife = pev.spawnflags & FL_ALLOW_MULTI_USE_PER_LIFE == 0;
+			for (int i = 0; i < itemCount; i++) {
+				UTIL_PrecacheOther(STRING(items[i].classname));
+			}
+		}
+
+		void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float flValue = 0.0f) override
+		{
+			oneUsePerLife = !(pev->spawnflags & FL_ALLOW_MULTI_USE_PER_LIFE);
 			
 			if (!applyToSpawners && useType == USE_ON) {
-				playerUsedAlready.resize(0);
-				playerUsedAlready.resize(33);
+				memset(playerUsedAlready, 0, sizeof(playerUsedAlready));
 			}
 			
 			if (useType == USE_ON) {
@@ -142,82 +147,86 @@ namespace bspguy {
 				return;
 			}
 			
-			if (pev.spawnflags & FL_EQUIP_ALL_ON_USE != 0) {
+			if (pev->spawnflags & FL_EQUIP_ALL_ON_USE) {
 				for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 				{
 					CBasePlayer* plr = UTIL_PlayerByIndex(i);
-					if (plr  == NULL  || !plr->IsConnected())
+					if (!plr)
 						continue;
 					
-					if (pev.spawnflags & FL_REQUIP_ON_USE != 0) {
-						plr.RemoveAllItems(stripSuit);
-						plr.SetItemPickupTimes(0);
+					if (pev->spawnflags & FL_REQUIP_ON_USE) {
+						plr->RemoveAllItems(stripSuit);
+						//plr->SetItemPickupTimes(0);
 					}
 					
 					if (oneUsePerLife && playerUsedAlready[plr->entindex()]) {
 						return;
 					}
 					
-					if (equip_player(plr, pev.spawnflags & FL_FORCE_WEAPON_SWITCH != 0)) {
-						EMIT_SOUND_DYN(plr->edict(), CHAN_ITEM, "items/gunpickup2.wav", 1.0f, 1.0f);
+					if (equip_player(plr, pev->spawnflags & FL_FORCE_WEAPON_SWITCH)) {
+						EMIT_SOUND_DYN(plr->edict(), CHAN_ITEM, "items/gunpickup2.wav", 1.0f, 1.0f, 0, 100);
 					}
 				}
 				
 				return;
 			}
 			
-			if (pActivator  == NULL  || !pActivator.IsPlayer()) {
+			if (!pActivator || !pActivator->IsPlayer()) {
 				return;
 			}
 			
-			CBasePlayer* plr = (CBasePlayer*)(pActivator);
+			CBasePlayer* plr = pActivator->MyPlayerPointer();
 			
 			if (oneUsePerLife && playerUsedAlready[plr->entindex()]) {
 				return;
 			}
 			
-			if (pev.spawnflags & FL_REQUIP_ON_USE != 0) {
-				plr.RemoveAllItems(stripSuit);
-				plr.SetItemPickupTimes(0);
+			if (pev->spawnflags & FL_REQUIP_ON_USE) {
+				plr->RemoveAllItems(stripSuit);
+				//plr->SetItemPickupTimes(0);
 			}
 			
-			if (equip_player(plr, pev.spawnflags & FL_FORCE_WEAPON_SWITCH != 0)) {
-				EMIT_SOUND_DYN(plr->edict(), CHAN_ITEM, "items/gunpickup2.wav", 1.0f, 1.0f);
+			if (equip_player(plr, pev->spawnflags & FL_FORCE_WEAPON_SWITCH)) {
+				EMIT_SOUND_DYN(plr->edict(), CHAN_ITEM, "items/gunpickup2.wav", 1.0f, 1.0f, 0, 100);
 			}
 		}
 		
 		bool equip_player(CBasePlayer* plr, bool switchWeapon) {
 			bool anyWeaponGiven = false;
 			
-			for (uint i = 0; i < items.size(); i++) {
+			for (int i = 0; i < itemCount; i++) {
 				if (!items[i].isWeapon) {
-					if (items[i].classname == "item_longjump" && plr.m_fLongJump) {
+					if (!strcmp(STRING(items[i].classname), "item_longjump") && plr->m_fLongJump) {
 						continue;
 					}
-					if (plr.HasNamedPlayerItem(items[i].classname) ) {
+					if (plr->HasNamedPlayerItem(STRING(items[i].classname)) ) {
 						continue;
 					}
+
+					Vector wow;
 					
-					dictionary keys;
-					keys["origin"] = plr->pev->origin.ToString();
-					keys["spawnflags"] = "1024";
-					CBaseEntity* item = CreateEntity(items[i].classname, keys, true);
-					item.Use(plr, plr, USE_TOGGLE);
+					StringMap keys;
+					keys.put("origin", UTIL_VectorToString(plr->pev->origin));
+					keys.put("spawnflags", "1024");
+					CBaseEntity* item = CBaseEntity::Create(STRING(items[i].classname), g_vecZero, g_vecZero, true, NULL, keys);
+					item->Use(plr, plr, USE_TOGGLE);
 					
 					//plr.GiveNamedItem(items[i].classname);
 					continue;
 				}
 				
-				CBasePlayerWeapon* wep = cast<CBasePlayerWeapon*>(plr.HasNamedPlayerItem(items[i].classname));
+				CBasePlayerItem* it = plr->GetNamedPlayerItem(STRING(items[i].classname));
+				CBasePlayerWeapon* wep = it ? it->GetWeaponPtr() : NULL;
 				
-				if (wep  == NULL ) {
-					dictionary keys;
-					keys["origin"] = plr->pev->origin.ToString();
-					keys["spawnflags"] = "1024";
-					*wep = cast<CBasePlayerWeapon*>(CreateEntity(items[i].classname, keys, true));
-					
-					if (wep  == NULL ) {
-						println("bspguy_equip: Invalid weapon class " + items[i].classname);
+				if (wep == NULL) {
+					StringMap keys;
+					keys.put("origin", UTIL_VectorToString(plr->pev->origin));
+					keys.put("spawnflags", "1024");
+					CBaseEntity* cent = CBaseEntity::Create(STRING(items[i].classname), g_vecZero, g_vecZero, true, NULL, keys);
+					wep = cent ? cent->GetWeaponPtr() : NULL;
+
+					if (wep == NULL) {
+						ALERT(at_console, "bspguy_equip: Invalid weapon class %s\n", STRING(items[i].classname));
 						continue;
 					}
 					
@@ -225,80 +234,85 @@ namespace bspguy {
 					// delete the new weapon if the player actually has the same item by a different name
 					bool alreadyHadWeapon = false;
 					if (wep->pev->classname != items[i].classname) {
-						CBasePlayerWeapon* oldWep = cast<CBasePlayerWeapon*>(plr.HasNamedPlayerItem(wep->pev->classname));
-						if (oldWep ) {
+						CBasePlayerItem* it = plr->GetNamedPlayerItem(STRING(wep->pev->classname));
+						CBasePlayerWeapon* oldWep = it ? it->GetWeaponPtr() : NULL;
+						if (oldWep) {
 							alreadyHadWeapon = true;
 							UTIL_Remove(wep);
-							*wep = *oldWep;
+							wep = oldWep;
 						}
 					}
 					
 					if (!alreadyHadWeapon) {
-						wep.m_iDefaultAmmo = 0;
-						plr.SetItemPickupTimes(0);
-						wep.Touch(plr);
+						wep->m_iDefaultAmmo = 0;
+						//plr->SetItemPickupTimes(0);
+						wep->Touch(plr);
 						
-						if (wep.m_iClip != -1) {
-							wep.m_iClip = wep.iMaxClip();
+						if (wep->m_iClip != -1) {
+							wep->m_iClip = wep->iMaxClip();
 						}
 						
 						anyWeaponGiven = true;
 					}
-				} else if (pev.spawnflags & FL_REFILL_CLIPS != 0) {
-					wep.m_iClip = wep.iMaxClip();
+				} else if (pev->spawnflags & FL_REFILL_CLIPS) {
+					wep->m_iClip = wep->iMaxClip();
 				}
+
+				ItemInfo itemInfo;
+				wep->GetItemInfo(&itemInfo);
 				
-				int primaryAmmoIdx = wep.PrimaryAmmoIndex();
+				int primaryAmmoIdx = wep->PrimaryAmmoIndex();
 				if (primaryAmmoIdx != -1) {
-					int newAmmo = plr.m_rgAmmo(primaryAmmoIdx) + items[i].primaryAmmo;
+					int newAmmo = plr->m_rgAmmo[primaryAmmoIdx] + items[i].primaryAmmo;
 					
 					if (ammo_equip_mode == AMMO_EQUIP_RESTOCK) {
-						newAmmo = Math.max(items[i].primaryAmmo, plr.m_rgAmmo(primaryAmmoIdx));
+						newAmmo = V_max(items[i].primaryAmmo, plr->m_rgAmmo[primaryAmmoIdx]);
 					}
 					
-					int maxAmmo = plr.GetMaxAmmo(primaryAmmoIdx);
-					plr.m_rgAmmo(primaryAmmoIdx, Math.min(newAmmo, maxAmmo));
+					int maxAmmo = itemInfo.iMaxAmmo1;
+					plr->m_rgAmmo[primaryAmmoIdx] = V_min(newAmmo, maxAmmo);
 				}
 				
-				int secondaryAmmoIdx = wep.SecondaryAmmoIndex();
+				int secondaryAmmoIdx = wep->SecondaryAmmoIndex();
 				if (secondaryAmmoIdx != -1) {
-					int newAmmo = plr.m_rgAmmo(secondaryAmmoIdx) + items[i].secondaryAmmo;
+					int newAmmo = plr->m_rgAmmo[secondaryAmmoIdx] + items[i].secondaryAmmo;
 					
 					if (ammo_equip_mode == AMMO_EQUIP_RESTOCK) {
-						newAmmo = Math.max(items[i].secondaryAmmo, plr.m_rgAmmo(secondaryAmmoIdx));
+						newAmmo = V_max(items[i].secondaryAmmo, plr->m_rgAmmo[secondaryAmmoIdx]);
 					}
 					
-					int maxAmmo = plr.GetMaxAmmo(secondaryAmmoIdx);
-					plr.m_rgAmmo(secondaryAmmoIdx, Math.min(newAmmo, maxAmmo));
+					int maxAmmo = itemInfo.iMaxAmmo2;
+					plr->m_rgAmmo[secondaryAmmoIdx] = V_min(newAmmo, maxAmmo);
 				}
 			}
 			
 			// select the best weapon
-			bool forceWeaponSwitch = pev.spawnflags & FL_FORCE_WEAPON_SWITCH != 0;
+			bool forceWeaponSwitch = pev->spawnflags & FL_FORCE_WEAPON_SWITCH;
 			if (switchWeapon && (anyWeaponGiven || forceWeaponSwitch)) {
 				CBasePlayerWeapon* bestWeapon = NULL;
 				int bestWeight = -1;
 			
-				for (uint i = 0; i < MAX_ITEM_TYPES; i++) {
-					CBasePlayerWeapon* wep = cast<CBasePlayerWeapon*>(plr.m_rgpPlayerItems(i));
+				for (int i = 0; i < MAX_ITEM_TYPES; i++) {
+					CBaseEntity* it = plr->m_rgpPlayerItems[i];
+					CBasePlayerWeapon* wep = it ? it->GetWeaponPtr() : NULL;
 					
 					if (wep ) {
-						if (best_weapon == string(wep->pev->classname)) {
-							*bestWeapon = *wep;
+						if (!strcmp(STRING(best_weapon), STRING(wep->pev->classname))) {
+							bestWeapon = wep;
 							break;
 						}
 					
 						ItemInfo itemInfo;
-						wep.GetItemInfo(itemInfo);
+						wep->GetItemInfo(&itemInfo);
 						if (itemInfo.iWeight > bestWeight) {
 							bestWeight = itemInfo.iWeight;
-							*bestWeapon = *wep;
+							bestWeapon = wep;
 						}
 					}
 				}
 				
-				if (bestWeapon ) {
-					plr.SwitchWeapon(bestWeapon);
+				if (bestWeapon) {
+					plr->SwitchWeapon(bestWeapon);
 				}
 			}
 			
@@ -319,5 +333,19 @@ namespace bspguy {
 			
 			return anyWeaponGiven;
 		}
+	};
+
+	HOOK_RETURN_DATA EquipPlayerSpawn(CBasePlayer* plr) {
+		for (int i = 0; i < g_equip_ents.size(); i++) {
+			if (g_equip_ents[i]) {
+				CBspguyEquip* equip = (CBspguyEquip*)(g_equip_ents[i].GetEntity());
+				equip->playerUsedAlready[plr->entindex()] = false;
+				if (equip->applyToSpawners)
+					equip->equip_player(plr, true); // bpyass one-use-per-life limit
+			}
+		}
+		return HOOK_CONTINUE;
 	}
 }
+
+LINK_ENTITY_TO_CLASS(bspguy_equip, bspguy::CBspguyEquip)
