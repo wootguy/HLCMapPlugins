@@ -2,6 +2,7 @@
 #include "util.h"
 #include "weaponbase.h"
 #include "proj_bullet.h"
+#include "te_effects.h"
 
 namespace ProjBulletTouch{
     void LaserGunFirstShotTouch(CProjBullet* pThis, CBaseEntity* pOther){

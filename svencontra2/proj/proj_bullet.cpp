@@ -44,10 +44,8 @@ void CProjBullet::Spawn() {
     SetTouch(&CProjBullet::Touch);
 
     // parametric interpolation makes bullets appear sooner and not disappear too early -wootguy
-    if (UTIL_PointInBox(pev->origin, Vector(-4096, -4096, -4096), Vector(4096, 4096, 4096))) {
-        SetThink(&CProjBullet::Interpolate);
-        pev->nextthink = gpGlobals->time;
-    }
+    SetThink(&CProjBullet::Interpolate);
+    pev->nextthink = gpGlobals->time;
 }
 
 void CProjBullet::SetAnim(int animIndex) {
@@ -137,16 +135,7 @@ namespace ProjBulletTouch {
     void ExplodeTouch(CProjBullet* pThis, CBaseEntity* pOther) {
         ProjBulletTouch::DefaultDirectTouch(pThis, pOther);
         ::RadiusDamage(pThis->pev->origin, pThis->pev, &pThis->pev->owner->v, pThis->flExpDmg, pThis->iExpRadius, -1, pThis->iDamageType);
-        MESSAGE_BEGIN(MSG_BROADCAST, SVC_TEMPENTITY, NULL);
-        WRITE_BYTE(TE_EXPLOSION);
-        WRITE_COORD(pThis->pev->origin.x);
-        WRITE_COORD(pThis->pev->origin.y);
-        WRITE_COORD(pThis->pev->origin.z);
-        WRITE_SHORT(g_engfuncs.pfnModelIndex(pThis->szExpSpr));
-        WRITE_BYTE(pThis->iExpSclae);
-        WRITE_BYTE(15);
-        WRITE_BYTE(0);
-        MESSAGE_END();
+        UTIL_Explosion(pThis->pev->origin, MODEL_INDEX(pThis->szExpSpr), pThis->iExpSclae, 15, 0);
         ProjBulletTouch::DefaultPostTouch(pThis, pOther);
     }
 }
