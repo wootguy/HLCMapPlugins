@@ -4,6 +4,7 @@
 #include <string>
 #include "hlds_hooks.h"
 #include "weapons.h"
+#include "te_effects.h"
 
 #define BULLET_REGISTERNAME "contra_bullet"
 #define BULLET_HITSOUND "common/null.wav"

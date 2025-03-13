@@ -2,6 +2,7 @@
 #include "util.h"
 #include "CBasePlayerWeapon.h"
 #include "skill.h"
+#include "te_effects.h"
 
 /*
  * HLベース改造ショットガン

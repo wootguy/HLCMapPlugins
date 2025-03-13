@@ -1,4 +1,5 @@
 #include "weaponbase.h"
+#include "te_effects.h"
 
 using namespace std;
 

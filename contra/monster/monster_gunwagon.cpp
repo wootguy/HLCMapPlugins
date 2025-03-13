@@ -3,6 +3,7 @@
 #include "monsters.h"
 #include "explode.h"
 #include "weapons.h"
+#include "te_effects.h"
 
 namespace ContraGunWagon
 {

@@ -1,6 +1,7 @@
 ﻿#include "extdll.h"
 #include "util.h"
 #include "CBasePlayerWeapon.h"
+#include "te_effects.h"
 
 /*
  * Jetpack & Glock18
