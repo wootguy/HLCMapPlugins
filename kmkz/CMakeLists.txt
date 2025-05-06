@@ -4,6 +4,7 @@
 project(kmkz)
 
 add_library(${PROJECT_NAME} SHARED
+	main.cpp
 	env_warpball.cpp
 )
 
