@@ -367,6 +367,8 @@ namespace bspguy {
 	void spawnMapEnts(string mapName) {
 		mapName = toLowerCase(mapName);
 	
+		vector<CBaseEntity*> activateEnts;
+
 		for (int i = 0; i < g_bsp.ents.size(); i++) {
 			const char* mapSource = g_bsp.ents[i].get("$s_bspguy_map_source");
 			
@@ -379,34 +381,14 @@ namespace bspguy {
 				
 				CBaseEntity* ent = CBaseEntity::Create(classname, g_vecZero, g_vecZero, true, NULL, g_bsp.ents[i]);
 				
-				if (ent && !strcmp(STRING(ent->pev->classname), "func_train")) {
-					if (hasCustomKeyvalue(ent, "$i_bspguy_trainfix")) {
-						// For some reason survivor3 train at spawn only needs 2 triggers to respond properly.
-						// Might as well just allow a custom trigger count. It's getting too complicated
-						// to handle all scenarios.
-						
-						int triggerCount = getCustomIntegerKeyvalue(ent, "$i_bspguy_trainfix");
-						for (int t = 0; t < triggerCount; t++) {
-							g_Scheduler.SetTimeout(delay_trigger, 0.0f, EHANDLE(ent->edict()));
-						}
-						ALERT(at_console, "Triggered %s (func_train) %d times ($i_bspguy_trainfix)", STRING(ent->pev->targetname), triggerCount);
-					}
-					else {
-						// default trigger logic to fix trains that are spawned late
-						
-						if (strlen(STRING(ent->pev->targetname)) > 0) {
-							// triggering is broken the first time when spawned late
-							// sometimes needs 2+ triggers, but in those cases the trainfix kevalue should be used
-							delay_trigger(EHANDLE(ent->edict()));
-						} else {
-							// unnamed trains are supposed to start active, but don't when spawned late.
-							// It needs to be triggered on separate server frames for it to start moving
-							delay_trigger(EHANDLE(ent->edict()));
-							g_Scheduler.SetTimeout(delay_trigger, 0.0f, EHANDLE(ent->edict()));
-						}
-					}
+				if (ent) {
+					activateEnts.push_back(ent);
 				}
 			}
+		}
+
+		for (CBaseEntity* ent : activateEnts) {
+			ent->Activate();
 		}
 		
 		map_loaded.put(mapName.c_str());
