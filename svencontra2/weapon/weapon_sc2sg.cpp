@@ -14,7 +14,9 @@ ItemInfo g_wepinfo_sc2sg = {
     -1,             				// iMaxClip
     -1,								// iId (-1 = automatic)
     CONTRA_WEP_FLAGS,              	// iFlags
-    CONTRA_WEP_WEIGHT               // iWeight
+    CONTRA_WEP_WEIGHT,              // iWeight
+    0,								// iFlagsEx
+    4,								// fAccuracyDeg
 };
 
 class CWeaponSc2sg : public CBaseContraWeapon {

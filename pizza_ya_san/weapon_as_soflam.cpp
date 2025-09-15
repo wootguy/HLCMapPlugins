@@ -35,7 +35,9 @@ ItemInfo g_soflam_info = {
 	SOFLAM_MAX_CLIP,				// iMaxClip
 	-1,								// iId (-1 = automatic)
 	0,								// iFlags
-	SOFLAM_WEIGHT					// iWeight
+	SOFLAM_WEIGHT,					// iWeight
+	0,								// iFlagsEx
+	0								// fAccuracyDeg
 };
 
 class CSoflam : public CBasePlayerWeapon {

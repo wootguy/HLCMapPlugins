@@ -30,7 +30,9 @@ ItemInfo g_shotgun_info = {
 	AS_SHOTGUN_MAX_CLIP,			// iMaxClip
 	-1,								// iId (-1 = automatic)
 	0,								// iFlags
-	AS_SHOTGUN_WEIGHT				// iWeight
+	AS_SHOTGUN_WEIGHT,				// iWeight
+	0,								// iFlagsEx
+	15								// accuracy degrees
 };
 
 enum ShotgunAnimation

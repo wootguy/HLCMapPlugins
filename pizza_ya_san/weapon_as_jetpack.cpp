@@ -42,7 +42,9 @@ ItemInfo g_jetpack_info = {
 	JETPACK_MAX_CLIP,				// iMaxClip
 	-1,								// iId (-1 = automatic)
 	0,								// iFlags
-	JETPACK_WEIGHT					// iWeight
+	JETPACK_WEIGHT,					// iWeight
+	0,								// iFlagsEx
+	6								// accuracy degrees
 };
 
 class CJetpack : public CBasePlayerWeapon {

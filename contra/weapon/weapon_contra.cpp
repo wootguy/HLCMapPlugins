@@ -41,7 +41,9 @@ ItemInfo g_contra_wep_info = {
 	CONTRA_WEAPON_MAXAMMO,			// iMaxClip
 	-1,								// iId (-1 = automatic)
 	CONTRA_WEAPON_FLAG,				// iFlags
-	998								// iWeight
+	998,							// iWeight
+	0,								// iFlagsEx
+	0								// fAccuracyDeg
 };
 
 void CContraWeapon::Spawn()
