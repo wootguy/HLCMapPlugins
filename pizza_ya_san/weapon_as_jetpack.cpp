@@ -1,7 +1,8 @@
 ﻿#include "extdll.h"
 #include "util.h"
-#include "CBasePlayerWeapon.h"
+#include "CWeaponCustom.h"
 #include "te_effects.h"
+#include "skill.h"
 
 /*
  * Jetpack & Glock18
@@ -47,7 +48,7 @@ ItemInfo g_jetpack_info = {
 	6								// accuracy degrees
 };
 
-class CJetpack : public CBasePlayerWeapon {
+class CJetpack : public CWeaponCustom {
 	float m_flNextAnimTime;
 	int m_iShell;
 	int m_iSecondaryAmmo;
@@ -70,6 +71,10 @@ class CJetpack : public CBasePlayerWeapon {
 		m_iClip = 3;
 	}
 
+	int getBoostForce() {
+		return 30 + m_iClip * 2;
+	}
+
 	void Precache() {
 		m_defaultModelV = "models/pizza_ya_san/v_glock18jet.mdl";
 		m_defaultModelP = "models/pizza_ya_san/p_glock18jet.mdl";
@@ -86,7 +91,7 @@ class CJetpack : public CBasePlayerWeapon {
 		PRECACHE_SOUND("hl/items/cliprelease1.wav");
 		PRECACHE_SOUND("hl/items/guncock1.wav");
 
-		PRECACHE_SOUND("/weapons/hks1.wav");
+		int shootSnd = PRECACHE_SOUND("weapons/hks1.wav");
 		PRECACHE_SOUND("hl/weapons/357_cock1.wav");
 
 		// 噴射サウンド
@@ -94,6 +99,49 @@ class CJetpack : public CBasePlayerWeapon {
 		// 噴射
 		m_gBurnSprite = PRECACHE_MODEL("sprites/xflare2.spr");
 		m_gSmokeSprite = PRECACHE_MODEL("sprites/boom3.spr");
+
+		animExt = "onehanded";
+		//wrongClientWeapon = "weapon_shotgun";
+
+		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY;
+		params.vmodel = MODEL_INDEX(GetModelV());
+		params.deployAnim = GLOCK_DRAW;
+		params.deployAnimTime = 840;
+		params.maxClip = JETPACK_MAX_CLIP;
+		params.idles[0] = { GLOCK_IDLE1, 50, 3100 };
+		params.idles[1] = { GLOCK_IDLE2, 50, 1440 };
+		//params.idles[2] = { GLOCK_IDLE3, 80, 4670 };
+
+		CustomWeaponShootOpts& primary = params.shootOpts[0];
+		primary.ammoCost = 1;
+		primary.ammoPool = WC_AMMOPOOL_PRIMARY_RESERVE;
+		primary.cooldown = 50;
+		primary.accuracyX = 6 * 100;
+		primary.accuracyY = 6 * 100;
+
+		CustomWeaponShootOpts& secondary = params.shootOpts[1];
+		secondary.ammoCost = 1;
+		secondary.ammoFreq = 50;
+		secondary.cooldown = 20;
+		secondary.accuracyX = 6 * 100;
+		secondary.accuracyY = 6 * 100;
+
+		float spread = VECTOR_CONE_6DEGREES.x;
+		int bulletf = 0;
+
+		AddEvent(WepEvt().Primary().Bullets(1, 0, gSkillData.sk_9mm_bullet, spread, spread, 0, WC_FLASH_NORMAL, bulletf));
+		AddEvent(WepEvt().Primary().WepAnim(GLOCK_SHOOT));
+		AddEvent(WepEvt().Primary().EjectShell(m_iShell, 14, -12, 6));
+
+		// TODO: Predict gravity changes so this can match the original behavior exactly
+		AddEvent(WepEvt().Secondary().Kickback(getBoostForce(), 0, 0, 0, 100));
+		//AddEvent(WepEvt().Secondary().SetGravity(LOW_GRAVITY));
+		//AddEvent(WepEvt().SecondaryStop().Delay(1000).SetGravity(0));
+
+		AddEvent(WepEvt().BulletFired().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_9MM, WC_AIVOL_NORMAL));
+		AddEvent(WepEvt().BulletFired().PunchRandom(2, 0));
+
+		PrecacheEvents();
 	}
 
 	int GetItemInfo(ItemInfo* info) {
@@ -102,21 +150,23 @@ class CJetpack : public CBasePlayerWeapon {
 	}
 
 	int AddToPlayer(CBasePlayer* pPlayer) {
-		if (CBasePlayerWeapon::AddToPlayer(pPlayer))
-		{
-			MESSAGE_BEGIN(MSG_ONE, gmsgWeapPickup, NULL, m_hPlayer->pev);
-			WRITE_BYTE(m_iId);
-			MESSAGE_END();
-			return TRUE;
+		// resend event data in case the player altered boost levels and picked up a new gun
+		bool refreshPredData = HasPredictionData(pPlayer->edict());
+
+		if (CWeaponCustom::AddToPlayer(pPlayer)) {
+			if (refreshPredData)
+				SendPredictionData(pPlayer->edict(), WC_PRED_SEND_EVT);
+
+			return 1;
 		}
 
-		return FALSE;
+		return 0;
 	}
 
 	BOOL Deploy() {
 		m_iFuel = 0;
 		m_iBurnSound = 0;
-		return DefaultDeploy(GetModelV(), GetModelP(), GLOCK_DRAW, "onehanded");
+		return CWeaponCustom::Deploy();
 	}
 
 	void Holster(int skiplocal) {
@@ -125,94 +175,7 @@ class CJetpack : public CBasePlayerWeapon {
 			return;
 
 		m_pPlayer->pev->gravity = NORMAL_GRAVITY;
-	}
-
-	float WeaponTimeBase() {
-		return gpGlobals->time; //g_WeaponFuncs.WeaponTimeBase();
-	}
-
-	// プライマリアタック
-	void PrimaryAttack() {
-		CBasePlayer* m_pPlayer = (CBasePlayer*)m_hPlayer.GetEntity();
-		if (!m_pPlayer)
-			return;
-
-		// 水中は射撃不可、弾薬なし
-		if ((m_pPlayer->pev->waterlevel == WATERLEVEL_HEAD)
-			|| (m_pPlayer->rgAmmo(m_iPrimaryAmmoType) <= 0)
-			) {
-			PlayEmptySound();
-			m_flNextPrimaryAttack = WeaponTimeBase() + 0.15;
-			return;
-		}
-
-		m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
-		m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
-
-		m_pPlayer->rgAmmo(m_iPrimaryAmmoType, m_pPlayer->rgAmmo(m_iPrimaryAmmoType) - 1);
-
-		// 弾薬があるなら
-		if (m_pPlayer->rgAmmo(m_iPrimaryAmmoType) > 1) {
-			SendWeaponAnim(GLOCK_SHOOT, 0, 0);
-		}
-		else {
-			SendWeaponAnim(GLOCK_SHOOT_EMPTY, 0, 0);
-		}
-
-		EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "/weapons/hks1.wav", 1.0, ATTN_NORM, 0, 95 + RANDOM_LONG(0, 10));
-
-		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
-
-		// 弾丸の処理
-		Vector vecSrc = m_pPlayer->GetGunPosition();
-		Vector vecAiming = m_pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);
-		m_pPlayer->FireBullets(1, vecSrc, vecAiming, VECTOR_CONE_6DEGREES, 8192, BULLET_PLAYER_MP5, 2);
-
-		// 薬莢
-		MAKE_VECTORS(m_pPlayer->pev->v_angle);
-
-		Vector vecShellVelocity = m_pPlayer->pev->velocity
-			+ gpGlobals->v_right * RANDOM_FLOAT(50, 70)
-			+ gpGlobals->v_up * RANDOM_FLOAT(100, 150)
-			+ gpGlobals->v_forward * 25;
-		EjectBrass(vecSrc
-			+ m_pPlayer->pev->view_ofs
-			+ gpGlobals->v_up * -34
-			+ gpGlobals->v_forward * 14 + gpGlobals->v_right * 6,
-			vecShellVelocity,
-			m_pPlayer->pev->angles.y,
-			m_iShell,
-			TE_BOUNCE_SHELL);
-
-		m_pPlayer->pev->punchangle.x = RANDOM_LONG(-2, 2);
-
-		m_flNextPrimaryAttack = m_flNextPrimaryAttack + 0.05;
-		if (m_flNextPrimaryAttack < WeaponTimeBase()) {
-			m_flNextPrimaryAttack = WeaponTimeBase() + 0.05;
-		}
-
-		m_flTimeWeaponIdle = WeaponTimeBase() + RANDOM_FLOAT(10, 15);
-
-		TraceResult tr;
-		float x, y;
-		GetCircularGaussianSpread(x, y);
-
-		Vector vecDir = vecAiming
-			+ x * VECTOR_CONE_6DEGREES.x * gpGlobals->v_right
-			+ y * VECTOR_CONE_6DEGREES.y * gpGlobals->v_up;
-
-		Vector vecEnd = vecSrc + vecDir * 4096;
-
-		TRACE_LINE(vecSrc, vecEnd, dont_ignore_monsters, m_pPlayer->edict(), &tr);
-
-		if (tr.flFraction < 1.0) {
-			if (tr.pHit) {
-				CBaseEntity* pHit = CBaseEntity::Instance(tr.pHit);
-				if (!pHit || pHit->IsBSPModel()) {
-					DecalGunshot(&tr, BULLET_PLAYER_MP5);
-				}
-			}
-		}
+		return CWeaponCustom::Holster(1);
 	}
 
 	// セカンダリアタック
@@ -221,18 +184,16 @@ class CJetpack : public CBasePlayerWeapon {
 		if (!m_pPlayer)
 			return;
 
+		/*
 		// 水中は飛行不可、また燃料なしは飛ばない
 		if ((m_pPlayer->pev->waterlevel == WATERLEVEL_HEAD)
 			|| (m_pPlayer->rgAmmo(m_iSecondaryAmmoType) <= 0)) {
 			PlayEmptySound();
-			m_flNextSecondaryAttack = WeaponTimeBase() + 0.15;
+			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.15;
 			return;
 		}
 
-		m_pPlayer->pev->gravity = LOW_GRAVITY;
-		m_gravityLowTime = WeaponTimeBase();
-
-		m_flNextSecondaryAttack = WeaponTimeBase() + 0.01;
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.01;
 
 		// 加速
 		float accX = m_pPlayer->pev->velocity.x;
@@ -251,6 +212,17 @@ class CJetpack : public CBasePlayerWeapon {
 		if (m_iFuel == 1) {
 			m_pPlayer->rgAmmo(m_iSecondaryAmmoType, m_pPlayer->rgAmmo(m_iSecondaryAmmoType) - 1);
 		}
+		*/
+
+		CWeaponCustom::SecondaryAttack();
+
+		if ((m_pPlayer->pev->waterlevel == WATERLEVEL_HEAD)
+			|| (m_pPlayer->rgAmmo(m_iSecondaryAmmoType) <= 0)) {
+			return;
+		}
+
+		//m_pPlayer->pev->gravity = LOW_GRAVITY;
+		//m_gravityLowTime = gpGlobals->time;
 
 		// 発射音＆スプライト
 		m_iBurnSound++;
@@ -293,8 +265,8 @@ class CJetpack : public CBasePlayerWeapon {
 			return;
 
 		// リロードといいつつ、出力レベル調整。clipが出力レベル
-		if ((WeaponTimeBase() > m_flNextPrimaryAttack)
-			&& (WeaponTimeBase() > m_flNextSecondaryAttack)
+		if ((UTIL_WeaponTimeBase() > m_flNextPrimaryAttack)
+			&& (UTIL_WeaponTimeBase() > m_flNextSecondaryAttack)
 			) {
 			// しゃがみ中で-1、立ち状態で+1
 			int pitch = 100;
@@ -308,41 +280,35 @@ class CJetpack : public CBasePlayerWeapon {
 				m_iClip = (m_iClip > JETPACK_MAX_CLIP) ? 1 : m_iClip;
 				pitch = 110;
 			}
-			EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "hl/weapons/357_cock1.wav", 1.0, ATTN_NORM, 0, pitch);
+			EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "weapons/357_cock1.wav", 1.0, ATTN_NORM, 0, pitch);
 
-			m_flNextPrimaryAttack = WeaponTimeBase() + 0.5;
-			m_flNextSecondaryAttack = WeaponTimeBase() + 0.5;
+			m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.5;
+			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
+
+			// update prediction data for boost force
+			for (int i = 0; i < params.numEvents; i++) {
+				WepEvt& evt = params.events[i];
+				if (evt.evtType == WC_EVT_KICKBACK) {
+					evt.kickback.pushForce = getBoostForce();
+				}
+			}
+			SendPredictionData(m_pPlayer->edict(), WC_PRED_SEND_EVT);
 
 			UTIL_ClientPrint(m_pPlayer, print_center, UTIL_VarArgs("Boost Level: %d", m_iClip));
 		}
 	}
-
 	void WeaponIdle() {
 		CBasePlayer* m_pPlayer = (CBasePlayer*)m_hPlayer.GetEntity();
 		if (!m_pPlayer)
 			return;
 
-		if (WeaponTimeBase() > m_gravityLowTime + 1.0) {
+		/*
+		if (gpGlobals->time > m_gravityLowTime + 1.0) {
 			m_pPlayer->pev->gravity = NORMAL_GRAVITY;
 		}
+		*/
 
-		ResetEmptySound();
-		m_pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);
-
-		if (m_flTimeWeaponIdle > WeaponTimeBase()) {
-			return;
-		}
-
-		int iAnim;
-		int r = RANDOM_LONG(0, 1);
-		switch (r) {
-		case 0:  iAnim = GLOCK_IDLE1; break;
-		case 1:  iAnim = GLOCK_IDLE2; break;
-		default: iAnim = GLOCK_IDLE3; break;
-		}
-
-		SendWeaponAnim(iAnim);
-		m_flTimeWeaponIdle = WeaponTimeBase() + RANDOM_FLOAT(10, 15);// how long till we do this again.
+		CWeaponCustom::WeaponIdle();
 	}
 };
 
