@@ -18,7 +18,7 @@ void CProjBullet::Spawn()
     //pev->renderamt = 255;
     //pev->rendercolor = vecColor;
 
-    pev->model = MAKE_STRING(szSprPath);
+    pev->model = ALLOC_STRING(szSprPath);
     pev->scale = flScale;
     pev->speed = flSpeed;
     pev->dmg = BULLET_DEFAULTDMG;

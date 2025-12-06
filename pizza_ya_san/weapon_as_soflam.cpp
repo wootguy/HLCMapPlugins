@@ -67,6 +67,8 @@ class CSoflam : public CBasePlayerWeapon {
 		m_defaultModelW = "models/pizza_ya_san/w_soflam.mdl";
 		CBasePlayerWeapon::Precache();
 
+		PRECACHE_HUD_FILES("sprites/pizza_ya_san/weapon_as_soflam.txt");
+
 		PRECACHE_MODEL("models/w_9mmARclip.mdl");
 		PRECACHE_SOUND("items/9mmclip1.wav");
 		PRECACHE_SOUND("hl/weapons/357_cock1.wav");

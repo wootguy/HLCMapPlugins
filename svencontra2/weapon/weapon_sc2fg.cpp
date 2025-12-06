@@ -67,7 +67,7 @@ public:
         UTIL_SetOrigin(pBullet->pev, m_pPlayer->GetGunPosition());
         pBullet->pev->owner = m_pPlayer->edict();
         pBullet->pev->dmg = flDamage;
-        pBullet->pev->model = MAKE_STRING("sprites/svencontra2/bullet_fg.spr");
+        pBullet->pev->model = ALLOC_STRING("sprites/svencontra2/bullet_fg.spr");
         //爆炸SPR, 爆炸音效, SPR缩放, 伤害范围, 伤害
         pBullet->SetExpVar("sprites/svencontra2/bullet_fghit.spr", "weapons/svencontra2/shot_fghit.wav", 10, 128, g_WeaponDMG.FGE);
         pBullet->pev->velocity = m_pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES) * flBulletSpeed;

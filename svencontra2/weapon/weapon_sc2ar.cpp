@@ -81,7 +81,7 @@ public:
         CProjBullet* pBullet = (CProjBullet*)CBaseEntity::Create(BULLET_REGISTERNAME, g_vecZero, g_vecZero, false);
         UTIL_SetOrigin( pBullet->pev, m_pPlayer->GetGunPosition() );
         pBullet->pev->owner = m_pPlayer->edict();
-        pBullet->pev->model = MAKE_STRING("sprites/svencontra2/bullet_ar.spr");
+        pBullet->pev->model = ALLOC_STRING("sprites/svencontra2/bullet_ar.spr");
         pBullet->pev->velocity = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES ) * flBulletSpeed;
         pBullet->pev->angles = UTIL_VecToAngles( pBullet->pev->velocity );
         pBullet->pev->dmg = flDamage;

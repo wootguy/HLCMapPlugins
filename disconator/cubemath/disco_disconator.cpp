@@ -461,7 +461,7 @@ public:
 		SET_MODEL(edict(), "models/cubemath/discoboss/disconator.mdl");
 		UTIL_SetOrigin(pev, pev->origin);
 		
-		pev->targetname = MAKE_STRING("disconator");
+		pev->targetname = ALLOC_STRING("disconator");
 		pev->framerate = 1.0f;
 		
 		pev->solid = SOLID_NOT;
@@ -677,7 +677,7 @@ public:
 		SET_MODEL(edict(), "models/cubemath/discoboss/disconator.mdl");
 		UTIL_SetOrigin(pev, pev->origin);
 		
-		pev->targetname = MAKE_STRING("disconator");
+		pev->targetname = ALLOC_STRING("disconator");
 		pev->framerate = 1.0f;
 		
 		pev->solid = SOLID_NOT;
@@ -853,7 +853,7 @@ public:
 		SET_MODEL(edict(), "models/cubemath/discoboss/disconator.mdl");
 		UTIL_SetOrigin(pev, pev->origin);
 		
-		pev->targetname = MAKE_STRING("disconator");
+		pev->targetname = ALLOC_STRING("disconator");
 		pev->framerate = 1.0f;
 		
 		pev->solid = SOLID_NOT;
@@ -1012,7 +1012,7 @@ public:
 		SET_MODEL(edict(), "models/cubemath/discoboss/disconatorbroken.mdl");
 		UTIL_SetOrigin(pev, pev->origin);
 
-		pev->targetname = MAKE_STRING("disconator");
+		pev->targetname = ALLOC_STRING("disconator");
 		pev->framerate = 1.0f;
 
 		pev->solid = SOLID_NOT;
@@ -1080,7 +1080,7 @@ public:
 		SET_MODEL(edict(), "models/cubemath/discoboss/disconatorbroken.mdl");
 		UTIL_SetOrigin(pev, pev->origin);
 
-		pev->targetname = MAKE_STRING("disconator");
+		pev->targetname = ALLOC_STRING("disconator");
 		pev->framerate = 1.0f;
 
 		pev->solid = SOLID_NOT;

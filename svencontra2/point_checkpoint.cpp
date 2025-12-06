@@ -97,7 +97,7 @@ public:
         PRECACHE_SOUND( "common/null.wav" );
         
         if( !pev->message )
-            pev->message = MAKE_STRING("items/gunpickup2.wav");
+            pev->message = ALLOC_STRING("items/gunpickup2.wav");
             
         PRECACHE_SOUND( STRING(pev->message) );
     }

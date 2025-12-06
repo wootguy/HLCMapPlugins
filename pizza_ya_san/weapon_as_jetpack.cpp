@@ -81,6 +81,8 @@ class CJetpack : public CWeaponCustom {
 		m_defaultModelW = "models/pizza_ya_san/w_glock18jet.mdl";
 		CBasePlayerWeapon::Precache();
 
+		PRECACHE_HUD_FILES("sprites/pizza_ya_san/weapon_as_jetpack.txt");
+
 		m_iShell = PRECACHE_MODEL("models/shell.mdl");
 
 		PRECACHE_MODEL("models/w_9mmARclip.mdl");

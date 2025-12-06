@@ -73,7 +73,7 @@ public:
 		pev->view_ofs.z = 48;
 
         if(!m_displayName)
-			m_displayName = MAKE_STRING("Sentry");
+			m_displayName = ALLOC_STRING("Sentry");
             
 		UTIL_SetSize( pev, Vector(-16, -16, 0), Vector(16, 16, 32) );
 

@@ -56,7 +56,7 @@ public:
 		m_flFieldOfView = 0.8;
 		m_MonsterState = MONSTERSTATE_NONE;
 		m_afCapability = bits_CAP_DOORS_GROUP;
-		m_displayName = MAKE_STRING(BOYZ_DISPLAY_NAME);
+		m_displayName = ALLOC_STRING(BOYZ_DISPLAY_NAME);
 
 		MonsterInit();
 	}

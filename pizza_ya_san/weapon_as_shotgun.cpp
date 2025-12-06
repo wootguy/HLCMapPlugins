@@ -82,7 +82,7 @@ class CPizzaShotgun : public CWeaponCustom
 		PRECACHE_SOUND("weapons/357_cock1.wav"); // gun empty sound
 		int pumpSnd = PRECACHE_SOUND("weapons/scock1.wav");	// cock gun
 
-		PRECACHE_GENERIC("sprites/pizza_ya_san/weapon_as_shotgun.txt");
+		PRECACHE_HUD_FILES("sprites/pizza_ya_san/weapon_as_shotgun.txt");
 
 		animExt = "shotgun";
 		//wrongClientWeapon = "weapon_shotgun";
