@@ -23,8 +23,6 @@ HOOK_RETURN_DATA MapInit() {
 
 	g_weaponRemapHL.put("weapon_9mmAR", "weapon_par21");
 	g_weaponRemapHL.put("weapon_shotgun", "weapon_sawedoff");
-	g_classRemap.put("weapon_9mmAR", "weapon_par21");
-	g_classRemap.put("weapon_shotgun", "weapon_sawedoff");
 
 	UTIL_RegisterEquipmentEntity("weapon_leadpipe");
 
