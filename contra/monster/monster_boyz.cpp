@@ -50,7 +50,7 @@ public:
 		pev->health = bSurvivalEnabled ? BOYZ_MOD_HEALTH_SURVIVAL : BOYZ_MOD_HEALTH;
 		pev->solid = SOLID_SLIDEBOX;
 		pev->movetype = MOVETYPE_STEP;
-		m_bloodColor = BLOOD_COLOR_RED;
+		m_bloodColor = BloodColorHuman();
 		//宽
 		pev->view_ofs = Vector( 0, 0, 80 );
 		m_flFieldOfView = 0.8;
