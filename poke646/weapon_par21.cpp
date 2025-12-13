@@ -65,7 +65,7 @@ class CPar21 : public CWeaponCustom {
 		PRECACHE_HUD_FILES("sprites/poke646/weapon_par21.txt");
 
 		animExt = "mp5";
-		wrongClientWeapon = "weapon_mp5";
+		wrongClientWeapon = "weapon_9mmAR";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY;
 		params.vmodel = MODEL_INDEX(GetModelV());

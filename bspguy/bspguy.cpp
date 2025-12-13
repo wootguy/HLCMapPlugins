@@ -9,6 +9,8 @@ void print_hashmap(BaseHashMap& hmap) {
 
 using namespace std;
 
+cvar_t* g_restore_hp;
+
 namespace bspguy {
 	bool noscript = false; // true if this script shouldn't be used but is loaded anyway
 	int survival_is_restarting = 0;
@@ -89,7 +91,7 @@ namespace bspguy {
 
 	void delay_respawn() {
 		ALERT(at_console, "Respawning everyone\n");
-		UTIL_RespawnAllPlayers(true, true);
+		UTIL_RespawnAllPlayers(true, g_restore_hp->value);
 		survival_is_restarting = 0;
 	}
 	
@@ -288,9 +290,9 @@ namespace bspguy {
 	
 	bool isSpawnEntity(const char* cname) {
 		static StringSet spawnEnts = {
-			"info_player_deathmatch"
-			"info_player_start"
-			"info_player_dm2"
+			"info_player_deathmatch",
+			"info_player_start",
+			"info_player_dm2",
 			"info_player_coop"
 		};
 
@@ -636,6 +638,8 @@ extern "C" int DLLEXPORT PluginInit(int interfaceVersion) {
 	g_hooks.pfnPlayerSpawn = bspguy::EquipPlayerSpawn;
 
 	RegisterPluginCommand("bspguy", bspguy::doCommand, FL_CMD_CLIENT_CONSOLE | FL_CMD_SERVER);
+
+	g_restore_hp = RegisterPluginCVar("bspguy.restore_hp", "1", 1, 0);
 
 	RegisterPluginEntCallback(bspguy::mapload);
 	RegisterPluginEntCallback(bspguy::mapchange);

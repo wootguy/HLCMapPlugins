@@ -85,7 +85,7 @@ class CPizzaShotgun : public CWeaponCustom
 		PRECACHE_HUD_FILES("sprites/pizza_ya_san/weapon_as_shotgun.txt");
 
 		animExt = "shotgun";
-		//wrongClientWeapon = "weapon_shotgun";
+		wrongClientWeapon = "weapon_shotgun";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_SHOTGUN_RELOAD;
 		params.vmodel = MODEL_INDEX(GetModelV());
