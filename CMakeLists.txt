@@ -1,5 +1,6 @@
 project(plugins)
 
+add_subdirectory(aomdc)
 add_subdirectory(bspguy)
 add_subdirectory(contra)
 add_subdirectory(disconator)
