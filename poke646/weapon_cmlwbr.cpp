@@ -60,6 +60,9 @@ class CCmlwbr : public CWeaponCustom {
 
 		int shootSnd = PRECACHE_SOUND("poke646/weapons/cmlwbr/cmlwbr_fire.wav");
 		int zoomSnd = PRECACHE_SOUND("poke646/weapons/cmlwbr/cmlwbr_zoom.wav");
+		int reloadSnd = PRECACHE_SOUND("poke646/weapons/cmlwbr/cmlwbr_reload.wav");
+		int reloadSnd2 = PRECACHE_SOUND("poke646/weapons/cmlwbr/cmlwbr_reload_empty.wav");
+		int drawbackSnd = PRECACHE_SOUND("poke646/weapons/cmlwbr/cmlwbr_drawback.wav");
 		
 		int boltMdl = PRECACHE_MODEL("models/poke646/items/crossbow_bolt.mdl");
 
@@ -96,6 +99,7 @@ class CCmlwbr : public CWeaponCustom {
 
 		AddEvent(WepEvt().Primary().WepAnim(CMLWBR_FIRE));
 		AddEvent(WepEvt().PrimaryEmpty().WepAnim(CMLWBR_FIRE_LAST));
+		AddEvent(WepEvt().PrimaryNotEmpty().Delay(280).IdleSound(drawbackSnd));
 		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET));
 		AddEvent(WepEvt().Primary()
 			.Projectile(WC_PROJECTILE_CUSTOM, 2000)
@@ -104,6 +108,9 @@ class CCmlwbr : public CWeaponCustom {
 
 		AddEvent(WepEvt().Secondary().IdleSound(zoomSnd));
 		AddEvent(WepEvt().Secondary().ToggleZoom(40, 20));
+
+		AddEvent(WepEvt().ReloadNotEmpty().Delay(150).IdleSound(reloadSnd));
+		AddEvent(WepEvt().ReloadEmpty().Delay(150).IdleSound(reloadSnd2));
 
 		PrecacheEvents();
 	}

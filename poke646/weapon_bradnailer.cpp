@@ -65,6 +65,8 @@ class CBradNailer : public CWeaponCustom {
 
 		int shootSnd = PRECACHE_SOUND("poke646/weapons/bradnailer/bradnailer_fire.wav");
 		int nailMdl = PRECACHE_MODEL("models/poke646/weapons/nail.mdl");
+		int reloadSnd1 = PRECACHE_SOUND("items/9mmclip2.wav");
+		int reloadSnd2 = PRECACHE_SOUND("items/9mmclip1.wav");
 
 		PRECACHE_HUD_FILES("sprites/poke646/weapon_bradnailer.txt");
 
@@ -118,6 +120,9 @@ class CBradNailer : public CWeaponCustom {
 		AddEvent(WepEvt().Secondary().Projectile(WC_PROJECTILE_CUSTOM, 4000, spread2, spread2, Vector(0, 16, -6))
 			.ProjClass(ALLOC_STRING("nail"))
 			.ProjModel(nailMdl));
+
+		AddEvent(WepEvt().Reload().Delay(220).IdleSound(reloadSnd1));
+		AddEvent(WepEvt().Reload().Delay(1280).IdleSound(reloadSnd2));
 
 		PrecacheEvents();
 	}

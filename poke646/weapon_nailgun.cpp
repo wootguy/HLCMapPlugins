@@ -57,6 +57,8 @@ class CNailgun : public CWeaponCustom {
 
 		int shootSnd = PRECACHE_SOUND("poke646/weapons/nailgun/nailgun_fire.wav");
 		int nailMdl = PRECACHE_MODEL("models/poke646/weapons/nail.mdl");
+		int reloadSnd1 = PRECACHE_SOUND("items/cliprelease1.wav");
+		int reloadSnd2 = PRECACHE_SOUND("items/clipinsert1.wav");
 
 		PRECACHE_HUD_FILES("sprites/poke646/weapon_nailgun.txt");
 
@@ -88,6 +90,9 @@ class CNailgun : public CWeaponCustom {
 		AddEvent(WepEvt().Primary().Projectile(WC_PROJECTILE_CUSTOM, 4000, spread, spread, Vector(8, 16, -6))
 			.ProjClass(ALLOC_STRING("nail"))
 			.ProjModel(nailMdl));
+
+		AddEvent(WepEvt().Reload().Delay(170).IdleSound(reloadSnd1));
+		AddEvent(WepEvt().Reload().Delay(800).IdleSound(reloadSnd2));
 
 		PrecacheEvents();
 	}

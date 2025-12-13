@@ -66,6 +66,7 @@ class CSawedOff : public CWeaponCustom
 		int shootSnd = PRECACHE_SOUND("vendetta/weapons/sawedoff/sawedoff_fire.wav");
 		int reloadSnd1 = PRECACHE_SOUND("vendetta/weapons/sawedoff/sawedoff_reload1.wav");
 		int reloadSnd2 = PRECACHE_SOUND("vendetta/weapons/sawedoff/sawedoff_reload2.wav");
+		int pumpSnd = PRECACHE_SOUND("vendetta/weapons/sawedoff/sawedoff_pump.wav");
 
 		PRECACHE_HUD_FILES("sprites/poke646/weapon_sawedoff.txt");
 
@@ -105,6 +106,9 @@ class CSawedOff : public CWeaponCustom
 		AddEvent(WepEvt().Reload().Delay(16)
 			.PlaySound(reloadSnd1, CHAN_WEAPON, 1.0f, ATTN_IDLE, 100, 100, DISTANT_NONE, WC_AIVOL_SILENT)
 			.AddSound(reloadSnd2));
+
+		AddEvent(WepEvt().Primary().Delay(600).IdleSound(pumpSnd));
+		AddEvent(WepEvt().ReloadFinish().Delay(380).IdleSound(pumpSnd));
 
 		PrecacheEvents();
 	}

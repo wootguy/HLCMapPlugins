@@ -59,6 +59,7 @@ class CPar21 : public CWeaponCustom {
 		int shootSnd = PRECACHE_SOUND("vendetta/weapons/par21/par21_fire.wav");
 		int launchSnd1 = PRECACHE_SOUND("vendetta/weapons/par21/par21_gl1.wav");
 		int launchSnd2 = PRECACHE_SOUND("vendetta/weapons/par21/par21_gl2.wav");
+		int reloadSnd = PRECACHE_SOUND("vendetta/weapons/par21/par21_reload.wav");
 
 		int shell = PRECACHE_MODEL("models/shell.mdl");
 
@@ -105,6 +106,8 @@ class CPar21 : public CWeaponCustom {
 		AddEvent(WepEvt().Secondary()
 			.Projectile(WC_PROJECTILE_ARGRENADE, 800)
 			.ProjPhysics(0.5f));
+
+		AddEvent(WepEvt().Reload().Delay(330).IdleSound(reloadSnd));
 
 		PrecacheEvents();
 	}
