@@ -174,6 +174,8 @@ class CCmlwbrBolt : public CProjectileCustom {
 		ParametricInterpolation(0.1f);
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_crossbow"; }
+
 	bool CustomTouch(CBaseEntity* pOther) override {
 		if (pOther->pev->takedamage)
 		{

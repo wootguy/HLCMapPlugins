@@ -126,6 +126,11 @@ class CNail : public CProjectileCustom {
 		UTIL_BeamFollow(entindex(), MODEL_INDEX("sprites/laserbeam.spr"), 1, 1, RGB(64, 64, 64));
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { 
+		CBaseEntity* owner = CBaseEntity::Instance(pev->owner);
+		return owner ? owner->GetDeathNoticeWeapon() : "weapon_9mmhandgun";
+	}
+
 	bool CustomTouch(CBaseEntity* pOther) override {
 		if (pOther->pev->takedamage)
 		{
