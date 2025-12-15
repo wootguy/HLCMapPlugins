@@ -48,6 +48,8 @@ class CGlock : public CWeaponCustom {
 		return true;
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_9mmhandgun"; }
+
 	const char* DisplayName() { return "AOM Glock"; }
 
 	void Precache() {

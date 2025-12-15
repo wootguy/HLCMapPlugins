@@ -49,6 +49,8 @@ class CP228 : public CWeaponCustom {
 		return true;
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_9mmhandgun"; }
+
 	const char* DisplayName() { return "AOM P228"; }
 
 	void Precache() {

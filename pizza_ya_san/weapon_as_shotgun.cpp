@@ -60,6 +60,8 @@ class CPizzaShotgun : public CWeaponCustom
 		CWeaponCustom::Spawn();
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_shotgun"; }
+
 	void Precache()
 	{
 		m_defaultModelV = "models/pizza_ya_san/v_shotgun_shorty.mdl";
@@ -126,6 +128,11 @@ class CPizzaShotgun : public CWeaponCustom
 	{
 		*p = g_shotgun_info;
 		return 1;
+	}
+
+	void GetAmmoDropInfo(bool secondary, const char*& ammoEntName, int& dropAmount) {
+		ammoEntName = "ammo_buckshot";
+		dropAmount = 12;
 	}
 };
 

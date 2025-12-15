@@ -123,7 +123,7 @@ HOOK_RETURN_DATA MapInit() {
 	g_beretta_info = UTIL_RegisterWeapon("weapon_beretta");
 
 	g_weaponRemapHL.put("weapon_shotgun", "weapon_aom_shotgun");
-	g_weaponRemapHL.put("weapon_9mmhandgun", "weapon_glock");
+	g_weaponRemapHL.put("weapon_9mmhandgun", "weapon_aom_glock");
 	g_weaponRemapHL.put("weapon_357", "weapon_revolver");
 
 	g_entityRemap.put("weapon_knife", weapon_aom_knife);

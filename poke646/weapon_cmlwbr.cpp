@@ -52,11 +52,16 @@ class CCmlwbr : public CWeaponCustom {
 		CWeaponCustom::Spawn();
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_crossbow"; }
+
 	void Precache() {
 		m_defaultModelV = "models/poke646/weapons/cmlwbr/v_cmlwbr.mdl";
 		m_defaultModelP = "models/poke646/weapons/cmlwbr/p_cmlwbr.mdl";
 		m_defaultModelW = "models/poke646/weapons/cmlwbr/w_cmlwbr.mdl";
 		CBasePlayerWeapon::Precache();
+
+		PRECACHE_SOUND("weapons/xbow_hitbod1.wav");
+		PRECACHE_SOUND("weapons/xbow_hitbod2.wav");
 
 		int shootSnd = PRECACHE_SOUND("poke646/weapons/cmlwbr/cmlwbr_fire.wav");
 		int zoomSnd = PRECACHE_SOUND("poke646/weapons/cmlwbr/cmlwbr_zoom.wav");
@@ -231,6 +236,11 @@ class CCmlwbrBolt : public CProjectileCustom {
 		UTIL_BubbleTrail(pev->origin - pev->velocity * 0.1, pev->origin, 1);
 
 		return true;
+	}
+
+	void GetAmmoDropInfo(bool secondary, const char*& ammoEntName, int& dropAmount) {
+		ammoEntName = "ammo_crossbow";
+		dropAmount = 5;
 	}
 };
 

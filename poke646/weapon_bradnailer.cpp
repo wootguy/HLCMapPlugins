@@ -57,11 +57,16 @@ class CBradNailer : public CWeaponCustom {
 		CWeaponCustom::Spawn();
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_9mmhandgun"; }
+
 	void Precache() {
 		m_defaultModelV = "models/poke646/weapons/bradnailer/v_bradnailer.mdl";
 		m_defaultModelP = "models/poke646/weapons/bradnailer/p_bradnailer.mdl";
 		m_defaultModelW = "models/poke646/weapons/bradnailer/w_bradnailer.mdl";
 		CBasePlayerWeapon::Precache();
+
+		PRECACHE_SOUND("weapons/xbow_hitbod1.wav");
+		PRECACHE_SOUND("weapons/xbow_hitbod2.wav");
 
 		int shootSnd = PRECACHE_SOUND("poke646/weapons/bradnailer/bradnailer_fire.wav");
 		int nailMdl = PRECACHE_MODEL("models/poke646/weapons/nail.mdl");
@@ -130,6 +135,11 @@ class CBradNailer : public CWeaponCustom {
 	int GetItemInfo(ItemInfo* info) {
 		*info = g_bradnailer_info;
 		return true;
+	}
+
+	void GetAmmoDropInfo(bool secondary, const char*& ammoEntName, int& dropAmount) {
+		ammoEntName = "ammo_nailclip";
+		dropAmount = BRADNAILER_MAX_CLIP;
 	}
 };
 

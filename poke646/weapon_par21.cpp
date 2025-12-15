@@ -50,6 +50,8 @@ class CPar21 : public CWeaponCustom {
 		CWeaponCustom::Spawn();
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_9mmAR"; }
+
 	void Precache() {
 		m_defaultModelV = "models/vendetta/weapons/par21/v_par21.mdl";
 		m_defaultModelP = "models/vendetta/weapons/par21/p_par21.mdl";
@@ -115,6 +117,17 @@ class CPar21 : public CWeaponCustom {
 	int GetItemInfo(ItemInfo* info) {
 		*info = g_par21_info;
 		return true;
+	}
+
+	void GetAmmoDropInfo(bool secondary, const char*& ammoEntName, int& dropAmount) {
+		if (secondary) {
+			ammoEntName = "ammo_ARgrenades";
+			dropAmount = 2;
+		}
+		else {
+			ammoEntName = "ammo_9mmAR";
+			dropAmount = PAR_MAX_CLIP;
+		}
 	}
 };
 

@@ -49,11 +49,16 @@ class CNailgun : public CWeaponCustom {
 		CWeaponCustom::Spawn();
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_9mmAR"; }
+
 	void Precache() {
 		m_defaultModelV = "models/poke646/weapons/nailgun/v_nailgun.mdl";
 		m_defaultModelP = "models/poke646/weapons/nailgun/p_nailgun.mdl";
 		m_defaultModelW = "models/poke646/weapons/nailgun/w_nailgun.mdl";
 		CBasePlayerWeapon::Precache();
+
+		PRECACHE_SOUND("weapons/xbow_hitbod1.wav");
+		PRECACHE_SOUND("weapons/xbow_hitbod2.wav");
 
 		int shootSnd = PRECACHE_SOUND("poke646/weapons/nailgun/nailgun_fire.wav");
 		int nailMdl = PRECACHE_MODEL("models/poke646/weapons/nail.mdl");
@@ -100,6 +105,11 @@ class CNailgun : public CWeaponCustom {
 	int GetItemInfo(ItemInfo* info) {
 		*info = g_nailgun_info;
 		return true;
+	}
+
+	void GetAmmoDropInfo(bool secondary, const char*& ammoEntName, int& dropAmount) {
+		ammoEntName = "ammo_nailround";
+		dropAmount = NAILGUN_MAX_CLIP;
 	}
 };
 

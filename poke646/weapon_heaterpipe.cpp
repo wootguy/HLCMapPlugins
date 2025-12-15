@@ -59,6 +59,8 @@ public:
 		CBasePlayerWeapon::Precache();
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_crowbar"; }
+
 	void Precache() {
 		PrecacheWeaponModels();
 

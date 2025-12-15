@@ -52,6 +52,8 @@ class CSawedOff : public CWeaponCustom
 		CWeaponCustom::Spawn();
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_shotgun"; }
+
 	void Precache()
 	{
 		m_defaultModelV = "models/vendetta/weapons/sawedoff/v_sawedoff.mdl";
@@ -117,6 +119,11 @@ class CSawedOff : public CWeaponCustom
 	{
 		*p = g_sawedoff_info;
 		return 1;
+	}
+
+	void GetAmmoDropInfo(bool secondary, const char*& ammoEntName, int& dropAmount) {
+		ammoEntName = "ammo_buckshot";
+		dropAmount = 12;
 	}
 };
 

@@ -61,6 +61,8 @@ class CSoflam : public CBasePlayerWeapon {
 		FallInit();
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "grenade"; }
+
 	void Precache() {
 		m_defaultModelV = "models/pizza_ya_san/v_soflam.mdl";
 		m_defaultModelP = "models/pizza_ya_san/p_soflam.mdl";
@@ -345,6 +347,11 @@ class CSoflam : public CBasePlayerWeapon {
 		SendWeaponAnim(SOFLAM_IDLE1);
 
 		m_flTimeWeaponIdle = WeaponTimeBase() + RANDOM_FLOAT(10, 15);// how long till we do this again.
+	}
+
+	void GetAmmoDropInfo(bool secondary, const char*& ammoEntName, int& dropAmount) {
+		ammoEntName = "ammo_rpgclip";
+		dropAmount = 1;
 	}
 };
 

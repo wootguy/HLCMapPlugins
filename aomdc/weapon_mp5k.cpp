@@ -46,6 +46,8 @@ class CMp5k : public CWeaponCustom {
 		return true;
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_9mmAR"; }
+
 	const char* DisplayName() { return "AOM MP5K"; }
 
 	void Precache() {

@@ -46,6 +46,8 @@ class CRevolver : public CWeaponCustom {
 		return true;
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_357"; }
+
 	const char* DisplayName() { return "AOM Revolver"; }
 
 	void Precache() {

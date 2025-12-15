@@ -48,6 +48,8 @@ class CDeagle : public CWeaponCustom {
 		return true;
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_357"; }
+
 	const char* DisplayName() { return "AOM Deagle"; }
 
 	void Precache() {

@@ -38,6 +38,8 @@ class CHammer : public CWeaponCustom {
 		return true;
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_crowbar"; }
+
 	void Precache() {
 		m_defaultModelV = "models/aomdc/v_hammer.mdl";
 		m_defaultModelP = "models/aomdc/p_hammer.mdl";

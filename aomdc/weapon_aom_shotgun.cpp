@@ -49,6 +49,8 @@ class CAomShotgun : public CWeaponCustom
 		return 1;
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_shotgun"; }
+
 	const char* DisplayName() { return "AOM Shotgun"; }
 
 	void Precache() {

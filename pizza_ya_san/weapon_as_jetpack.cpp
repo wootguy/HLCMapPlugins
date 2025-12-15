@@ -71,6 +71,8 @@ class CJetpack : public CWeaponCustom {
 		m_iClip = 3;
 	}
 
+	virtual const char* GetDeathNoticeWeapon() { return "weapon_9mmhandgun"; }
+
 	int getBoostForce() {
 		return 30 + m_iClip * 2;
 	}
@@ -311,6 +313,11 @@ class CJetpack : public CWeaponCustom {
 		*/
 
 		CWeaponCustom::WeaponIdle();
+	}
+
+	void GetAmmoDropInfo(bool secondary, const char*& ammoEntName, int& dropAmount) {
+		ammoEntName = "ammo_uziclip";
+		dropAmount = 32;
 	}
 };
 
