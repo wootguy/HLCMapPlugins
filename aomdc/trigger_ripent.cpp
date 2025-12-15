@@ -36,6 +36,9 @@ class CTriggerRipent : public CPointEntity
 		char* data = NULL;
 		int len = 0;
 
+		if (gGlobalState.EntityGetState(MAKE_STRING("ending4")) == GLOBAL_ON) {
+			data = loadEntFileDat("4", len);
+		}
 		if (gGlobalState.EntityGetState(MAKE_STRING("ending1")) == GLOBAL_ON) {
 			data = loadEntFileDat("1", len);
 		}
@@ -44,9 +47,6 @@ class CTriggerRipent : public CPointEntity
 		}
 		else if (gGlobalState.EntityGetState(MAKE_STRING("ending3")) == GLOBAL_ON) {
 			data = loadEntFileDat("3", len);
-		}
-		else if (gGlobalState.EntityGetState(MAKE_STRING("ending4")) == GLOBAL_ON) {
-			data = loadEntFileDat("4", len);
 		}
 		
 		if (!data) {
