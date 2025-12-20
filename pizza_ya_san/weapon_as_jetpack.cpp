@@ -68,13 +68,13 @@ class CJetpack : public CWeaponCustom {
 		m_iSecondaryAmmoType = 0;
 		m_iId = g_jetpack_info.iId;
 		FallInit();
-		m_iClip = 3;
+		m_iClip = 5;
 	}
 
 	virtual const char* GetDeathNoticeWeapon() { return "weapon_9mmhandgun"; }
 
 	int getBoostForce() {
-		return 30 + m_iClip * 2;
+		return 30 + m_iClip * 3;
 	}
 
 	void Precache() {
@@ -107,7 +107,7 @@ class CJetpack : public CWeaponCustom {
 		animExt = "onehanded";
 		//wrongClientWeapon = "weapon_shotgun";
 
-		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY;
+		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY | FL_WC_WEP_UNLINK_COOLDOWNS;
 		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = GLOCK_DRAW;
 		params.deployAnimTime = 840;
