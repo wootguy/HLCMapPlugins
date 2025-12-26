@@ -19,7 +19,7 @@ class CAomZombie : public CZombie {
 
 class CAomZombie2 : public CAomZombie {
 	void Precache() override {
-		pev->model = ALLOC_STRING("models/aomdc/zombie2.mdl");
+		pev->model = ALLOC_STRING("models/zombie2.mdl");
 		pev->health = gSkillData.sk_zombie_health * 1.2f;
 		CZombie::Precache();
 	}
@@ -27,7 +27,7 @@ class CAomZombie2 : public CAomZombie {
 
 class CAomZombie3 : public CAomZombie {
 	void Precache() override {
-		pev->model = ALLOC_STRING("models/aomdc/zombie3.mdl");
+		pev->model = ALLOC_STRING("models/zombie3.mdl");
 		pev->health = gSkillData.sk_zombie_health * 1.3f;
 		CZombie::Precache();
 	}
@@ -35,7 +35,7 @@ class CAomZombie3 : public CAomZombie {
 
 class CAomZombie4 : public CAomZombie {
 	void Precache() override {
-		pev->model = ALLOC_STRING("models/aomdc/zombie4.mdl");
+		pev->model = ALLOC_STRING("models/zombie4.mdl");
 		CZombie::Precache();
 	}
 };
