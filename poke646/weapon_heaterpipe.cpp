@@ -25,7 +25,7 @@ enum pipe_e
 
 ItemInfo g_heaterpipe_info = {
 	0,								// iSlot
-	-1,								// iPosition (-1 = automatic)
+	0,								// iPosition (-1 = automatic)
 	NULL,							// pszAmmo1
 	-1,								// iMaxAmmo1
 	NULL,							// pszAmmo2

@@ -39,7 +39,7 @@ class CTriggerRipent : public CPointEntity
 		if (gGlobalState.EntityGetState(MAKE_STRING("ending4")) == GLOBAL_ON) {
 			data = loadEntFileDat("4", len);
 		}
-		if (gGlobalState.EntityGetState(MAKE_STRING("ending1")) == GLOBAL_ON) {
+		else if (gGlobalState.EntityGetState(MAKE_STRING("ending1")) == GLOBAL_ON) {
 			data = loadEntFileDat("1", len);
 		}
 		else if (gGlobalState.EntityGetState(MAKE_STRING("ending2")) == GLOBAL_ON) {
