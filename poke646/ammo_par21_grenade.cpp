@@ -5,17 +5,13 @@ const int AMMO_PAR21GL_MAX_CARRY = 10;
 
 class CPar21Grenade : public CBasePlayerAmmo
 {
-	void Spawn(void)
-	{
-		Precache();
-		SET_MODEL(ENT(pev), "models/vendetta/items/w_par21_grenades.mdl");
-		CBasePlayerAmmo::Spawn();
-	}
 	void Precache(void)
 	{
-		PRECACHE_MODEL("models/vendetta/items/w_par21_grenades.mdl");
+		m_defaultModel = "models/vendetta/items/w_par21_grenades.mdl";
+		CBasePlayerAmmo::Precache();
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
+
 	BOOL AddAmmo(CBaseEntity* pOther)
 	{
 		int bResult = (pOther->GiveAmmo(AMMO_PAR21GL_GIVE, "ARgrenades", AMMO_PAR21GL_MAX_CARRY) != -1);

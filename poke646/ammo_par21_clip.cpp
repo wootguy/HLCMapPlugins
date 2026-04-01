@@ -5,17 +5,13 @@ const int AMMO_PAR21_MAX_CARRY = 150;
 
 class CPar21Clip : public CBasePlayerAmmo
 {
-	void Spawn(void)
-	{
-		Precache();
-		SET_MODEL(ENT(pev), "models/vendetta/items/w_par21_clip.mdl");
-		CBasePlayerAmmo::Spawn();
-	}
 	void Precache(void)
 	{
-		PRECACHE_MODEL("models/vendetta/items/w_par21_clip.mdl");
+		m_defaultModel = "models/vendetta/items/w_par21_clip.mdl";
+		CBasePlayerAmmo::Precache();
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
+
 	BOOL AddAmmo(CBaseEntity* pOther)
 	{
 		int bResult = (pOther->GiveAmmo(AMMO_PAR21_GIVE, "9mm", AMMO_PAR21_MAX_CARRY) != -1);

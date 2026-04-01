@@ -124,14 +124,9 @@ class CBeretta : public CWeaponCustom {
 
 class CAmmoBeretta : public CBasePlayerAmmo
 {
-	void Spawn(void) {
-		Precache();
-		SET_MODEL(ENT(pev), "models/aomdc/w_weaponclips/w_berettaclip.mdl");
-		CBasePlayerAmmo::Spawn();
-	}
-
 	void Precache(void) {
-		PRECACHE_MODEL("models/aomdc/w_weaponclips/w_berettaclip.mdl");
+		m_defaultModel = "models/aomdc/w_weaponclips/w_berettaclip.mdl";
+		CBasePlayerAmmo::Precache();
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
 

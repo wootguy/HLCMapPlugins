@@ -114,14 +114,9 @@ class CAomUzi : public CWeaponCustom {
 
 class CAmmoAomUzi : public CBasePlayerAmmo
 {
-	void Spawn(void) {
-		Precache();
-		SET_MODEL(ENT(pev), "models/aomdc/w_weaponclips/w_uziclip.mdl");
-		CBasePlayerAmmo::Spawn();
-	}
-
 	void Precache(void) {
-		PRECACHE_MODEL("models/aomdc/w_weaponclips/w_uziclip.mdl");
+		m_defaultModel = "models/aomdc/w_weaponclips/w_uziclip.mdl";
+		CBasePlayerAmmo::Precache();
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
 

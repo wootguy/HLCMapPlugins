@@ -125,14 +125,9 @@ class CP228 : public CWeaponCustom {
 
 class CAmmoP228 : public CBasePlayerAmmo
 {
-	void Spawn(void) {
-		Precache();
-		SET_MODEL(ENT(pev), "models/aomdc/w_weaponclips/w_p228clip.mdl");
-		CBasePlayerAmmo::Spawn();
-	}
-
 	void Precache(void) {
-		PRECACHE_MODEL("models/aomdc/w_weaponclips/w_p228clip.mdl");
+		m_defaultModel = "models/aomdc/w_weaponclips/w_p228clip.mdl";
+		CBasePlayerAmmo::Precache();
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
 

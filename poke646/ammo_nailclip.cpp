@@ -5,17 +5,13 @@ const int AMMO_NAIL_MAX_CARRY = 200;
 
 class CNailClip : public CBasePlayerAmmo
 {
-	void Spawn(void)
-	{
-		Precache();
-		SET_MODEL(ENT(pev), "models/poke646/items/w_nailclip.mdl");
-		CBasePlayerAmmo::Spawn();
-	}
 	void Precache(void)
 	{
-		PRECACHE_MODEL("models/poke646/items/w_nailclip.mdl");
+		m_defaultModel = "models/poke646/items/w_nailclip.mdl";
+		CBasePlayerAmmo::Precache();
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
+
 	BOOL AddAmmo(CBaseEntity* pOther)
 	{
 		int bResult = (pOther->GiveAmmo(AMMO_NAIL_GIVE, "9mm", AMMO_NAIL_MAX_CARRY) != -1);
