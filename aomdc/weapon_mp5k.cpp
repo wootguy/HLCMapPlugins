@@ -96,7 +96,7 @@ class CMp5k : public CWeaponCustom {
 		AddEvent(WepEvt().Reload().Delay(1770).IdleSound(reloadSnd3));
 		AddEvent(WepEvt().Reload().Delay(2300).IdleSound(reloadSnd4));
 
-		AddEvent(WepEvt().BulletFired().EjectShell(shell, 40, -12, 34));
+		AddEvent(WepEvt().BulletFired().EjectShell(shell, 26, -8, 22));
 		AddEvent(WepEvt().BulletFired().DLight(20, RGB(255, 255, 255), 1, 0));
 
 		UTIL_PrecacheOther("ammo_mp5k");

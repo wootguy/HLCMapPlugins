@@ -113,7 +113,7 @@ class CPizzaShotgun : public CWeaponCustom
 		AddEvent(WepEvt().Primary().Bullets(AS_SHOTGUN_PELLETCOUNT, 0, gSkillData.sk_12mm_bullet, spread, spread, 0, WC_FLASH_NORMAL, bulletf));
 		AddEvent(WepEvt().Primary().WepAnim(SHOTGUN_FIRE));
 		AddEvent(WepEvt().Primary().Delay(350).IdleSound(pumpSnd));
-		AddEvent(WepEvt().Primary().EjectShell(m_iShell, 14, -12, 6));
+		AddEvent(WepEvt().Primary().EjectShell(m_iShell, 9, -8, 4));
 
 		AddEvent(WepEvt().BulletFired().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_556, WC_AIVOL_NORMAL));
 		AddEvent(WepEvt().BulletFired().PunchSet(-4, 0));

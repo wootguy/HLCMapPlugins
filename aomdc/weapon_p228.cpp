@@ -107,7 +107,7 @@ class CP228 : public CWeaponCustom {
 		AddEvent(WepEvt().ReloadEmpty().Delay(1530).IdleSound(reloadSnd4));
 
 		AddEvent(WepEvt().BulletFired().PunchAdd(-2.0f, 0));
-		AddEvent(WepEvt().BulletFired().EjectShell(shell, 40, -12, 14));
+		AddEvent(WepEvt().BulletFired().EjectShell(shell, 26, -8, 9));
 		AddEvent(WepEvt().BulletFired().DLight(20, RGB(255, 255, 255), 1, 0));
 
 		UTIL_PrecacheOther("ammo_p228");

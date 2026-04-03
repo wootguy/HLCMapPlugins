@@ -92,7 +92,7 @@ class CAomShotgun : public CWeaponCustom
 
 		AddEvent(WepEvt().Primary().Bullets(8, 0, gSkillData.sk_plr_buckshot, spread, spread, 0, WC_FLASH_NORMAL, bulletf));
 		AddEvent(WepEvt().Primary().WepAnim(SHOTGUN_FIRE));
-		AddEvent(WepEvt().Primary().Delay(650).EjectShell(m_iShell, 30, -35, 6));
+		AddEvent(WepEvt().Primary().Delay(650).EjectShell(m_iShell, 19, -22, 4));
 		AddEvent(WepEvt().Primary().Delay(500).IdleSound(reloadSnd2));
 
 		AddEvent(WepEvt().BulletFired().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 100, 100, DISTANT_556, WC_AIVOL_NORMAL));

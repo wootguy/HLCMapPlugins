@@ -135,7 +135,7 @@ class CJetpack : public CWeaponCustom {
 
 		AddEvent(WepEvt().Primary().Bullets(1, 0, gSkillData.sk_9mm_bullet, spread, spread, 0, WC_FLASH_NORMAL, bulletf));
 		AddEvent(WepEvt().Primary().WepAnim(GLOCK_SHOOT));
-		AddEvent(WepEvt().Primary().EjectShell(m_iShell, 14, -12, 6));
+		AddEvent(WepEvt().Primary().EjectShell(m_iShell, 9, -8, 4));
 
 		// TODO: Predict gravity changes so this can match the original behavior exactly
 		AddEvent(WepEvt().Secondary().Kickback(getBoostForce(), 0, 0, 0, 100));

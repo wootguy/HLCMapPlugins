@@ -97,9 +97,9 @@ class CDualGlock : public CWeaponCustom {
 		int damage = 36;
 
 		AddEvent(WepEvt().PrimaryEven().WepAnim(ELITES_SHOOTLEFT1));
-		AddEvent(WepEvt().PrimaryEven().EjectShell(shell, 40, -12, 14));
+		AddEvent(WepEvt().PrimaryEven().EjectShell(shell, 26, -8, 9));
 		AddEvent(WepEvt().PrimaryOdd().WepAnim(ELITES_SHOOTRIGHT1));
-		AddEvent(WepEvt().PrimaryOdd().EjectShell(shell, 40, -12, 14));
+		AddEvent(WepEvt().PrimaryOdd().EjectShell(shell, 26, -8, 9));
 		AddEvent(WepEvt().PrimaryClip(1).WepAnim(ELITES_SHOOTLEFTLAST));
 		AddEvent(WepEvt().PrimaryClip(0).WepAnim(ELITES_SHOOTRIGHTLAST));
 

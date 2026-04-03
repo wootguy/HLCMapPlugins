@@ -116,15 +116,12 @@ class CSawedOff : public CWeaponCustom {
 		AddEvent(WepEvt().ReloadNotEmpty().Delay(920).IdleSound(reloadSnd2));
 		AddEvent(WepEvt().ReloadNotEmpty().Delay(2010).IdleSound(reloadSnd3));
 		AddEvent(WepEvt().ReloadNotEmpty().Delay(2760).IdleSound(reloadSnd4));
-		//AddEvent(WepEvt().ReloadNotEmpty().Delay(920).EjectShell(shell, 20, -22, 14));
 
 		AddEvent(WepEvt().ReloadEmpty().Delay(360).IdleSound(reloadSnd1));
 		AddEvent(WepEvt().ReloadEmpty().Delay(420).IdleSound(reloadSnd5));
 		AddEvent(WepEvt().ReloadEmpty().Delay(1400).IdleSound(reloadSnd3));
 		AddEvent(WepEvt().ReloadEmpty().Delay(1680).IdleSound(reloadSnd6));
 		AddEvent(WepEvt().ReloadEmpty().Delay(2280).IdleSound(reloadSnd4));
-		//AddEvent(WepEvt().ReloadEmpty().Delay(360).EjectShell(shell, 20, -22, 14));
-		//AddEvent(WepEvt().ReloadEmpty().Delay(360).EjectShell(shell, 20, -22, -14));
 
 		AddEvent(WepEvt().Deploy().IdleSound(deploySnd));
 		AddEvent(WepEvt().Deploy().Delay(350).IdleSound(reloadSnd4));

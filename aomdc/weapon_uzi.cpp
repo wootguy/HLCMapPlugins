@@ -96,7 +96,7 @@ class CAomUzi : public CWeaponCustom {
 
 		AddEvent(WepEvt().Deploy().Delay(450).IdleSound(reloadSnd3));
 
-		AddEvent(WepEvt().BulletFired().EjectShell(shell, 40, -12, 24));
+		AddEvent(WepEvt().BulletFired().EjectShell(shell, 26, -8, 15));
 		AddEvent(WepEvt().BulletFired().DLight(20, RGB(255, 255, 255), 1, 0));
 
 		UTIL_PrecacheOther("ammo_uzi");

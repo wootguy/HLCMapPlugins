@@ -91,7 +91,7 @@ class CFiveSeven : public CWeaponCustom {
 		AddEvent(WepEvt().Reload().Delay(2500).IdleSound(reloadSnd3));
 
 		AddEvent(WepEvt().BulletFired().PunchRandom(2.0f, 0));
-		AddEvent(WepEvt().BulletFired().EjectShell(shell, 40, -12, 14));
+		AddEvent(WepEvt().BulletFired().EjectShell(shell, 26, -8, 9));
 
 		AddEvent(WepEvt().Deploy().IdleSound(deploySnd));
 		AddEvent(WepEvt().Deploy().Delay(430).IdleSound(deploySnd2));
