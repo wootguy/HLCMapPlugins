@@ -296,6 +296,11 @@ WeaponSound* CWeaponCustomShoot::getRandomShootFailSound()
 
 void CWeaponCustomShoot::Spawn()
 {
+	if (g_mapinit_finished && !g_map_activated) {
+		UTIL_Remove(this);
+		return; // already spawned in MapInit, don't spawn again
+	}
+
 	if (!pev->targetname) {
 		EALERT(at_warning, "has no targetname and will not be used.");
 		return;

@@ -26,6 +26,11 @@ void CWeaponCustomAmmo::loadExternalSoundSettings()
 
 void CWeaponCustomAmmo::Spawn()
 {
+	if (g_mapinit_finished && !g_map_activated) {
+		UTIL_Remove(this);
+		return; // already spawned in MapInit, don't spawn again
+	}
+
 	if (ammo_classname)
 	{
 		custom_ammos.put(STRING(ammo_classname), EHANDLE(edict()));

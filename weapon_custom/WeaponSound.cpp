@@ -165,6 +165,27 @@ int WeaponSound::getPitch()
 	return 100;
 }
 
+SoundOpts WeaponSound::getOpts() {
+	if (h_options) {
+		return ((CWeaponCustomSound*)h_options.GetEntity())->getOpts();
+	}
+
+	static SoundOpts defaultOpts = {
+		0,				// delay
+		0,				// file
+		CHAN_STATIC,	// channel
+		1,				// play mode
+		ATTN_IDLE,		// radius
+		1.0f,			// volume
+		100,			// pitch
+		0,				// pitch rand
+		false,			// has next
+	};
+
+	defaultOpts.file = file;
+	return defaultOpts;
+}
+
 float WeaponSound::getVolume()
 {
 	if (h_options)

@@ -11,6 +11,8 @@ public:
 	void PrecacheSound(string_t sound);
 	void Precache();
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+
+	SoundOpts getOpts();
 };
 
 void loadSoundSettings(WeaponSound& snd);

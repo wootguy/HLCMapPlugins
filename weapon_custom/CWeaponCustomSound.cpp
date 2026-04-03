@@ -27,6 +27,11 @@ void loadSoundSettings(PodArray<WeaponSound, MAX_KV_ARRAY> sounds) {
 
 void CWeaponCustomSound::Spawn()
 {
+	if (g_mapinit_finished && !g_map_activated) {
+		UTIL_Remove(this);
+		return; // already spawned in MapInit, don't spawn again
+	}
+
 	next_snd.file = pev->noise;
 	Precache();
 }
@@ -56,6 +61,43 @@ void CWeaponCustomSound::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_
 	snd.h_options = this;
 
 	snd.play(pev->origin);
+}
+
+SoundOpts CWeaponCustomSound::getOpts() {
+	SoundOpts opts;
+	opts.delay = pev->friction;
+	opts.file = pev->message;
+	opts.channel = pev->sequence;
+	opts.playMode = pev->skin;
+	opts.volume = pev->health;
+	opts.pitch = pev->rendermode;
+	opts.pitchRand = pev->renderfx;
+	opts.hasNext = pev->noise != 0;
+
+	switch (pev->body) {
+	default:
+	case 1:
+		opts.attn = ATTN_IDLE;
+		break;
+	case 2:
+		opts.attn = ATTN_STATIC;
+		break;
+	case 3:
+		opts.attn = ATTN_NORM;
+		break;
+	case 4:
+		opts.attn = 0.3f;
+		break;
+	case 5:
+		opts.attn = ATTN_NONE;
+		break;
+	}
+
+	if (opts.channel == -1) {
+		opts.channel = CHAN_STATIC;
+	}
+
+	return opts;
 }
 
 LINK_ENTITY_TO_CLASS(weapon_custom_sound, CWeaponCustomSound)

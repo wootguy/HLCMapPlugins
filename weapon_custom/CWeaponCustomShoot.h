@@ -147,7 +147,7 @@ public:
 	void Spawn();
 	int PrecacheModel(string_t model);
 	void PrecacheSound(string_t sound);
-	bool can_fire_underwater() { return pev->spawnflags & FL_SHOOT_IN_WATER != 0; }
+	bool can_fire_underwater() { return (pev->spawnflags & FL_SHOOT_IN_WATER) != 0; }
 	void update_shell_type();
 	void Precache();
 };

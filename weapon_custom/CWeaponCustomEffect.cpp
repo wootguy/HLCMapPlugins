@@ -407,6 +407,11 @@ void CWeaponCustomEffect::KeyValue(KeyValueData* pkvd)
 
 void CWeaponCustomEffect::Spawn()
 {
+	if (g_mapinit_finished && !g_map_activated) {
+		UTIL_Remove(this);
+		return; // already spawned in MapInit, don't spawn again
+	}
+
 	Precache();
 }
 

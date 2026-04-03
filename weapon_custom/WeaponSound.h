@@ -1,4 +1,5 @@
 #pragma once
+#include "CBaseEntity.h"
 
 struct SoundArgs
 {
@@ -18,6 +19,23 @@ struct SoundArgs
 	bool underwaterEffects = true;
 };
 
+struct SoundOpts {
+	float delay;
+	string_t file;
+	int channel;
+	int playMode;
+	float attn;
+	float volume;
+	int pitch;
+	int pitchRand;
+	bool hasNext; // connected to another sound?
+
+	bool isDefault() {
+		return channel == -1 && playMode == 1 && attn == ATTN_IDLE && volume == 1.0f
+			&& pitch == 100 && pitchRand == 0 && !hasNext;
+	}
+};
+
 class WeaponSound
 {
 public:
@@ -34,6 +52,8 @@ public:
 		int additionalFlags = 0);
 
 	int getPitch();
+
+	SoundOpts getOpts();
 
 	float getVolume();
 

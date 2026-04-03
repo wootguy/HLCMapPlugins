@@ -166,7 +166,7 @@ void CWeaponCustomConfig::link_shoot_settings()
 	}
 }
 
-string CWeaponCustomConfig::getPlayerAnimExt()
+const char* CWeaponCustomConfig::getPlayerAnimExt()
 {
 	if (player_anims < 0 || player_anims >= int(g_panim_refs.size()))
 		return g_panim_refs[ANIM_REF_ONEHANDED];
@@ -386,6 +386,11 @@ int CWeaponCustomConfig::getAmmoDropAmt(const char* ammoClass)
 
 void CWeaponCustomConfig::Spawn()
 {
+	if (g_mapinit_finished && !g_map_activated) {
+		UTIL_Remove(this);
+		return; // already spawned in MapInit, don't spawn again
+	}
+
 	if (weapon_classname)
 	{
 		validateSettings();
@@ -409,7 +414,7 @@ void CWeaponCustomConfig::Spawn()
 		}
 		if (!secondary_ammo_drop_class && secondary_ammo_type)
 		{
-			AmmoDrop bestMatch = getSmallestAmmoDropType(STRING(primary_ammo_type));
+			AmmoDrop bestMatch = getSmallestAmmoDropType(STRING(secondary_ammo_type));
 			secondary_ammo_drop_class = bestMatch.cname;
 			secondary_ammo_drop_amt = bestMatch.dropAmt;
 		}
@@ -419,22 +424,48 @@ void CWeaponCustomConfig::Spawn()
 		}
 
 		custom_weapons.put(STRING(weapon_classname), EHANDLE(edict()));
+		UTIL_RegisterEquipmentEntity(STRING(weapon_classname));
+		g_entityRemap.put(STRING(weapon_classname), weapon_custom_base);
 
-		ALERT(at_error, "weapon registering not implemented\n");
+		if (g_wep_info_count < MAX_WEAPONS) {
+			if (pev->spawnflags & FL_WEP_HIDE_SECONDARY_AMMO) {
+				ALERT(at_error, "Hide secondary ammo flag not implemented\n");
+			}
 
-		/*
-		g_CustomEntityFuncs.RegisterCustomEntity("WeaponCustom::WeaponCustomBase", weapon_classname);
-		if (pev.spawnflags & FL_WEP_HIDE_SECONDARY_AMMO != 0)
-		{
-			g_ItemRegistry.RegisterWeapon(weapon_classname, hud_sprite_folder, primary_ammo_type, "",
-				primary_ammo_drop_class, secondary_ammo_drop_class);
+			string_t hud_path;
+			if (hud_sprite_folder)
+				hud_path = ALLOC_STRING(UTIL_VarArgs("%s/%s", STRING(hud_sprite_folder), STRING(weapon_classname)));
+			else
+				hud_path = ALLOC_STRING(STRING(weapon_classname));
+
+			g_wep_name_info_idx.put(STRING(weapon_classname), g_wep_info_count);
+
+			const char* ammoType1 = primary_ammo_type ? STRING(primary_ammo_type) : NULL;
+			const char* ammoType2 = secondary_ammo_type ? STRING(secondary_ammo_type) : NULL;
+
+			ItemInfo& info = g_wep_info[g_wep_info_count++];
+			info = {
+				slot,							// iSlot
+				slotPosition,					// iPosition (-1 = auto)
+				ammoType1,						// pszAmmo1
+				-1,								// iMaxAmmo1 (-1 = auto)
+				ammoType2,						// pszAmmo2
+				-1,								// iMaxAmmo2 (-1 = auto)
+				STRING(hud_path),				// pszName (path to HUD config)
+				clip_size(),					// iMaxClip
+				-1,								// iId (-1 = automatic)
+				0,								// iFlags
+				priority,						// iWeight
+				0,								// iFlagsEx
+				0								// accuracy degrees
+			};
+
+			info = UTIL_RegisterWeapon(STRING(weapon_classname));
 		}
-		else
-		{
-			g_ItemRegistry.RegisterWeapon(weapon_classname, hud_sprite_folder, primary_ammo_type, secondary_ammo_type,
-				primary_ammo_drop_class, secondary_ammo_drop_class);
+		else {
+			ALERT(at_error, "Exceeded max registered weapons!\n");
 		}
-		*/
+
 		matchingAmmoTypes = toLowerCase(STRING(primary_ammo_type)) == toLowerCase(STRING(secondary_ammo_type));
 		Precache();
 	}
@@ -473,6 +504,17 @@ void CWeaponCustomConfig::Precache()
 	PrecacheModel(wpn_p_model);
 	PrecacheModel(hud_sprite);
 	PrecacheModel(laser_sprite);
+
+	if (hud_sprite_folder)
+		PRECACHE_HUD_FILES(UTIL_VarArgs("sprites/%s/%s.txt", STRING(hud_sprite_folder), STRING(weapon_classname)));
+	else
+		PRECACHE_HUD_FILES(UTIL_VarArgs("sprites/%s.txt", STRING(weapon_classname)));
+
+	if (primary_ammo_drop_class)
+		UTIL_PrecacheOther(STRING(primary_ammo_drop_class));
+
+	if (secondary_ammo_drop_class)
+		UTIL_PrecacheOther(STRING(secondary_ammo_drop_class));
 }
 
 LINK_ENTITY_TO_CLASS(weapon_custom, CWeaponCustomConfig)
