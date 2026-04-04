@@ -106,6 +106,7 @@ public:
 
 	int clip_size() { return pev->skin; }
 	CWeaponCustomShoot* get_shoot_settings(int fmode) { return (CWeaponCustomShoot*)(fire_settings[fmode].GetEntity()); }
+	CWeaponCustomShoot* get_alt_shoot_settings(int fmode) { return (CWeaponCustomShoot*)(alt_fire_settings[fmode].GetEntity()); }
 
 	const char* getPlayerAnimExt();
 

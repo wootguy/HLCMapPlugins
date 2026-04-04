@@ -240,10 +240,10 @@ void CWeaponCustomShoot::loadExternalSoundSettings()
 
 void CWeaponCustomShoot::loadExternalEffectSettings()
 {
-	effect1 = loadEffectSettings((CWeaponCustomEffect*)effect1.GetEntity());
-	effect2 = loadEffectSettings((CWeaponCustomEffect*)effect2.GetEntity());
-	effect3 = loadEffectSettings((CWeaponCustomEffect*)effect3.GetEntity());
-	effect4 = loadEffectSettings((CWeaponCustomEffect*)effect4.GetEntity());
+	effect1 = loadEffectSettings((CWeaponCustomEffect*)effect1.GetEntity(), effect1_name);
+	effect2 = loadEffectSettings((CWeaponCustomEffect*)effect2.GetEntity(), effect2_name);
+	effect3 = loadEffectSettings((CWeaponCustomEffect*)effect3.GetEntity(), effect3_name);
+	effect4 = loadEffectSettings((CWeaponCustomEffect*)effect4.GetEntity(), effect4_name);
 
 	user_effect1 = loadUserEffectSettings((CWeaponCustomUserEffect*)user_effect1.GetEntity(), user_effect1_str);
 	user_effect2 = loadUserEffectSettings((CWeaponCustomUserEffect*)user_effect2.GetEntity(), user_effect2_str);
@@ -332,6 +332,49 @@ void CWeaponCustomShoot::Spawn()
 			iBeams, REC_BEAMS);
 	}
 
+	// translate plugin type to mod type
+	switch (projectile.type) {
+	case PROJECTILE_ARGRENADE:
+		projectile.type = WC_PROJECTILE_ARGRENADE;
+		break;
+	case PROJECTILE_BANANA:
+		projectile.type = WC_PROJECTILE_BANANA;
+		break;
+	case PROJECTILE_BOLT:
+		projectile.type = WC_PROJECTILE_BOLT;
+		break;
+	case PROJECTILE_DISPLACER:
+		projectile.type = WC_PROJECTILE_DISPLACER;
+		break;
+	case PROJECTILE_GRENADE:
+		projectile.type = WC_PROJECTILE_GRENADE;
+		break;
+	case PROJECTILE_HORNET:
+		projectile.type = WC_PROJECTILE_HORNET;
+		break;
+	case PROJECTILE_HVR:
+		projectile.type = WC_PROJECTILE_HVR;
+		break;
+	case PROJECTILE_RPG:
+		projectile.type = WC_PROJECTILE_RPG;
+		break;
+	case PROJECTILE_SHOCK:
+		projectile.type = WC_PROJECTILE_SHOCK;
+		break;
+	case PROJECTILE_WEAPON:
+		projectile.type = WC_PROJECTILE_WEAPON;
+		break;
+	case PROJECTILE_TRIPMINE:
+		projectile.type = WC_PROJECTILE_TRIPMINE;
+		break;
+	case PROJECTILE_CUSTOM:
+		projectile.type = WC_PROJECTILE_CUSTOM;
+		break;
+	case PROJECTILE_OTHER:
+		projectile.type = WC_PROJECTILE_OTHER;
+		break;
+	}	
+
 	custom_weapon_shoots.put(STRING(pev->targetname), EHANDLE(edict()));
 
 	Precache();
@@ -359,17 +402,17 @@ void CWeaponCustomShoot::update_shell_type()
 	switch (shell_type)
 	{
 	case SHELL_SMALL:
-		shell_idx = MODEL_INDEX("models/shell.mdl");
+		shell_idx = PRECACHE_MODEL("models/shell.mdl");
 		break;
 	case SHELL_LARGE:
-		shell_idx = MODEL_INDEX("models/saw_shell.mdl");
+		shell_idx = PRECACHE_MODEL("models/saw_shell.mdl");
 		break;
 	case SHELL_SHOTGUN:
-		shell_idx = MODEL_INDEX("models/shotgunshell.mdl");
+		shell_idx = PRECACHE_MODEL("models/shotgunshell.mdl");
 		break;
 	}
 	if (shell_model)
-		shell_idx = MODEL_INDEX(STRING(shell_model));
+		shell_idx = PRECACHE_MODEL(STRING(shell_model));
 }
 
 void CWeaponCustomShoot::Precache()

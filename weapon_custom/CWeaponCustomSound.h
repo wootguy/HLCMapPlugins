@@ -13,7 +13,8 @@ public:
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 
 	SoundOpts getOpts();
+	WeaponSound getWeaponSound();
 };
 
 void loadSoundSettings(WeaponSound& snd);
-void loadSoundSettings(PodArray<WeaponSound, MAX_KV_ARRAY> sounds);
+void loadSoundSettings(PodArray<WeaponSound, MAX_KV_ARRAY>& sounds);

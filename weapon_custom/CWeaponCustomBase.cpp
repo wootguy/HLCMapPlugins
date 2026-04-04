@@ -5,8 +5,26 @@
 #include "CWeaponCustomConfig.h"
 #include "CWeaponCustomSound.h"
 #include "CWeaponCustomShoot.h"
+#include "CWeaponCustomEffect.h"
+#include "CWeaponCustomUserEffect.h"
 #include "te_effects.h"
 #include "skill.h"
+#include "Scheduler.h"
+
+enum CustomServerEvents {
+	EVT_SELF_DAMAGE,		// apply damage to user
+	EVT_CHANGE_MODELS,		// change weapon models
+	EVT_CHANGE_W_BODY,		// change world model body
+	EVT_PLAYER_ANIM,		// player model animation
+	EVT_CENTER_PRINT,		// center print HUD text
+	EVT_SCREEN_FADE,
+	EVT_GLOW_SHELL,			// player model glow shell effect
+	EVT_TRIGGER,			// trigger entity by name
+};
+
+const char* cstr(string_t s) {
+	return STRING(s);
+}
 
 class CWeaponCustomBase : public CWeaponCustom {
 public:
@@ -38,9 +56,11 @@ public:
 		return true;
 	}
 
-	virtual const char* GetDeathNoticeWeapon() { return "weapon_9mmhandgun"; }
+	virtual const char* GetDeathNoticeWeapon() override {
+		return wrongClientWeapon ? wrongClientWeapon : "weapon_9mmhandgun";
+	}
 
-	const char* DisplayName() { return "Test"; }
+	const char* DisplayName() override { return STRING(pev->classname); }
 
 	WepEvt MakeAnimEvt(WepEvt evt, PodArray<string_t, MAX_KV_ARRAY> anims) {
 		evt = evt.WepAnim(atoi(STRING(anims.data[0])), 0, FL_WC_ANIM_ORDERED);
@@ -52,34 +72,262 @@ public:
 		return evt;
 	}
 
-	WepEvt MakeSoundEvt(WepEvt evt, WeaponSound& sound, bool isLoud) {
+	void AddSoundChainEvents(WepEvt evt, WeaponSound& sound, float totalDelay, bool isLoud) {
 		SoundOpts opts = sound.getOpts();
 		int sndIdx = SOUND_INDEX(STRING(opts.file));
 
+		totalDelay += opts.delay;
+		evt = evt.Delay(totalDelay*1000);
+
 		if (opts.isDefault()) {
-			return evt.Delay(opts.delay*1000).IdleSound(sndIdx);
+			AddEvent(evt.IdleSound(sndIdx));
 		}
 		else {
-			return evt.Delay(opts.delay*1000)
-				.PlaySound(sndIdx, opts.channel, opts.volume, opts.attn,
+			AddEvent(evt.PlaySound(sndIdx, opts.channel, opts.volume, opts.attn,
 					opts.pitch - opts.pitchRand, opts.pitch + opts.pitchRand,
-					isLoud ? DISTANT_9MM : DISTANT_NONE, isLoud ? WC_AIVOL_NORMAL : WC_AIVOL_QUIET);
+					isLoud ? DISTANT_9MM : DISTANT_NONE, isLoud ? WC_AIVOL_NORMAL : WC_AIVOL_QUIET));
+		}
 
-			if (opts.hasNext) {
-				EALERT(at_error, "Reload sound chains not implemented\n");
+		if (opts.nextSnd) {
+			CWeaponCustomSound* wsound = (CWeaponCustomSound*)opts.nextSnd.GetEntity();
+			WeaponSound next = wsound->getWeaponSound();
+			AddSoundChainEvents(evt, next, totalDelay, isLoud);
+		}
+	}
+
+	float AddEffectChainEvents(WepEvt baseEvent, EHANDLE h_effect, float totalDelay, bool isLoud) {
+		CWeaponCustomUserEffect* effect = (CWeaponCustomUserEffect*)h_effect.GetEntity();
+		if (!effect)
+			return totalDelay;
+
+		totalDelay += effect->delay;
+		baseEvent = baseEvent.Delay(totalDelay * 1000);
+
+		// sounds
+		if (effect->sounds.size) {
+			bool userOnly = (effect->pev->spawnflags & FL_UEFFECT_USER_SOUNDS) != 0;
+			if (userOnly) {
+				EALERT(at_error, "User only sounds not implemented\n");
+			}
+
+			for (int i = 0; i < effect->sounds.size; i++) {
+				AddSoundChainEvents(baseEvent, effect->sounds.data[i], 0, isLoud);
 			}
 		}
+
+		// self damage
+		if (effect->self_damage != 0) {
+			WepEvt custom = baseEvent.CustomServerLogic(EVT_SELF_DAMAGE);
+			custom.server.fuser1 = effect->self_damage;
+			custom.server.iuser1 = effect->damageType();
+			AddEvent(custom);
+		}
+
+		// punch angle
+		Vector punch = effect->punch_angle;
+		if (punch != g_vecZero) {
+			AddEvent(baseEvent.PunchAdd(punch.x, punch.y, punch.z));
+		}
+
+		// kickback
+		Vector push = effect->push_vel;
+		if (push != g_vecZero) {
+			Vector norm = push.Normalize();
+			AddEvent(baseEvent.Kickback(push.Length(), norm.z * -100, norm.x * 100, 0, norm.y * 100));
+		}
+
+		// view angle animation
+		if (effect->add_angle != g_vecZero || effect->add_angle_rand != g_vecZero)
+		{
+			float startTime = gpGlobals->time;
+			float endTime = startTime + effect->add_angle_time;
+			Vector r = effect->add_angle_rand;
+
+			Vector randAngle = Vector(RANDOM_FLOAT(-r.x, r.x), RANDOM_FLOAT(-r.y, r.y), RANDOM_FLOAT(-r.z, r.z));
+			Vector addAngle = effect->add_angle + randAngle;
+			ALERT(at_error, "WeaponCustomUserEffect: animate_view_angles not implemented\n")
+				//g_Scheduler.SetTimeout(animate_view_angles, 0, h_plr, plrEnt->pev->v_angle, addAngle, startTime, endTime);
+		}
+
+		// indicate something
+		if (effect->action_sprite > 0) {
+			//plr->ShowOverheadSprite(effect->action_sprite, effect->action_sprite_height, effect->action_sprite_time);
+			ALERT(at_error, "WeaponCustomUserEffect: ShowOverheadSprite not implemented\n");
+		}
+
+		// firstperson anim
+		if (effect->wep_anim != -1) {
+			AddEvent(baseEvent.WepAnim(effect->wep_anim));
+		}
+
+		// primary fire mode toggle
+		switch (effect->primary_mode) {
+		default:
+		case PRIMARY_NO_CHANGE:
+			break;
+		case PRIMARY_FIRE:
+			AddEvent(baseEvent.DisableState(FL_WC_STATE_PRIMARY_ALT));
+			break;
+		case PRIMARY_ALT_FIRE:
+			AddEvent(baseEvent.EnableState(FL_WC_STATE_PRIMARY_ALT));
+			break;
+		case PRIMARY_TOGGLE:
+			AddEvent(baseEvent.ToggleState(FL_WC_STATE_PRIMARY_ALT));
+			break;
+		}
+
+		// model swap
+		if (effect->v_model || effect->p_model || effect->w_model) {
+			WepEvt custom = baseEvent.CustomServerLogic(EVT_CHANGE_MODELS);
+			custom.server.suser1 = effect->v_model;
+			custom.server.suser2 = effect->p_model;
+			custom.server.suser3 = effect->w_model;
+			AddEvent(custom);
+		}
+		
+		// world model body swap
+		if (effect->w_model_body >= 0) {
+			WepEvt custom = baseEvent.CustomServerLogic(EVT_CHANGE_W_BODY);
+			custom.server.iuser1 = effect->w_model_body;
+			AddEvent(custom);
+		}
+
+		// hud text
+		if (effect->hud_text) {
+			WepEvt custom = baseEvent.CustomServerLogic(EVT_CENTER_PRINT);
+			custom.server.suser1 = effect->hud_text;
+			AddEvent(custom);
+		}
+
+		// thirdperson anim
+		if (effect->anim != -1) {
+			WepEvt custom = baseEvent.CustomServerLogic(EVT_PLAYER_ANIM);
+			custom.server.iuser1 = effect->anim;
+			custom.server.fuser1 = effect->anim_frame;
+			custom.server.fuser2 = effect->anim_speed;
+			AddEvent(custom);
+		}
+
+		// screen fade
+		if (effect->fade_mode != -1) {
+			WepEvt custom = baseEvent.CustomServerLogic(EVT_SCREEN_FADE);
+			custom.server.cuser1 = effect->fade_color;
+			custom.server.fuser1 = effect->fade_time;
+			custom.server.fuser2 = effect->fade_hold;
+			custom.server.iuser1 = effect->fade_mode;
+			AddEvent(custom);
+		}
+
+		if (effect->player_sprite_count > 0 && effect->player_sprite > 0)
+		{
+			int numIntervals = int(effect->player_sprite_time / effect->player_sprite_freq);
+
+			ALERT(at_error, "WeaponCustomUserEffect: player_sprites_effect not implemented\n");
+			//player_sprites_effect(h_plr, effect->player_sprite, effect->player_sprite_count);
+			//g_Scheduler.SetInterval(player_sprites_effect, effect->player_sprite_freq, numIntervals,
+			//	h_plr, effect->player_sprite, effect->player_sprite_count);
+		}
+
+		if (effect->glow_time > 0)
+		{
+			WepEvt custom = baseEvent.CustomServerLogic(EVT_GLOW_SHELL);
+			custom.server.iuser1 = effect->glow_amt;
+			(Vector)custom.server.vuser1 = effect->glow_color;
+			custom.server.fuser1 = effect->glow_time;
+			AddEvent(custom);
+		}
+
+		if (effect->beam_mode != UBEAM_DISABLED)
+		{
+			ALERT(at_error, "WeaponCustomUserEffect: CreateUserBeam not implemented\n");
+			//CreateUserBeam(c_wep->state, effect);
+		}
+
+		string_t targetStr = effect->pev->target;
+		if (targetStr) {
+			WepEvt custom = baseEvent.CustomServerLogic(EVT_TRIGGER);
+			custom.server.suser1 = targetStr;
+			custom.server.iuser1 = effect->triggerstate;
+			custom.server.euser1 = EHANDLE(effect->edict());
+			AddEvent(custom);
+		}
+
+		return AddEffectChainEvents(baseEvent, effect->next_effect, totalDelay, isLoud);
 	}
 
 	// 0 = primary, 1 = seconday, 2 = tertiary, 3 = alt primary
 	void ConfigureAttack(CWeaponCustomConfig* settings, int attackIdx) {
-		CWeaponCustomShoot* config = settings->get_shoot_settings(attackIdx);
 		CustomWeaponShootOpts& opts = params.shootOpts[attackIdx];
+		
+		WepEvt attackEvt = WepEvt();
+		int attackFlag = 0;
+		switch (attackIdx) {
+		default:
+		case 0:
+			attackEvt = attackEvt.Primary();
+			attackFlag = FL_WC_WEP_HAS_PRIMARY;
+			break;
+		case 1:
+			attackEvt = attackEvt.Secondary();
+			attackFlag = FL_WC_WEP_HAS_SECONDARY;
+			break;
+		case 2:
+			attackEvt = attackEvt.Tertiary();
+			attackFlag = FL_WC_WEP_HAS_TERTIARY;
+			break;
+		case 3:
+			attackEvt = attackEvt.PrimaryAlt();
+			attackFlag = FL_WC_WEP_HAS_ALT_PRIMARY;
+			break;
+		}
+
+		int action = FIRE_ACT_SHOOT;
+		if (attackIdx == 1) {
+			action = settings->secondary_action;
+		}
+		else if (attackIdx == 2) {
+			action = settings->tertiary_action;
+		}
+		
+		if (action != FIRE_ACT_SHOOT) {
+			CWeaponCustomShoot* alt_config = settings->get_alt_shoot_settings(0);
+
+			params.flags |= attackFlag;
+			opts.flags |= FL_WC_SHOOT_NO_ATTACK;
+			opts.cooldown = alt_config->toggle_cooldown*1000;
+
+			switch (action) {
+			case FIRE_ACT_LASER:
+				params.flags |= FL_WC_WEP_UNLINK_COOLDOWNS;
+				AddEvent(attackEvt.ToggleState(FL_WC_STATE_LASER | FL_WC_STATE_PRIMARY_ALT));
+				return;
+			case FIRE_ACT_ZOOM:
+				params.flags |= FL_WC_WEP_UNLINK_COOLDOWNS;
+				AddEvent(attackEvt.ToggleZoom(settings->zoom_fov));
+				AddEvent(attackEvt.ToggleState(FL_WC_STATE_PRIMARY_ALT));
+				return;
+			case FIRE_ACT_ALT:
+				AddEvent(attackEvt.ToggleState(FL_WC_STATE_PRIMARY_ALT));
+				return;
+			case FIRE_ACT_WINDUP:
+				if (attackIdx == 2) {
+					EALERT(at_error, "Tertiary chargup action not implemented\n");
+				}
+				params.flags |= FL_WC_WEP_LINK_CHARGEUPS;
+				opts.cooldown = params.shootOpts[0].cooldown;
+				opts.chargeTime = params.shootOpts[0].chargeTime;
+				opts.chargeCancelTime = params.shootOpts[0].chargeCancelTime;
+				opts.chargeMoveSpeedMult = params.shootOpts[0].chargeMoveSpeedMult;
+				return;
+			}
+		}
+
+		CWeaponCustomShoot* config = settings->get_shoot_settings(attackIdx);
 
 		if (!config)
 			return;
 
-		params.flags |= FL_WC_WEP_HAS_PRIMARY << attackIdx; // delicate but smol		
+		params.flags |= attackFlag;
 
 		int flags = config->pev->spawnflags;
 		if (flags & (FL_SHOOT_IF_NOT_DAMAGE | FL_SHOOT_IF_NOT_MISS | FL_SHOOT_NO_MELEE_SOUND_OVERLAP
@@ -88,18 +336,18 @@ public:
 			EALERT(at_error, "Unimplemented shoot flags used\n");
 		}
 
-		if (config->windup_time) {
-			EALERT(at_error, "windups not implemented\n");
-		}
-
 		// translate flags
 		if (config->can_fire_underwater())			opts.flags |= FL_WC_SHOOT_UNDERWATER;
 		if (!(flags & FL_SHOOT_PARTIAL_AMMO_SHOOT)) opts.flags |= FL_WC_SHOOT_NEED_FULL_COST;
 		if (flags & FL_SHOOT_NO_AUTOFIRE)			opts.flags |= FL_WC_SHOOT_NO_AUTOFIRE;
 
+		if (config->windup_time) {
+			EALERT(at_error, "windups not implemented\n");
+		}
+
+		// general setup
 		opts.ammoCost = config->ammo_cost;
 		opts.ammoFreq = 0;
-		opts.ammoPool = 0;
 		opts.cooldown = config->cooldown * 1000;
 		opts.cooldownFail = config->cooldown_fail * 1000;
 		opts.chargeTime = 0;
@@ -108,34 +356,48 @@ public:
 		opts.accuracyX = config->bullet_spread * 100;
 		opts.accuracyY = config->bullet_spread * 100;
 
-		WepEvt attackEvt = WepEvt();
-		WepEvt attackEmptyEvt = WepEvt();
-		WepEvt attackNotEmptyEvt = WepEvt();
-
-		switch (attackIdx) {
-		default:
-		case 0:
-			attackEvt = attackEvt.Primary();
-			break;
-		case 1:
-			attackEvt = attackEvt.Secondary();
-			break;
-		case 2:
-			attackEvt = attackEvt.Tertiary();
-			break;
-		case 3:
-			attackEvt = attackEvt.PrimaryAlt();
-			break;
+		// ammo pool
+		if (attackIdx == 0) {
+			if (settings->clip_size()) {
+				opts.ammoPool = WC_AMMOPOOL_PRIMARY_CLIP;
+			}
+			else {
+				opts.ammoPool = WC_AMMOPOOL_PRIMARY_RESERVE;
+			}
+		}
+		else if (attackIdx == 1) {
+			if (settings->clip_size2 == 0) {
+				if (!strcmp(STRING(settings->primary_ammo_type), STRING(settings->secondary_ammo_type))) {
+					opts.ammoPool = params.shootOpts[0].ammoPool;
+				}
+				else {
+					opts.ammoPool = WC_AMMOPOOL_SECONDARY_RESERVE;
+				}					
+			}
+			else {
+				EALERT(at_error, "Secondary clip not implemented\n");
+			}
+		}
+		else if (attackIdx == 2) {
+			if (settings->tertiary_ammo_type == TAMMO_SAME_AS_PRIMARY) {
+				opts.ammoPool = params.shootOpts[0].ammoPool;
+			}
+			else if (settings->tertiary_ammo_type == TAMMO_SAME_AS_SECONDARY) {
+				opts.ammoPool = params.shootOpts[1].ammoPool;
+			}
+		}
+		else if (attackIdx == 3) {
+			opts.ammoPool = params.shootOpts[0].ammoPool;
 		}
 
 		// animations
 		if (config->shoot_empty_anim != -1) {
-			if (attackIdx == 0) {
+			if (opts.ammoPool == WC_AMMOPOOL_PRIMARY_CLIP) {
 				AddEvent(MakeAnimEvt(WepEvt().PrimaryNotEmpty(), config->shoot_anims));
 				AddEvent(WepEvt().PrimaryEmpty().WepAnim(config->shoot_empty_anim));
 			}
 			else {
-				EALERT(at_error, "Only primary attacks can have empty anims\n");
+				EALERT(at_error, "Only primary clip attacks can have empty anims\n");
 			}
 		}
 		else {
@@ -144,20 +406,20 @@ public:
 
 		// sounds
 		if (config->shoot_empty_snd.file) {
-			if (attackIdx == 0) {
-				AddEvent(MakeSoundEvt(WepEvt().PrimaryEmpty(), config->shoot_empty_snd, true));
+			if (opts.ammoPool == WC_AMMOPOOL_PRIMARY_CLIP) {
+				AddSoundChainEvents(WepEvt().PrimaryEmpty(), config->shoot_empty_snd, 0, true);
 
 				for (int i = 0; i < config->sounds.size; i++) {
-					AddEvent(MakeSoundEvt(WepEvt().PrimaryNotEmpty(), config->sounds.data[i], true));
+					AddSoundChainEvents(WepEvt().PrimaryNotEmpty(), config->sounds.data[i], 0, true);
 				}
 			}
 			else {
-				EALERT(at_error, "Only primary attacks can have empty sounds\n");
+				EALERT(at_error, "Only primary clip attacks can have empty sounds\n");
 			}
 		}
 		else {
 			for (int i = 0; i < config->sounds.size; i++) {
-				AddEvent(MakeSoundEvt(attackEvt, config->sounds.data[i], true));
+				AddSoundChainEvents(attackEvt, config->sounds.data[i],0,  true);
 			}
 		}
 
@@ -165,16 +427,45 @@ public:
 		float spread = UTIL_ConeFromDegrees(config->bullet_spread).x;
 
 		switch (config->shoot_type) {
-		case SHOOT_BULLETS:
-			AddEvent(attackEvt.Bullets(config->bullets, config->bullet_delay*1000, config->damage,
-				spread, spread, 1, WC_FLASH_NORMAL, 0));
+		case SHOOT_BULLETS: {
+			bool showTracers = config->bullets == 1;
+			AddEvent(attackEvt.Bullets(config->bullets, config->bullet_delay * 1000, config->damage,
+				spread, spread, showTracers ? 1 : 0, WC_FLASH_NORMAL, 0));
 			break;
+		}
 		case SHOOT_MELEE:
 			EALERT(at_error, "Melee attacks not implemented\n");
 			break;
-		case SHOOT_PROJECTILE:
-			EALERT(at_error, "Projectile attacks not implemented\n");
+		case SHOOT_PROJECTILE: {
+			float spread = config->bullet_spread;
+			ProjectileOptions opt = config->projectile;
+			WeaponCustomProjectile ptype = (WeaponCustomProjectile)opt.type;
+			WepEvt evt = attackEvt
+				.Projectile(ptype, opt.speed, spread, spread, opt.offset, opt.dir)
+				.ProjPhysics(opt.gravity, opt.elasticity, opt.air_friction, opt.water_friction)
+				.ProjAvel(opt.avel)
+				.ProjModel(opt.model ? MODEL_INDEX(STRING(opt.model)) : 0);
+
+			if (ptype == WC_PROJECTILE_OTHER) {
+				if (opt.entity_class) {
+					evt = evt.ProjClass(opt.entity_class);
+				}
+				else {
+					EALERT(at_error, "Projectile class not set. Defaulting to hand grenade.\n");
+					evt.proj.type = WC_PROJECTILE_GRENADE;
+				}
+			}
+
+			AddEvent(evt);
+
+			if (opt.world_event || opt.monster_event || opt.life || opt.size || opt.move_snd.file
+				|| opt.sprite || opt.angles != g_vecZero || opt.player_vel_inf != g_vecZero ||
+				opt.follow_mode || opt.trail_spr || opt.bounce_effect_delay) {
+				EALERT(at_error, "Unimplemented projectile options used\n");
+			}
+			
 			break;
+		}
 		case SHOOT_BEAM:
 			EALERT(at_error, "Beam attacks not implemented\n");
 			break;
@@ -183,23 +474,78 @@ public:
 		// after effects
 		float punchRange = fabs(config->recoil[0] - config->recoil[1]);
 		float punchMidPoint = config->recoil[0] + (config->recoil[1] - config->recoil[0]) * 0.5f;
-		AddEvent(attackEvt.PunchRandom(punchRange * 0.5f, 0));
-		AddEvent(attackEvt.PunchAdd(-punchMidPoint, 0));
+		if (punchRange > 0) {
+			AddEvent(attackEvt.PunchRandom(punchRange * 0.5f, 0));
+			AddEvent(attackEvt.PunchAdd(-punchMidPoint, 0));
+		}
+		else {
+			AddEvent(attackEvt.PunchSet(-punchMidPoint, 0));
+		}
 
 		if (config->kickback != g_vecZero) {
-			//AddEvent(WepEvt().Kickback());
+			float force = config->kickback.Length();
+			Vector dir = config->kickback.Normalize();
+			AddEvent(attackEvt.Kickback(force, dir.z * -100, dir.x * 100, 0, dir.y * 100));
 		}
 		
 		if (config->shell_type != SHELL_NONE) {
-			int ishell = MODEL_INDEX(STRING(config->shell_model));
 			Vector shellOfs = config->shell_offset;
+			int sound = config->shell_type == SHELL_SHOTGUN ? TE_BOUNCE_SHOTSHELL : TE_BOUNCE_SHELL;
+
 			AddEvent(attackEvt.Delay(config->shell_delay)
-				.EjectShell(ishell, shellOfs.z, shellOfs.y, shellOfs.x));
+				.EjectShell(config->shell_idx, sound, shellOfs.z, shellOfs.y, shellOfs.x));
 
 			if (config->shell_delay > 0 && config->shell_delay_snd.file) {
 				SoundOpts opts = config->shell_delay_snd.getOpts();
-				WepEvt evt = MakeSoundEvt(attackEvt, config->shell_delay_snd, false);
-				AddEvent(evt.Delay((config->shell_delay + opts.delay)*1000));
+				AddSoundChainEvents(attackEvt, config->shell_delay_snd, config->shell_delay, false);
+			}
+		}
+	}
+
+	void ConfigureReload(CWeaponCustomConfig* settings) {
+		if (settings->reload_mode == RELOAD_SIMPLE) {
+			params.reloadStage[0] = { (uint8_t)settings->reload_anim, (uint16_t)(settings->reload_time * 1000) };
+
+			// delay the next idle if the reload finishes before the animation
+			float animDur = GetSequenceDuration(GET_MODEL_PTR(params.vmodel), settings->reload_anim);
+			if (animDur > settings->reload_time) {
+				AddEvent(WepEvt().Reload().Cooldown(animDur * 1000, FL_WC_COOLDOWN_IDLE));
+			}
+
+			if (settings->reload_snd.file) {
+				AddSoundChainEvents(WepEvt().Reload(), settings->reload_snd, 0, false);
+			}
+			if (settings->reload_empty_anim >= 0) {
+				params.reloadStage[1] = { (uint8_t)settings->reload_empty_anim,  (uint16_t)(settings->reload_time * 1000) };
+			}
+		}
+		else if (settings->reload_mode == RELOAD_STAGED) {
+			params.flags |= FL_WC_WEP_SHOTGUN_RELOAD;
+			params.reloadStage[0] = { (uint8_t)settings->reload_start_anim, (uint16_t)(settings->reload_start_time*1000) };
+			params.reloadStage[1] = { (uint8_t)settings->reload_anim, (uint16_t)(settings->reload_time * 1000) };
+			params.reloadStage[2] = { (uint8_t)settings->reload_end_anim, (uint16_t)(settings->reload_end_time * 1000) };
+
+			if (settings->reload_snd.file) {
+				AddSoundChainEvents(WepEvt().Reload(), settings->reload_snd, 0, false);
+			}
+			if (settings->reload_end_snd.file) {
+				AddSoundChainEvents(WepEvt().ReloadFinish(), settings->reload_end_snd, 0, false);
+			}
+		}
+		else if (settings->reload_mode == RELOAD_STAGED_RESPONSIVE) {
+			EALERT(at_error, "Responsive staged reloads not implemented\n");
+		}
+		else if (settings->reload_mode == RELOAD_EFFECT_CHAIN) {
+			if (settings->user_effect1 && settings->user_effect2) {
+				float time1 = AddEffectChainEvents(WepEvt().ReloadNotEmpty(), settings->user_effect1, 0, false);
+				float time2 = AddEffectChainEvents(WepEvt().ReloadEmpty(), settings->user_effect2, 0, false);
+
+				params.reloadStage[0] = { 0, (uint16_t)(time1 * 1000) };
+				params.reloadStage[1] = { 0, (uint16_t)(time2 * 1000) };
+			}
+			else {
+				float time = AddEffectChainEvents(WepEvt().Reload(), settings->user_effect1, 0, false);
+				params.reloadStage[0] = { 0, (uint16_t)(time * 1000) };
 			}
 		}
 	}
@@ -214,30 +560,10 @@ public:
 		params.deployTime = settings->deploy_time * 1000;
 		params.maxClip = settings->clip_size();
 
-		if (settings->reload_mode == RELOAD_SIMPLE) {
-			params.reloadStage[0] = { (uint8_t)settings->reload_anim, (uint16_t)(settings->reload_time*1000) };
-
-			// delay the next idle if the reload finishes before the animation
-			float animDur = GetSequenceDuration(GET_MODEL_PTR(params.vmodel), settings->reload_anim);
-			if (animDur > settings->reload_time) {
-				AddEvent(WepEvt().Reload().Cooldown(animDur * 1000, FL_WC_COOLDOWN_IDLE));
-			}
-
-			WeaponSound& reloadSnd = settings->reload_snd;
-
-			if (reloadSnd.file) {
-				AddEvent(MakeSoundEvt(WepEvt().Reload(), reloadSnd, false));
-			}
-			if (settings->reload_empty_anim >= 0) {
-				params.reloadStage[1] = { (uint8_t)settings->reload_empty_anim,  (uint16_t)(settings->reload_time * 1000) };
-			}
-		}
-		else {
-			EALERT(at_error, "Special reloads not implemented\n");
-		}
+		ConfigureReload(settings);
 
 		if (settings->deploy_snd.file)
-			AddEvent(MakeSoundEvt(WepEvt().Deploy(), settings->deploy_snd, false));
+			AddSoundChainEvents(WepEvt().Deploy(), settings->deploy_snd, 0, false);
 
 		int idleCount = V_min(4, settings->idle_anims.size);
 		if (settings->idle_anims.size > 4) {
@@ -251,6 +577,11 @@ public:
 			uint8_t anim = atoi(STRING(settings->idle_anims.data[i]));
 			params.idles[i] = { anim, idleChance, idleTime };
 		}
+
+		ConfigureAttack(settings, 0);
+		ConfigureAttack(settings, 1);
+		ConfigureAttack(settings, 2);
+		ConfigureAttack(settings, 3);
 	}
 
 	void Precache() override {
@@ -264,9 +595,66 @@ public:
 		CBasePlayerWeapon::Precache();
 
 		ConfigureWeapon(settings);
-		ConfigureAttack(settings, 0);
 
 		PrecacheEvents();
+	}
+
+	void CustomServerEvent(WepEvt& evt, CBasePlayer* m_pPlayer) override {
+		switch (evt.server.type) {
+		case EVT_SELF_DAMAGE:
+			m_pPlayer->TakeDamage(pev, pev, evt.server.fuser1, evt.server.iuser1);
+			break;
+		case EVT_CHANGE_MODELS:
+			m_customModelV = evt.server.suser1;
+			m_customModelP = evt.server.suser2;
+			m_customModelW = evt.server.suser3;
+			Deploy();
+			break;
+		case EVT_CHANGE_W_BODY:
+			pev->body = evt.server.iuser1;
+			break;
+		case EVT_PLAYER_ANIM:
+			m_pPlayer->m_Activity = ACT_RELOAD;
+			m_pPlayer->pev->sequence = evt.server.iuser1;
+			m_pPlayer->pev->frame = evt.server.fuser1;
+			m_pPlayer->ResetSequenceInfo();
+			m_pPlayer->pev->framerate = evt.server.fuser2;
+			break;
+		case EVT_CENTER_PRINT:
+			UTIL_ClientPrint(m_pPlayer, print_center, STRING(evt.server.suser1));
+			break;
+		case EVT_SCREEN_FADE:
+			UTIL_ScreenFade(m_pPlayer, evt.server.cuser1.ToVector(), evt.server.fuser1,
+				evt.server.fuser2, evt.server.cuser1.a, evt.server.iuser1);
+			break;
+		case EVT_GLOW_SHELL: {
+			Vector c = evt.server.vuser1;
+			m_pPlayer->AddShockEffect(c.x, c.y, c.z, evt.server.iuser1, evt.server.fuser1);
+			break;
+		}
+		case EVT_TRIGGER:
+			FireTargets(STRING(evt.server.suser1), m_pPlayer, evt.server.euser1, (USE_TYPE)evt.server.iuser1);
+			break;
+		}
+	}
+
+	void AttackTrace(CBasePlayer* plr, int attackIdx, Vector vecSrc, TraceResult& tr) override {
+		if (tr.flFraction >= 1.0f)
+			return;
+
+		CWeaponCustomConfig* settings = getSettings();
+		if (!settings)
+			return;
+
+		CWeaponCustomShoot* config = settings->get_shoot_settings(attackIdx);
+		if (!config)
+			return;
+
+		CBaseEntity* pEntity = CBaseEntity::Instance(tr.pHit);
+
+		EHANDLE effect = pEntity->IsMonster() ? config->effect2 : config->effect1;
+		Vector vecDir = (tr.vecEndPos - vecSrc).Normalize();
+		custom_effect(tr.vecEndPos, effect, NULL, tr.pHit, plr->edict(), vecDir, config->friendly_fire ? 1 : 0);
 	}
 
 	void GetAmmoDropInfo(bool secondary, const char*& ammoEntName, int& dropAmount) {

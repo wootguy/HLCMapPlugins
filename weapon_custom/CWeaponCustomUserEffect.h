@@ -82,6 +82,4 @@ public:
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 };
 
-void custom_user_effect(EHANDLE h_plr, EHANDLE h_wep, CWeaponCustomUserEffect* effect, bool delayFinished = false);
-
 CWeaponCustomUserEffect* loadUserEffectSettings(CWeaponCustomUserEffect* effect, string_t name = 0);

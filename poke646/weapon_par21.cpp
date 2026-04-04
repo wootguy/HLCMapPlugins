@@ -98,7 +98,7 @@ class CPar21 : public CWeaponCustom {
 		AddEvent(WepEvt().Primary().Bullets(1, 0, 15, spread, spread, 2, WC_FLASH_NORMAL, 0));
 		
 		AddEvent(WepEvt().BulletFired().PunchRandom(1.5f, 0));
-		AddEvent(WepEvt().BulletFired().EjectShell(shell, 13, -8, 9));
+		AddEvent(WepEvt().BulletFired().EjectShell(shell, TE_BOUNCE_SHELL, 13, -8, 9));
 
 		AddEvent(WepEvt().Secondary().WepAnim(PAR_LAUNCH));
 		AddEvent(WepEvt().Secondary().PunchSet(-10, 0));

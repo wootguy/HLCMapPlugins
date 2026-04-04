@@ -179,7 +179,7 @@ SoundOpts WeaponSound::getOpts() {
 		1.0f,			// volume
 		100,			// pitch
 		0,				// pitch rand
-		false,			// has next
+		NULL,			// next sound
 	};
 
 	defaultOpts.file = file;

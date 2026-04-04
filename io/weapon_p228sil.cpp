@@ -125,7 +125,7 @@ class CUsp : public CWeaponCustom {
 			AddEvent(WepEvt().Reload().Delay(2220).IdleSound(reloadSnd3));
 
 			AddEvent(WepEvt().BulletFired().PunchRandom(2.0f, 0));
-			AddEvent(WepEvt().BulletFired().EjectShell(shell, 26, -8, 9));
+			AddEvent(WepEvt().BulletFired().EjectShell(shell, TE_BOUNCE_SHELL, 26, -8, 9));
 
 			AddEvent(WepEvt().Deploy().IdleSound(deploySnd));
 			AddEvent(WepEvt().Deploy().Delay(540).IdleSound(deploySnd2));
@@ -166,7 +166,7 @@ class CUsp : public CWeaponCustom {
 			AddEvent(WepEvt().Reload().Delay(2220).IdleSound(reloadSnd3_alt));
 
 			AddEvent(WepEvt().BulletFired().PunchAdd(-0.8f, 0));
-			AddEvent(WepEvt().BulletFired().EjectShell(shell, 26, -8, 9));
+			AddEvent(WepEvt().BulletFired().EjectShell(shell, TE_BOUNCE_SHELL, 26, -8, 9));
 
 			AddEvent(WepEvt().Deploy().IdleSound(deploySnd));
 			AddEvent(WepEvt().Deploy().Delay(540).IdleSound(deploySnd2_alt));

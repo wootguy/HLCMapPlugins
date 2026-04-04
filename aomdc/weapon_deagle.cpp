@@ -97,7 +97,7 @@ class CDeagle : public CWeaponCustom {
 		AddEvent(WepEvt().Reload().Delay(1560).IdleSound(reloadSnd2));
 
 		AddEvent(WepEvt().BulletFired().PunchAdd(-2.0f, 0));
-		AddEvent(WepEvt().BulletFired().EjectShell(shell, 26, -8, 9));
+		AddEvent(WepEvt().BulletFired().EjectShell(shell, TE_BOUNCE_SHELL, 26, -8, 9));
 		AddEvent(WepEvt().BulletFired().DLight(20, RGB(255, 255, 255), 1, 0));
 
 		UTIL_PrecacheOther("ammo_deagle");

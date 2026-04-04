@@ -19,7 +19,7 @@ void loadSoundSettings(WeaponSound& snd)
 	}
 }
 
-void loadSoundSettings(PodArray<WeaponSound, MAX_KV_ARRAY> sounds) {
+void loadSoundSettings(PodArray<WeaponSound, MAX_KV_ARRAY>& sounds) {
 	for (int i = 0; i < sounds.size; i++) {
 		loadSoundSettings(sounds.data[i]);
 	}
@@ -44,7 +44,7 @@ void CWeaponCustomSound::loadExternalSoundSettings()
 void CWeaponCustomSound::PrecacheSound(string_t sound)
 {
 	if (sound) {
-		ALERT(at_console, "Precaching sound for %s: %s", STRING(pev->targetname), STRING(sound));
+		EALERT(at_console, "Precaching sound: %s\n", STRING(sound));
 		PRECACHE_SOUND(STRING(sound));
 	}
 }
@@ -72,7 +72,7 @@ SoundOpts CWeaponCustomSound::getOpts() {
 	opts.volume = pev->health;
 	opts.pitch = pev->rendermode;
 	opts.pitchRand = pev->renderfx;
-	opts.hasNext = pev->noise != 0;
+	opts.nextSnd = next_snd.h_options;
 
 	switch (pev->body) {
 	default:
@@ -98,6 +98,13 @@ SoundOpts CWeaponCustomSound::getOpts() {
 	}
 
 	return opts;
+}
+
+WeaponSound CWeaponCustomSound::getWeaponSound() {
+	WeaponSound snd;
+	snd.file = pev->message;
+	snd.h_options = EHANDLE(edict());
+	return snd;
 }
 
 LINK_ENTITY_TO_CLASS(weapon_custom_sound, CWeaponCustomSound)

@@ -189,6 +189,14 @@ bool CWeaponCustomConfig::validateSettings()
 	if (slotPosition < MIN_WEAPON_SLOT_POSITION || slotPosition > MAX_WEAPON_SLOT_POSITION)
 		slotPosition = -1;
 
+	// remap sven ammo types
+	if (!strcmp(STRING(primary_ammo_type), "m40a1")) {
+		primary_ammo_type = ALLOC_STRING("762");
+	}
+	if (!strcmp(STRING(secondary_ammo_type), "m40a1")) {
+		secondary_ammo_type = ALLOC_STRING("762");
+	}
+
 	/*
 	// check that slot isn't filled
 	if (slotPosition == -1) // user chose "Auto"
@@ -313,6 +321,10 @@ AmmoDrop CWeaponCustomConfig::getSmallestAmmoDropType(const char* ammoType)
 	else if (!strcmp(ammoType, "bolts")) {
 		best.cname = ALLOC_STRING("ammo_crossbow");
 	}
+	else {
+		best.cname = 0;
+	}
+
 	best.dropAmt = getAmmoDropAmt(STRING(best.cname));
 
 	// check custom ammos
@@ -428,10 +440,6 @@ void CWeaponCustomConfig::Spawn()
 		g_entityRemap.put(STRING(weapon_classname), weapon_custom_base);
 
 		if (g_wep_info_count < MAX_WEAPONS) {
-			if (pev->spawnflags & FL_WEP_HIDE_SECONDARY_AMMO) {
-				ALERT(at_error, "Hide secondary ammo flag not implemented\n");
-			}
-
 			string_t hud_path;
 			if (hud_sprite_folder)
 				hud_path = ALLOC_STRING(UTIL_VarArgs("%s/%s", STRING(hud_sprite_folder), STRING(weapon_classname)));
@@ -442,6 +450,8 @@ void CWeaponCustomConfig::Spawn()
 
 			const char* ammoType1 = primary_ammo_type ? STRING(primary_ammo_type) : NULL;
 			const char* ammoType2 = secondary_ammo_type ? STRING(secondary_ammo_type) : NULL;
+			bool hideAmmo2 = pev->spawnflags & FL_WEP_HIDE_SECONDARY_AMMO;
+			int zoomFlag = zoom_fov != 0 ? WEP_FLAG_USE_ZOOM_CROSSHAIR : 0;
 
 			ItemInfo& info = g_wep_info[g_wep_info_count++];
 			info = {
@@ -449,14 +459,14 @@ void CWeaponCustomConfig::Spawn()
 				slotPosition,					// iPosition (-1 = auto)
 				ammoType1,						// pszAmmo1
 				-1,								// iMaxAmmo1 (-1 = auto)
-				ammoType2,						// pszAmmo2
+				hideAmmo2 ? NULL : ammoType2,	// pszAmmo2
 				-1,								// iMaxAmmo2 (-1 = auto)
 				STRING(hud_path),				// pszName (path to HUD config)
 				clip_size(),					// iMaxClip
 				-1,								// iId (-1 = automatic)
 				0,								// iFlags
 				priority,						// iWeight
-				0,								// iFlagsEx
+				zoomFlag,						// iFlagsEx
 				0								// accuracy degrees
 			};
 

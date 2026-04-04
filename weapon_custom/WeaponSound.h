@@ -28,11 +28,11 @@ struct SoundOpts {
 	float volume;
 	int pitch;
 	int pitchRand;
-	bool hasNext; // connected to another sound?
+	EHANDLE nextSnd;
 
 	bool isDefault() {
 		return channel == -1 && playMode == 1 && attn == ATTN_IDLE && volume == 1.0f
-			&& pitch == 100 && pitchRand == 0 && !hasNext;
+			&& pitch == 100 && pitchRand == 0 && !nextSnd.GetEntity();
 	}
 };
 

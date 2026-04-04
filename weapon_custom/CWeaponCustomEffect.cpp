@@ -304,14 +304,12 @@ CWeaponCustomEffect* loadEffectSettings(CWeaponCustomEffect* effect, string_t na
 		ef->valid = true;
 		ef->name = searchStr;
 
-		*effect = *ef; // TODO: why duplicate?
-
 		ef->loadExternalEffectSettings(); // load chained effects
 		return ef;
 	}
 	else if (searchStr)
 	{
-		ALERT(at_error, "WEAPON_CUSTOM: Failed to find weapon_custom_effect '%s'", STRING(searchStr));
+		ALERT(at_error, "WEAPON_CUSTOM: Failed to find weapon_custom_effect '%s'\n", STRING(searchStr));
 	}
 	return effect;
 }
