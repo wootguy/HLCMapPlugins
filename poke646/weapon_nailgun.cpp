@@ -92,9 +92,16 @@ class CNailgun : public CWeaponCustom {
 		AddEvent(WepEvt().Primary().WepAnim(NAILGUN_FIRE1).AddAnim(NAILGUN_FIRE2).AddAnim(NAILGUN_FIRE3));
 		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_NORMAL));
 		AddEvent(WepEvt().Primary().PunchSet(-1.5f, 0));
-		AddEvent(WepEvt().Primary().Projectile(WC_PROJECTILE_CUSTOM, 4000, spread, spread, Vector(8, 16, -6))
-			.ProjClass(ALLOC_STRING("nail"))
-			.ProjModel(nailMdl));
+
+		WepEvt projEvt = WepEvt().Secondary().Projectile(WC_PROJECTILE_OTHER);
+		projEvt.proj.speed = 4000;
+		projEvt.proj.spreadX = spread;
+		projEvt.proj.spreadY = spread;
+		(Vector)projEvt.proj.offset = Vector(8, 16, -6);
+		projEvt.proj.entity_class = ALLOC_STRING("nail");
+		projEvt.proj.model = nailMdl;
+		projEvt.proj.gravity = 0.5f;
+		AddEvent(projEvt);
 
 		AddEvent(WepEvt().Reload().Delay(170).IdleSound(reloadSnd1));
 		AddEvent(WepEvt().Reload().Delay(800).IdleSound(reloadSnd2));
@@ -131,7 +138,7 @@ class CNail : public CProjectileCustom {
 		return owner ? owner->GetDeathNoticeWeapon() : "weapon_9mmhandgun";
 	}
 
-	bool CustomTouch(CBaseEntity* pOther) override {
+	void CustomTouch(CBaseEntity* pOther) override {
 		if (pOther->pev->takedamage)
 		{
 			TraceResult tr = UTIL_GetGlobalTrace();
@@ -175,23 +182,21 @@ class CNail : public CProjectileCustom {
 					UTIL_Sparks(pev->origin);
 			}
 
-			return true;
+			return;
 		}
 
-		return false;
+		UTIL_Remove(this);
 	}
 
-	bool CustomThink(void) override
+	void CustomMove(void) override
 	{
 		pev->nextthink = gpGlobals->time + 0.1;
 		ParametricInterpolation(0.1f);
 
 		if (pev->waterlevel == 0)
-			return true;
+			return;
 
 		UTIL_BubbleTrail(pev->origin - pev->velocity * 0.1, pev->origin, 1);
-
-		return true;
 	}
 };
 

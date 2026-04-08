@@ -1,3 +1,5 @@
+#pragma once
+#include "util_wc.h"
 
 class CWeaponCustomEffect : public CBaseEntity
 {

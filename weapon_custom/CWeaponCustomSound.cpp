@@ -43,7 +43,7 @@ void CWeaponCustomSound::loadExternalSoundSettings()
 
 void CWeaponCustomSound::PrecacheSound(string_t sound)
 {
-	if (sound) {
+	if (sound && strstr(STRING(sound), ".")) {
 		EALERT(at_console, "Precaching sound: %s\n", STRING(sound));
 		PRECACHE_SOUND(STRING(sound));
 	}

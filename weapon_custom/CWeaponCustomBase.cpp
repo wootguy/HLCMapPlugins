@@ -331,9 +331,13 @@ public:
 
 		int flags = config->pev->spawnflags;
 		if (flags & (FL_SHOOT_IF_NOT_DAMAGE | FL_SHOOT_IF_NOT_MISS | FL_SHOOT_NO_MELEE_SOUND_OVERLAP
-			| FL_SHOOT_RESPONSIVE_WINDUP | FL_SHOOT_QUAKE_MUZZLEFLASH | FL_SHOOT_PROJ_NO_ORIENT
-			| FL_SHOOT_NO_BUBBLES | FL_SHOOT_DETONATE_SATCHELS)) {
+			| FL_SHOOT_RESPONSIVE_WINDUP | FL_SHOOT_QUAKE_MUZZLEFLASH
+			| FL_SHOOT_DETONATE_SATCHELS)) {
 			EALERT(at_error, "Unimplemented shoot flags used\n");
+		}
+
+		if ((flags & FL_SHOOT_NO_BUBBLES) && config->shoot_type != SHOOT_PROJECTILE) {
+			EALERT(at_error, "No bubbles flag not implemented for bullets/beams\n");
 		}
 
 		// translate flags
@@ -440,15 +444,44 @@ public:
 			float spread = config->bullet_spread;
 			ProjectileOptions opt = config->projectile;
 			WeaponCustomProjectile ptype = (WeaponCustomProjectile)opt.type;
-			WepEvt evt = attackEvt
-				.Projectile(ptype, opt.speed, spread, spread, opt.offset, opt.dir)
-				.ProjPhysics(opt.gravity, opt.elasticity, opt.air_friction, opt.water_friction)
-				.ProjAvel(opt.avel)
-				.ProjModel(opt.model ? MODEL_INDEX(STRING(opt.model)) : 0);
 
+			WepEvt evt = attackEvt.Projectile(ptype);
+			evt.proj.entity_class = ALLOC_STRING("custom_projectile_plugin");
+			evt.proj.speed = opt.speed;
+			evt.proj.spreadX = spread;
+			evt.proj.spreadY = spread;
+			(Vector)evt.proj.offset = opt.offset;
+			(Vector)evt.proj.dir = opt.dir;
+			evt.proj.gravity = opt.gravity;
+			evt.proj.elasticity = opt.elasticity;
+			evt.proj.world_event = opt.world_event;
+			evt.proj.monster_event = opt.monster_event;
+			evt.proj.air_friction = opt.air_friction;
+			evt.proj.water_friction = opt.water_friction;
+			(Vector)evt.proj.avel = opt.avel;
+			evt.proj.life = opt.life;
+			evt.proj.size = opt.size;
+			evt.proj.sprite = opt.sprite;
+			evt.proj.damage = config->damage;
+			evt.proj.damageBits = config->damage_type | config->damage_type2;
+			evt.proj.model = opt.model ? MODEL_INDEX(STRING(opt.model)) : 0;
+			evt.proj.sprite_color = opt.sprite_color;
+			evt.proj.sprite_scale = opt.sprite_scale;
+			(Vector)evt.proj.player_vel_inf = opt.player_vel_inf;
+			(Vector)evt.proj.angles = opt.angles;
+			evt.proj.trail_spr = opt.trail_spr;
+			evt.proj.follow_mode = opt.follow_mode;
+
+			if (config->pev->spawnflags & FL_SHOOT_PROJ_NO_ORIENT) {
+				evt.proj.flags |= FL_WC_PROJ_NO_ORIENT;
+			}
+			if (config->pev->spawnflags & FL_SHOOT_NO_BUBBLES) {
+				evt.proj.flags |= FL_WC_PROJ_NO_BUBBLES;
+			}
+			
 			if (ptype == WC_PROJECTILE_OTHER) {
 				if (opt.entity_class) {
-					evt = evt.ProjClass(opt.entity_class);
+					evt.proj.entity_class = opt.entity_class;
 				}
 				else {
 					EALERT(at_error, "Projectile class not set. Defaulting to hand grenade.\n");
@@ -457,12 +490,6 @@ public:
 			}
 
 			AddEvent(evt);
-
-			if (opt.world_event || opt.monster_event || opt.life || opt.size || opt.move_snd.file
-				|| opt.sprite || opt.angles != g_vecZero || opt.player_vel_inf != g_vecZero ||
-				opt.follow_mode || opt.trail_spr || opt.bounce_effect_delay) {
-				EALERT(at_error, "Unimplemented projectile options used\n");
-			}
 			
 			break;
 		}
@@ -519,11 +546,16 @@ public:
 				params.reloadStage[1] = { (uint8_t)settings->reload_empty_anim,  (uint16_t)(settings->reload_time * 1000) };
 			}
 		}
-		else if (settings->reload_mode == RELOAD_STAGED) {
+		else if (settings->reload_mode == RELOAD_STAGED || settings->reload_mode == RELOAD_STAGED_RESPONSIVE) {
 			params.flags |= FL_WC_WEP_SHOTGUN_RELOAD;
 			params.reloadStage[0] = { (uint8_t)settings->reload_start_anim, (uint16_t)(settings->reload_start_time*1000) };
 			params.reloadStage[1] = { (uint8_t)settings->reload_anim, (uint16_t)(settings->reload_time * 1000) };
 			params.reloadStage[2] = { (uint8_t)settings->reload_end_anim, (uint16_t)(settings->reload_end_time * 1000) };
+
+			if (settings->reload_mode == RELOAD_STAGED_RESPONSIVE) {
+				ALERT(at_error, "Responsive reloads not implemented\n");
+				// TODO: add reload cancel stage
+			}
 
 			if (settings->reload_snd.file) {
 				AddSoundChainEvents(WepEvt().Reload(), settings->reload_snd, 0, false);

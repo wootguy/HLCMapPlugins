@@ -106,10 +106,12 @@ class CCmlwbr : public CWeaponCustom {
 		AddEvent(WepEvt().PrimaryEmpty().WepAnim(CMLWBR_FIRE_LAST));
 		AddEvent(WepEvt().PrimaryNotEmpty().Delay(280).IdleSound(drawbackSnd));
 		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET));
-		AddEvent(WepEvt().Primary()
-			.Projectile(WC_PROJECTILE_CUSTOM, 2000)
-			.ProjClass(ALLOC_STRING("cmlwbr_bolt"))
-			.ProjModel(boltMdl));
+		
+		WepEvt projEvt = WepEvt().Primary().Projectile(WC_PROJECTILE_OTHER);
+		projEvt.proj.speed = 2000;
+		projEvt.proj.entity_class = ALLOC_STRING("cmlwbr_bolt");
+		projEvt.proj.model = boltMdl;
+		AddEvent(projEvt);
 
 		AddEvent(WepEvt().Secondary().IdleSound(zoomSnd));
 		AddEvent(WepEvt().Secondary().ToggleZoom(40, 20));
@@ -163,6 +165,7 @@ class CCmlwbr : public CWeaponCustom {
 };
 
 class CCmlwbrBolt : public CProjectileCustom {
+public:
 	void Spawn() {
 		CProjectileCustom::Spawn();
 
@@ -176,7 +179,7 @@ class CCmlwbrBolt : public CProjectileCustom {
 
 	virtual const char* GetDeathNoticeWeapon() { return "weapon_crossbow"; }
 
-	bool CustomTouch(CBaseEntity* pOther) override {
+	void CustomTouch(CBaseEntity* pOther) override {
 		if (pOther->pev->takedamage)
 		{
 			TraceResult tr = UTIL_GetGlobalTrace();
@@ -221,23 +224,23 @@ class CCmlwbrBolt : public CProjectileCustom {
 				UTIL_Sparks(pev->origin);
 			}
 
-			return true;
+			return;
 		}
 
-		return false;
+		UTIL_Remove(this);
 	}
 
-	bool CustomThink(void) override
+	void CustomMove(void) override
 	{
 		pev->nextthink = gpGlobals->time + 0.1;
 		ParametricInterpolation(0.1f);
 
 		if (pev->waterlevel == 0)
-			return true;
+			return;
 
 		UTIL_BubbleTrail(pev->origin - pev->velocity * 0.1, pev->origin, 1);
 
-		return true;
+		return;
 	}
 
 	void GetAmmoDropInfo(bool secondary, const char*& ammoEntName, int& dropAmount) {

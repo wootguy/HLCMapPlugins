@@ -97,6 +97,15 @@ void custom_explosion(Vector pos, Vector vel, CWeaponCustomEffect* effect, Vecto
 		{
 			RadiusDamage(pos, ownerEnt->pev, ownerEnt->pev, dmg, radius, 0, effect->damageType());
 		}
+
+		if (effect->explode_damage >= 80) {
+			UTIL_WaterSplash(pos, true, true);
+			PLAY_DISTANT_SOUND(ENT(0), DISTANT_BOOM);
+		}
+		else {
+			UTIL_WaterSplash(pos, false, true, 0.5f);
+			PLAY_DISTANT_SOUND(ENT(0), DISTANT_556);
+		}
 	}
 
 	if (effect->explode_smoke_spr)
@@ -163,61 +172,41 @@ void custom_effect(Vector pos, EHANDLE h_effect, EHANDLE creator, EHANDLE target
 				UTIL_ELight(creator->entindex(), 0, pos, l_size2 * 10, effect->explode_light_color2, l_life2, l_decay2);
 		}
 	}
-	if ((effect->pev->spawnflags & FL_EFFECT_SPARKS) != 0)
-	{
+	if ((effect->pev->spawnflags & FL_EFFECT_SPARKS) != 0) {
 		UTIL_Sparks(pos);
 	}
-	if ((effect->pev->spawnflags & FL_EFFECT_RICOCHET) != 0)
-	{
+	if ((effect->pev->spawnflags & FL_EFFECT_RICOCHET) != 0) {
 		UTIL_Ricochet(pos, 0);
 	}
-	if ((effect->pev->spawnflags & FL_EFFECT_TARBABY) != 0)
-	{
-		ALERT(at_error, "te_tarexplosion effect not implemented");
-		//te_tarexplosion(pos);
+	if ((effect->pev->spawnflags & FL_EFFECT_TARBABY) != 0) {
+		UTIL_QuakeExplosion(pos);
 	}
-	if ((effect->pev->spawnflags & FL_EFFECT_TARBABY2) != 0)
-	{
-		ALERT(at_error, "te_explosion2 effect not implemented");
-		//te_explosion2(pos);
+	if ((effect->pev->spawnflags & FL_EFFECT_TARBABY2) != 0) {
+		UTIL_QuakeExplosion2(pos);
 	}
-	if ((effect->pev->spawnflags & FL_EFFECT_BURST) != 0)
-	{
-		ALERT(at_error, "te_particlebust effect not implemented");
-		//te_particlebust(pos, effect->burst_radius, effect->burst_color, effect->burst_life);
+	if ((effect->pev->spawnflags & FL_EFFECT_BURST) != 0) {
+		UTIL_QuakeParticleBurst(pos, effect->burst_radius, effect->burst_color, effect->burst_life);
 	}
-	if ((effect->pev->spawnflags & FL_EFFECT_LAVA) != 0)
-	{
-		ALERT(at_error, "te_lavasplash effect not implemented");
-		//te_lavasplash(pos);
+	if ((effect->pev->spawnflags & FL_EFFECT_LAVA) != 0) {
+		UTIL_QuakeLavaSplash(pos);
 	}
-	if ((effect->pev->spawnflags & FL_EFFECT_TELEPORT) != 0)
-	{
-		ALERT(at_error, "te_teleport effect not implemented");
-		//te_teleport(pos);
+	if ((effect->pev->spawnflags & FL_EFFECT_TELEPORT) != 0) {
+		UTIL_QuakeTeleport(pos);
 	}
-	if (effect->glow_spr)
-	{
-		ALERT(at_error, "te_glowsprite effect not implemented");
-		//te_glowsprite(pos, effect->glow_spr, effect->glow_spr_life, effect->glow_spr_scale, effect->glow_spr_opacity);
+	if (effect->glow_spr) {
+		UTIL_GlowSprite(pos, effect->glow_spr, effect->glow_spr_life, effect->glow_spr_scale, effect->glow_spr_opacity);
 	}
-	if (effect->spray_count > 0 && effect->spray_sprite > 0)
-	{
-		UTIL_SpriteSpray(pos, dir, effect->spray_sprite, effect->spray_count, effect->spray_speed, effect->spray_rand);
+	if (effect->spray_count > 0 && effect->spray_sprite > 0) {
+		UTIL_SpriteSpray(pos, dir, MODEL_INDEX(STRING(effect->spray_sprite)), effect->spray_count,
+			effect->spray_speed, effect->spray_rand);
 	}
-	if (effect->implode_count > 0)
-	{
-		ALERT(at_error, "te_implosion effect not implemented");
-		//te_implosion(pos, effect->implode_radius, effect->implode_count, effect->implode_life);
+	if (effect->implode_count > 0) {
+		UTIL_Implosion(pos, effect->implode_radius, effect->implode_count, effect->implode_life);
 	}
-	if (effect->rico_part_count > 0)
-	{
-		ALERT(at_error, "te_spritetrail effect not implemented");
-		/*
-		te_spritetrail(pos, pos + dt->tr.vecPlaneNormal, effect->rico_part_spr,
+	if (effect->rico_part_count > 0 && effect->rico_part_spr) {
+		UTIL_SpriteTrail(pos, pos + dt->tr.vecPlaneNormal, MODEL_INDEX(STRING(effect->rico_part_spr)),
 			effect->rico_part_count, 0, effect->rico_part_scale,
 			effect->rico_part_speed, effect->rico_part_speed / 2);
-		*/
 	}
 	if (effect->blood_stream != 0)
 	{
@@ -243,17 +232,23 @@ void custom_effect(Vector pos, EHANDLE h_effect, EHANDLE creator, EHANDLE target
 	}
 	if (effect->rico_trace_count > 0)
 	{
-		ALERT(at_error, "te_streaksplash effect not implemented");
-		//te_streaksplash(pos, dt->tr.vecPlaneNormal, effect->rico_trace_color,
-		//	effect->rico_trace_count, effect->rico_trace_speed, effect->rico_trace_rand);
+		UTIL_StreakSplash(pos, dt->tr.vecPlaneNormal, effect->rico_trace_color,
+			effect->rico_trace_count, effect->rico_trace_speed, effect->rico_trace_rand);
 	}
 	if (effect->rico_decal != DECAL_NONE && dt->ent)
 	{
 		const char* decal = getBulletDecalOverride(dt->ent, getDecal(effect->rico_decal));
-		if ((effect->pev->spawnflags & FL_EFFECT_GUNSHOT_RICOCHET) != 0)
-			UTIL_GunshotDecal(dt->ent->entindex(), pos, DECAL_INDEX(decal));
-		else
-			UTIL_Decal(dt->ent->entindex(), pos, DECAL_INDEX(decal));
+		int decalIdx = DECAL_INDEX(decal);
+
+		if (decalIdx != -1) {
+			if ((effect->pev->spawnflags & FL_EFFECT_GUNSHOT_RICOCHET) != 0)
+				UTIL_GunshotDecal(dt->ent->entindex(), pos, decalIdx);
+			else
+				UTIL_Decal(dt->ent->entindex(), pos, decalIdx);
+		}
+		else {
+			ALERT(at_error, "Unknown decal: %s\n", decal);
+		}
 	}
 
 	if (effect->explode_gibs > 0 && effect->explode_gib_mdl)
@@ -436,7 +431,7 @@ WeaponSound* CWeaponCustomEffect::getRandomSound()
 
 void CWeaponCustomEffect::PrecacheSound(string_t sound)
 {
-	if (sound) {
+	if (sound && strstr(STRING(sound), ".")) {
 		EALERT(at_aiconsole, "Precaching sound: %s\n", STRING(sound));
 		PRECACHE_SOUND(STRING(sound));
 	}

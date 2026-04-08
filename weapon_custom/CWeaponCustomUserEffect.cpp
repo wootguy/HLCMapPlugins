@@ -125,7 +125,7 @@ WeaponSound* CWeaponCustomUserEffect::getRandomSound()
 
 void CWeaponCustomUserEffect::PrecacheSound(string_t sound)
 {
-	if (sound) {
+	if (sound && strstr(STRING(sound), ".")) {
 		EALERT(at_aiconsole, "Precaching sound: %s\n", STRING(sound));
 		PRECACHE_SOUND(STRING(sound));
 	}

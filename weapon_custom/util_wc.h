@@ -1,5 +1,6 @@
 #pragma once
 #include "const_wc.h"
+#include "WeaponSound.h"
 #include <vector>
 
 class CWeaponCustomShoot;
@@ -78,19 +79,6 @@ DecalTarget getProjectileDecalTarget(CBaseEntity* ent, Vector pos, float searchD
 const char* getDecal(int decalType);
 
 const char* getBulletDecalOverride(CBaseEntity* ent, const char* currentDecal);
-
-std::vector<float> rotationMatrix(Vector axis, float angle);
-
-// multiply a matrix with a vector (assumes w component of vector is 1.0f) 
-Vector matMultVector(std::vector<float>& rotMat, Vector v);
-
-// rotates a point around 0,0,0 using YXZ euler rotation order
-Vector rotatePoint(Vector pos, Vector angles);
-
-// Given a point that has been rotated around 0,0,0 by "angles", figure out
-// where the point would be if we were to unapply all of those rotations.
-// This is probably a super naive way of doing it (me no is good at math).
-Vector unwindPoint(Vector pos, Vector angles);
 
 Vector resizeVector(Vector v, float length);
 

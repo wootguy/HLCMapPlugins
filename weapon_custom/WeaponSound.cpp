@@ -52,7 +52,7 @@ SoundArgs WeaponSound::getSoundArgs(Vector pos, CBaseEntity* ent, int channel, f
 	int pitch = getPitch();
 	float delay = 0.0f;
 	int chan = channel;
-	CWeaponCustomSound* nextSnd;
+	CWeaponCustomSound* nextSnd = NULL;
 	bool underwaterEffects = true;
 	if (h_options.GetEntity())
 	{
@@ -72,13 +72,17 @@ SoundArgs WeaponSound::getSoundArgs(Vector pos, CBaseEntity* ent, int channel, f
 		case 5: attn = ATTN_NONE; break;
 		}
 
-		if (h_options->pev->skin == 2) {
+		if (file && h_options->pev->skin == 2) {
 			//flags |= SND_FORCE_SINGLE;
-			ALERT(at_error, "WeaponSound: SND_FORCE_SINGLE flag not implemented\n");
+			WavInfo info = getWaveFileInfo(STRING(file));
+			if (info.isLooped)
+				ALERT(at_error, "WeaponSound: SND_FORCE_SINGLE flag not implemented\n");
 		}
-		if (h_options->pev->skin == 3) {
+		if (file && h_options->pev->skin == 3) {
 			//flags |= SND_FORCE_LOOP;
-			ALERT(at_error, "WeaponSound: SND_FORCE_LOOP flag not implemented\n");
+			WavInfo info = getWaveFileInfo(STRING(file));
+			if (!info.isLooped)
+				ALERT(at_error, "WeaponSound: SND_FORCE_LOOP flag not implemented\n");
 		}
 	}
 	if (pitchOverride != -1)
@@ -99,7 +103,7 @@ SoundArgs WeaponSound::getSoundArgs(Vector pos, CBaseEntity* ent, int channel, f
 	args.pitch = pitch;
 	args.target_ent = (ent && userOnly) ? ent->entindex() : 0;
 	args.underwaterEffects = underwaterEffects;
-	args.next_snd = EHANDLE(nextSnd->edict());
+	args.next_snd = nextSnd ? EHANDLE(nextSnd->edict()) : NULL;
 
 	return args;
 }
@@ -143,8 +147,10 @@ bool WeaponSound::play(Vector pos, int channel, float volMult, int pitchOverride
 	{
 		uint32_t targets = args.target_ent ? PLRBIT(args.target_ent) : 0xffffffff;
 		WaterSoundEffects(args.pos, args);
-		StartSound(NULL, args.channel, STRING(args.file), args.volume, args.attn, args.flags,
-			args.pitch, args.pos, targets);
+		UTIL_EmitAmbientSound(ENT(0), args.pos, STRING(args.file), args.volume, args.attn, args.flags,
+			args.pitch, args.target_ent ? INDEXENT(args.target_ent) : NULL);
+		//StartSound(0, CHAN_STATIC, STRING(args.file), args.volume, args.attn, args.flags,
+//			args.pitch, args.pos, targets);
 	}
 
 	if (args.next_snd) {

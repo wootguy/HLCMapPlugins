@@ -10,7 +10,7 @@ add_library(${PROJECT_NAME} SHARED
 	CWeaponCustomEffect.h		CWeaponCustomEffect.cpp
 	CWeaponCustomUserEffect.h	CWeaponCustomUserEffect.cpp
 	CWeaponCustomConfig.h		CWeaponCustomConfig.cpp
-	CWeaponCustomProjectile.h	CWeaponCustomProjectile.cpp
+	CWeaponCustomProjectile.cpp
 	util_wc.h					util_wc.cpp
 )
 

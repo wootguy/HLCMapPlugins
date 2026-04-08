@@ -112,9 +112,15 @@ class CBradNailer : public CWeaponCustom {
 		AddEvent(WepEvt().Primary().WepAnim(BRADNAILER_SHOOT));
 		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_NORMAL));
 		AddEvent(WepEvt().Primary().PunchSet(-1.5f, 0));
-		AddEvent(WepEvt().Primary().Projectile(WC_PROJECTILE_CUSTOM, 4000, spread, spread, Vector(8, 16, -6))
-			.ProjClass(ALLOC_STRING("nail"))
-			.ProjModel(nailMdl));
+
+		WepEvt projEvt = WepEvt().Primary().Projectile(WC_PROJECTILE_OTHER);
+		projEvt.proj.speed = 4000;
+		projEvt.proj.spreadX = spread;
+		projEvt.proj.spreadY = spread;
+		(Vector)projEvt.proj.offset = Vector(8, 16, -6);
+		projEvt.proj.entity_class = ALLOC_STRING("nail");
+		projEvt.proj.model = nailMdl;
+		AddEvent(projEvt);
 
 		AddEvent(WepEvt().SecondaryCharge().WepAnim(BRADNAILER_TILT_DOWN));
 		AddEvent(WepEvt().SecondaryStop().WepAnim(BRADNAILER_TILT_UP));
@@ -122,9 +128,15 @@ class CBradNailer : public CWeaponCustom {
 		AddEvent(WepEvt().Secondary().WepAnim(BRADNAILER_FAST_SHOOT));
 		AddEvent(WepEvt().Secondary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET));
 		AddEvent(WepEvt().Secondary().PunchSet(-1.5f, 0));
-		AddEvent(WepEvt().Secondary().Projectile(WC_PROJECTILE_CUSTOM, 4000, spread2, spread2, Vector(0, 16, -6))
-			.ProjClass(ALLOC_STRING("nail"))
-			.ProjModel(nailMdl));
+
+		WepEvt projEvt2 = WepEvt().Secondary().Projectile(WC_PROJECTILE_OTHER);
+		projEvt2.proj.speed = 4000;
+		projEvt2.proj.spreadX = spread2;
+		projEvt2.proj.spreadY = spread2;
+		(Vector)projEvt2.proj.offset = Vector(0, 16, -6);
+		projEvt2.proj.entity_class = ALLOC_STRING("nail");
+		projEvt2.proj.model = nailMdl;
+		AddEvent(projEvt2);
 
 		AddEvent(WepEvt().Reload().Delay(220).IdleSound(reloadSnd1));
 		AddEvent(WepEvt().Reload().Delay(1280).IdleSound(reloadSnd2));

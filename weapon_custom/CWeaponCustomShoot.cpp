@@ -3,7 +3,6 @@
 #include "CWeaponCustom.h"
 #include "te_effects.h"
 #include "skill.h"
-#include "const_wc.h"
 #include "weapon_custom.h"
 #include "WeaponSound.h"
 #include "CWeaponCustomSound.h"
@@ -72,8 +71,8 @@ void CWeaponCustomShoot::KeyValue(KeyValueData* pkvd)
 	else if (HandleKv(pkvd, "hook_sound2")) hook_snd2.file = ALLOC_STRING(pkvd->szValue);
 
 	else if (HandleKv(pkvd, "projectile_type"))          projectile.type = atoi(pkvd->szValue);
-	else if (HandleKv(pkvd, "projectile_world_event"))   projectile.world_event = atoi(pkvd->szValue);
-	else if (HandleKv(pkvd, "projectile_monster_event")) projectile.monster_event = atoi(pkvd->szValue);
+	else if (HandleKv(pkvd, "projectile_world_event"))   projectile.world_event = (WeaponCustomProjectileAction)atoi(pkvd->szValue);
+	else if (HandleKv(pkvd, "projectile_monster_event")) projectile.monster_event = (WeaponCustomProjectileAction)atoi(pkvd->szValue);
 	else if (HandleKv(pkvd, "projectile_speed"))         projectile.speed = atof(pkvd->szValue);
 	else if (HandleKv(pkvd, "projectile_life"))          projectile.life = atof(pkvd->szValue);
 	else if (HandleKv(pkvd, "projectile_bounce"))        projectile.elasticity = atof(pkvd->szValue);
@@ -391,7 +390,7 @@ int CWeaponCustomShoot::PrecacheModel(string_t model)
 
 void CWeaponCustomShoot::PrecacheSound(string_t sound)
 {
-	if (sound) {
+	if (sound && strstr(STRING(sound), ".")) {
 		EALERT(at_aiconsole, "Precaching sound: %s\n", STRING(sound));
 		PRECACHE_SOUND(STRING(sound));
 	}

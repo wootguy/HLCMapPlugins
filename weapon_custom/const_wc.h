@@ -88,13 +88,6 @@ enum fire_mode
 	TERTIARY
 };
 
-enum projectile_action
-{
-	PROJ_ACT_IMPACT = 1,
-	PROJ_ACT_BOUNCE,
-	PROJ_ACT_ATTACH
-};
-
 enum projectile_type
 {
 	PROJECTILE_ARGRENADE = 1,

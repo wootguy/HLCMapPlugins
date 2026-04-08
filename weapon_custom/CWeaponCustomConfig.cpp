@@ -189,12 +189,19 @@ bool CWeaponCustomConfig::validateSettings()
 	if (slotPosition < MIN_WEAPON_SLOT_POSITION || slotPosition > MAX_WEAPON_SLOT_POSITION)
 		slotPosition = -1;
 
+	static StringMap ammo_remap = {
+		{"m40a1", "762"},
+		{"sporeclip", "spores"},
+	};
+
 	// remap sven ammo types
-	if (!strcmp(STRING(primary_ammo_type), "m40a1")) {
-		primary_ammo_type = ALLOC_STRING("762");
+	const char* remapPrimary = ammo_remap.get(STRING(primary_ammo_type));
+	const char* remapSecondary = ammo_remap.get(STRING(secondary_ammo_type));
+	if (remapPrimary) {
+		primary_ammo_type = ALLOC_STRING(remapPrimary);
 	}
-	if (!strcmp(STRING(secondary_ammo_type), "m40a1")) {
-		secondary_ammo_type = ALLOC_STRING("762");
+	if (remapSecondary) {
+		secondary_ammo_type = ALLOC_STRING(remapSecondary);
 	}
 
 	/*
@@ -494,7 +501,7 @@ void CWeaponCustomConfig::PrecacheModel(string_t model)
 
 void CWeaponCustomConfig::PrecacheSound(string_t sound)
 {
-	if (sound) {
+	if (sound && strstr(STRING(sound), ".")) {
 		EALERT(at_aiconsole, "Precaching sound: %s\n", STRING(sound));
 		PRECACHE_SOUND(STRING(sound));
 	}
