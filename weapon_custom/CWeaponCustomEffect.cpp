@@ -102,7 +102,7 @@ void custom_explosion(Vector pos, Vector vel, CWeaponCustomEffect* effect, Vecto
 			UTIL_WaterSplash(pos, true, true);
 			PLAY_DISTANT_SOUND(ENT(0), DISTANT_BOOM);
 		}
-		else {
+		else if (effect->explode_damage >= 40) {
 			UTIL_WaterSplash(pos, false, true, 0.5f);
 			PLAY_DISTANT_SOUND(ENT(0), DISTANT_556);
 		}

@@ -469,6 +469,18 @@ void CWeaponCustomShoot::Precache()
 	*/
 }
 
+bool CWeaponCustomShoot::isConstantBeamAttack() {
+	if (shoot_type == SHOOT_BEAM) {
+		for (int i = 0; i < 2; i++) {
+			if (beams[i].type != BEAM_DISABLED && beams[i].time == 0) {
+				return true;
+			}
+		}
+	}
+	
+	return false;
+}
+
 void CWeaponCustomBullet::Spawn()
 {
 	CWeaponCustomShoot::Spawn();

@@ -72,9 +72,12 @@ public:
 		return evt;
 	}
 
-	void AddSoundChainEvents(WepEvt evt, WeaponSound& sound, float totalDelay, bool isLoud) {
+	void AddSoundChainEvents(WepEvt evt, WeaponSound& sound, float totalDelay, bool isLoud, int forceChannel=-1) {
 		SoundOpts opts = sound.getOpts();
 		int sndIdx = SOUND_INDEX(STRING(opts.file));
+
+		if (forceChannel != -1)
+			opts.channel = forceChannel; // Hacky but this flag is redundant and should be removed anyway
 
 		totalDelay += opts.delay;
 		evt = evt.Delay(totalDelay*1000);
@@ -91,11 +94,11 @@ public:
 		if (opts.nextSnd) {
 			CWeaponCustomSound* wsound = (CWeaponCustomSound*)opts.nextSnd.GetEntity();
 			WeaponSound next = wsound->getWeaponSound();
-			AddSoundChainEvents(evt, next, totalDelay, isLoud);
+			AddSoundChainEvents(evt, next, totalDelay, isLoud, forceChannel);
 		}
 	}
 
-	float AddEffectChainEvents(WepEvt baseEvent, EHANDLE h_effect, float totalDelay, bool isLoud) {
+	float AddEffectChainEvents(WepEvt baseEvent, EHANDLE h_effect, float totalDelay, bool isLoud, int forceChannel=-1) {
 		CWeaponCustomUserEffect* effect = (CWeaponCustomUserEffect*)h_effect.GetEntity();
 		if (!effect)
 			return totalDelay;
@@ -111,7 +114,7 @@ public:
 			}
 
 			for (int i = 0; i < effect->sounds.size; i++) {
-				AddSoundChainEvents(baseEvent, effect->sounds.data[i], 0, isLoud);
+				AddSoundChainEvents(baseEvent, effect->sounds.data[i], 0, isLoud, forceChannel);
 			}
 		}
 
@@ -260,23 +263,38 @@ public:
 		CustomWeaponShootOpts& opts = params.shootOpts[attackIdx];
 		
 		WepEvt attackEvt = WepEvt();
+		WepEvt attackStartEvt = WepEvt();
+		WepEvt attackEndEvt = WepEvt();
+		WepEvt attackFailEvt = WepEvt();
 		int attackFlag = 0;
 		switch (attackIdx) {
 		default:
 		case 0:
 			attackEvt = attackEvt.Primary();
+			attackStartEvt = attackStartEvt.PrimaryStart();
+			attackEndEvt = attackEndEvt.PrimaryStop();
+			attackFailEvt = attackFailEvt.PrimaryFail();
 			attackFlag = FL_WC_WEP_HAS_PRIMARY;
 			break;
 		case 1:
 			attackEvt = attackEvt.Secondary();
+			attackStartEvt = attackStartEvt.SecondaryStart();
+			attackEndEvt = attackEndEvt.SecondaryStop();
+			attackFailEvt = attackFailEvt.SecondaryFail();
 			attackFlag = FL_WC_WEP_HAS_SECONDARY;
 			break;
 		case 2:
 			attackEvt = attackEvt.Tertiary();
+			attackStartEvt = attackStartEvt.Tertiary();
+			attackEndEvt = attackEndEvt.Tertiary();
+			attackFailEvt = attackFailEvt.Tertiary();
 			attackFlag = FL_WC_WEP_HAS_TERTIARY;
 			break;
 		case 3:
 			attackEvt = attackEvt.PrimaryAlt();
+			attackStartEvt = attackStartEvt.PrimaryAlt();
+			attackEndEvt = attackEndEvt.PrimaryAlt();
+			attackFailEvt = attackFailEvt.PrimaryAlt();
 			attackFlag = FL_WC_WEP_HAS_ALT_PRIMARY;
 			break;
 		}
@@ -330,7 +348,7 @@ public:
 		params.flags |= attackFlag;
 
 		int flags = config->pev->spawnflags;
-		if (flags & (FL_SHOOT_IF_NOT_DAMAGE | FL_SHOOT_IF_NOT_MISS | FL_SHOOT_NO_MELEE_SOUND_OVERLAP
+		if (flags & (FL_SHOOT_IF_NOT_DAMAGE | FL_SHOOT_IF_NOT_MISS
 			| FL_SHOOT_RESPONSIVE_WINDUP | FL_SHOOT_QUAKE_MUZZLEFLASH
 			| FL_SHOOT_DETONATE_SATCHELS)) {
 			EALERT(at_error, "Unimplemented shoot flags used\n");
@@ -394,8 +412,10 @@ public:
 			opts.ammoPool = params.shootOpts[0].ammoPool;
 		}
 
+		bool isConstantBeam = config->isConstantBeamAttack();
+
 		// animations
-		if (config->shoot_empty_anim != -1) {
+		if (config->shoot_empty_anim != -1 && !isConstantBeam) {
 			if (opts.ammoPool == WC_AMMOPOOL_PRIMARY_CLIP) {
 				AddEvent(MakeAnimEvt(WepEvt().PrimaryNotEmpty(), config->shoot_anims));
 				AddEvent(WepEvt().PrimaryEmpty().WepAnim(config->shoot_empty_anim));
@@ -405,16 +425,19 @@ public:
 			}
 		}
 		else {
-			AddEvent(MakeAnimEvt(attackEvt, config->shoot_anims));
+			WepEvt evt = isConstantBeam ? attackStartEvt : attackEvt;
+			AddEvent(MakeAnimEvt(evt, config->shoot_anims));
 		}
 
 		// sounds
-		if (config->shoot_empty_snd.file) {
+		bool noSoundOverlap = config->pev->spawnflags & FL_SHOOT_NO_MELEE_SOUND_OVERLAP;
+		int forceChannel = noSoundOverlap ? CHAN_WEAPON : -1;
+		if (config->shoot_empty_snd.file && !isConstantBeam) {
 			if (opts.ammoPool == WC_AMMOPOOL_PRIMARY_CLIP) {
-				AddSoundChainEvents(WepEvt().PrimaryEmpty(), config->shoot_empty_snd, 0, true);
+				AddSoundChainEvents(WepEvt().PrimaryEmpty(), config->shoot_empty_snd, 0, true, forceChannel);
 
 				for (int i = 0; i < config->sounds.size; i++) {
-					AddSoundChainEvents(WepEvt().PrimaryNotEmpty(), config->sounds.data[i], 0, true);
+					AddSoundChainEvents(WepEvt().PrimaryNotEmpty(), config->sounds.data[i], 0, true, forceChannel);
 				}
 			}
 			else {
@@ -422,8 +445,9 @@ public:
 			}
 		}
 		else {
+			WepEvt evt = isConstantBeam ? attackStartEvt : attackEvt;
 			for (int i = 0; i < config->sounds.size; i++) {
-				AddSoundChainEvents(attackEvt, config->sounds.data[i],0,  true);
+				AddSoundChainEvents(evt, config->sounds.data[i],0,  true, forceChannel);
 			}
 		}
 
@@ -493,9 +517,57 @@ public:
 			
 			break;
 		}
-		case SHOOT_BEAM:
-			EALERT(at_error, "Beam attacks not implemented\n");
+		case SHOOT_BEAM: {
+			float spread = config->bullet_spread;
+			bool constantMode = false;
+
+			for (int i = 0; i < 2; i++) {
+				BeamOptions& opt = config->beams[i];
+				int flags = 0;
+				uint16_t spriteIdx = MODEL_INDEX(STRING(opt.sprite));
+
+				if (opt.type == BEAM_DISABLED)
+					continue;
+				if (opt.type == BEAM_SPIRAL || opt.type == BEAM_SPIRAL_OPAQUE)
+					flags |= FL_WC_BEAM_SPIRAL;
+				if (opt.type == BEAM_LINEAR_OPAQUE || opt.type == BEAM_SPIRAL_OPAQUE)
+					flags |= FL_WC_BEAM_OPAQUE;
+
+				int constId = attackIdx * 2 + i + 1;
+				int id = opt.time == 0 ? constId : 0;
+				constantMode |= opt.time == 0;
+
+				AddEvent(attackEvt
+					.Beam(id, opt.time, config->max_range)
+					.BeamDamage(config->damage, spread, spread, config->beam_impact_speed*1000)
+					.BeamStyle(spriteIdx, opt.color, opt.width, opt.noise, opt.scrollRate, 1, flags)
+				);
+
+				if (opt.alt_mode != BEAM_ALT_DISABLED) {
+					ALERT(at_error, "Beam animations not implemented\n");
+				}
+			}
+
+			// running sound
+			if (config->hook_snd.file) {
+				AddSoundChainEvents(attackStartEvt, config->hook_snd, config->hook_delay, false, forceChannel);
+			}
+
+			// end sound
+			if (config->hook_snd2.file) {
+				AddSoundChainEvents(attackEndEvt, config->hook_snd2, 0, false, forceChannel);
+			}
+
+			AddEvent(attackEndEvt.WepAnim(config->hook_anim));
+
+			if (constantMode) {
+				// use normal cooldown for spending ammo, and an event to cooldown attacks
+				opts.cooldown = config->beam_ammo_cooldown * 1000;
+				AddEvent(attackEndEvt.Cooldown(config->cooldown * 1000, 0xff));
+			}
+
 			break;
+		}
 		}
 
 		// after effects
