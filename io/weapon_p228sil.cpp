@@ -113,7 +113,7 @@ class CUsp : public CWeaponCustom {
 
 			AddEvent(WepEvt().PrimaryNotEmpty().WepAnim(USP_SHOOT1_UNSIL).AddAnim(USP_SHOOT2_UNSIL).AddAnim(USP_SHOOT3_UNSIL));
 			AddEvent(WepEvt().PrimaryEmpty().WepAnim(USP_SHOOTLAST_UNSIL));
-			AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 0.9f, ATTN_NORM, 100, 100, DISTANT_9MM, WC_AIVOL_NORMAL));
+			AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 0.9f, ATTN_NORM, 100, 100, DISTANT_9MM, WC_AIVOL_NORMAL, 0));
 			AddEvent(WepEvt().Primary().Bullets(1, 0, damage, spread, spread, 2, WC_FLASH_BRIGHT, 0));
 
 			// using the opposite sound because the server swaps it before it can play
@@ -155,7 +155,7 @@ class CUsp : public CWeaponCustom {
 
 			AddEvent(WepEvt().PrimaryNotEmpty().WepAnim(USP_SHOOT1)); // 2 and 3 don't return to idle pose
 			AddEvent(WepEvt().PrimaryEmpty().WepAnim(USP_SHOOTLAST));
-			AddEvent(WepEvt().Primary().PlaySound(shootSnd_alt, CHAN_WEAPON, 0.9f, ATTN_NORM, 100, 100, DISTANT_9MM, WC_AIVOL_SILENT));
+			AddEvent(WepEvt().Primary().PlaySound(shootSnd_alt, CHAN_WEAPON, 0.9f, ATTN_NORM, 100, 100, DISTANT_9MM, WC_AIVOL_SILENT, 0));
 			AddEvent(WepEvt().Primary().Bullets(1, 0, damage, spread, spread, 2, WC_FLASH_NONE, 0));
 
 			AddEvent(WepEvt().Secondary().WepAnim(USP_DETACH_SILENCER));

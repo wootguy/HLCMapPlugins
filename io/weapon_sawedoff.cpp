@@ -100,14 +100,14 @@ class CSawedOff : public CWeaponCustom {
 		float damage = roundf((gSkillData.sk_12mm_bullet * 4.0f) / 6.0f);
 
 		AddEvent(WepEvt().Primary().WepAnim(TOZ34_SHOOT1));
-		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 85, 116, DISTANT_9MM, WC_AIVOL_LOUD));
+		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 85, 116, DISTANT_9MM, WC_AIVOL_LOUD, 0));
 		AddEvent(WepEvt().Primary().Bullets(SAWEDOFF_SINGLE_PELLETCOUNTER, 0, damage,
 			VECTOR_CONE_DM_SAWEDOFFS.x, VECTOR_CONE_DM_SAWEDOFFS.y, 0, WC_FLASH_BRIGHT, 0));
 		AddEvent(WepEvt().Primary().PunchRandom(1.0f, 0));
 		AddEvent(WepEvt().Primary().PunchAdd(-4.0f, 0));
 
 		AddEvent(WepEvt().Secondary().WepAnim(TOZ34_SHOOT1));
-		AddEvent(WepEvt().Secondary().PlaySound(shootSnd2, CHAN_WEAPON, 1.0f, ATTN_NORM, 85, 116, DISTANT_9MM, WC_AIVOL_LOUD));
+		AddEvent(WepEvt().Secondary().PlaySound(shootSnd2, CHAN_WEAPON, 1.0f, ATTN_NORM, 85, 116, DISTANT_9MM, WC_AIVOL_LOUD, 0));
 		AddEvent(WepEvt().Secondary().Bullets(SAWEDOFF_DOUBLE_PELLETCOUNT, 0, damage,
 			VECTOR_CONE_DM_SAWEDOFFS.x, VECTOR_CONE_DM_SAWEDOFFS.y, 0, WC_FLASH_BRIGHT, 0));
 		AddEvent(WepEvt().Secondary().PunchAdd(-10.0f, 0));

@@ -88,7 +88,7 @@ class CMp5k : public CWeaponCustom {
 		int damage = 31;
 
 		AddEvent(WepEvt().Primary().WepAnim(MP5K_FIRE1).AddAnim(MP5K_FIRE2));
-		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 100, 100, DISTANT_9MM, WC_AIVOL_NORMAL));
+		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 100, 100, DISTANT_9MM, WC_AIVOL_NORMAL, 0));
 		AddEvent(WepEvt().Primary().Bullets(1, 0, damage, spread, spread, 2, WC_FLASH_NORMAL, 0));
 
 		AddEvent(WepEvt().Reload().Delay(260).IdleSound(reloadSnd1));

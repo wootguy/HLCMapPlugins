@@ -94,7 +94,7 @@ class CP228 : public CWeaponCustom {
 
 		AddEvent(WepEvt().PrimaryNotEmpty().WepAnim(P228_FIRE1).AddAnim(P228_FIRE2));
 		AddEvent(WepEvt().PrimaryEmpty().WepAnim(P228_FIRE_LAST));
-		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 100, 100, DISTANT_9MM, WC_AIVOL_NORMAL));
+		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 100, 100, DISTANT_9MM, WC_AIVOL_NORMAL, 0));
 		AddEvent(WepEvt().Primary().Bullets(1, 0, damage, spread, spread, 2, WC_FLASH_NORMAL, 0));
 		
 		AddEvent(WepEvt().ReloadNotEmpty().Delay(200).IdleSound(reloadSnd1));

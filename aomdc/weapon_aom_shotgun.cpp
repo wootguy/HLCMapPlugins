@@ -95,10 +95,10 @@ class CAomShotgun : public CWeaponCustom
 		AddEvent(WepEvt().Primary().Delay(650).EjectShell(m_iShell, TE_BOUNCE_SHOTSHELL, 19, -22, 4));
 		AddEvent(WepEvt().Primary().Delay(500).IdleSound(reloadSnd2));
 
-		AddEvent(WepEvt().BulletFired().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 100, 100, DISTANT_556, WC_AIVOL_NORMAL));
+		AddEvent(WepEvt().BulletFired().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 100, 100, DISTANT_556, WC_AIVOL_NORMAL, 0));
 
 		AddEvent(WepEvt().Reload().Delay(16)
-			.PlaySound(reloadSnd1, CHAN_WEAPON, 1.0f, ATTN_IDLE, 100, 100, DISTANT_NONE, WC_AIVOL_SILENT));
+			.PlaySound(reloadSnd1, CHAN_WEAPON, 1.0f, ATTN_IDLE, 100, 100, DISTANT_NONE, WC_AIVOL_SILENT, 0));
 
 		UTIL_PrecacheOther("ammo_buckshot");
 

@@ -94,7 +94,7 @@ class CPar21 : public CWeaponCustom {
 		float spread = VECTOR_CONE_3DEGREES.x;
 
 		AddEvent(WepEvt().Primary().WepAnim(PAR_FIRE1).AddAnim(PAR_FIRE2).AddAnim(PAR_FIRE3));
-		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_9MM, WC_AIVOL_NORMAL));
+		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_9MM, WC_AIVOL_NORMAL, 0));
 		AddEvent(WepEvt().Primary().Bullets(1, 0, 15, spread, spread, 2, WC_FLASH_NORMAL, 0));
 		
 		AddEvent(WepEvt().BulletFired().PunchRandom(1.5f, 0));
@@ -103,7 +103,7 @@ class CPar21 : public CWeaponCustom {
 		AddEvent(WepEvt().Secondary().WepAnim(PAR_LAUNCH));
 		AddEvent(WepEvt().Secondary().PunchSet(-10, 0));
 		AddEvent(WepEvt().Secondary()
-			.PlaySound(launchSnd1, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_556, WC_AIVOL_LOUD)
+			.PlaySound(launchSnd1, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_556, WC_AIVOL_LOUD, 0)
 			.AddSound(launchSnd2));
 
 		WepEvt projEvt = WepEvt().Secondary().Projectile(WC_PROJECTILE_ARGRENADE);

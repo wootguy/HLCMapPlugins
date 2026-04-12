@@ -106,7 +106,7 @@ class CDualGlock : public CWeaponCustom {
 		// prevent the default idle animation playing so the slide doesn't reset.
 		AddEvent(WepEvt().PrimaryClip(1).Cooldown(65535, FL_WC_COOLDOWN_IDLE));
 
-		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 0.9f, ATTN_NORM, 100, 100, DISTANT_9MM, WC_AIVOL_NORMAL));
+		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 0.9f, ATTN_NORM, 100, 100, DISTANT_9MM, WC_AIVOL_NORMAL, 0));
 		AddEvent(WepEvt().Primary().Bullets(1, 0, damage, spread, spread, 2, WC_FLASH_NORMAL, 0));
 
 		AddEvent(WepEvt().Reload().Delay(0).IdleSound(reloadSnd1));

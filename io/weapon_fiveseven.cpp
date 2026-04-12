@@ -83,7 +83,7 @@ class CFiveSeven : public CWeaponCustom {
 		int damage = 24;
 
 		AddEvent(WepEvt().Primary().WepAnim(FIVE7_SHOOT1));
-		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 0.9f, ATTN_NORM, 100, 100, DISTANT_9MM, WC_AIVOL_NORMAL));
+		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 0.9f, ATTN_NORM, 100, 100, DISTANT_9MM, WC_AIVOL_NORMAL, 0));
 		AddEvent(WepEvt().Primary().Bullets(1, 0, damage, spread, spread, 2, WC_FLASH_NORMAL, 0));
 
 		AddEvent(WepEvt().Reload().Delay(500).IdleSound(reloadSnd1));

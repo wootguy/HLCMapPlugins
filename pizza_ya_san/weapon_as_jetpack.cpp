@@ -142,7 +142,7 @@ class CJetpack : public CWeaponCustom {
 		//AddEvent(WepEvt().Secondary().SetGravity(LOW_GRAVITY));
 		//AddEvent(WepEvt().SecondaryStop().Delay(1000).SetGravity(0));
 
-		AddEvent(WepEvt().BulletFired().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_9MM, WC_AIVOL_NORMAL));
+		AddEvent(WepEvt().BulletFired().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_9MM, WC_AIVOL_NORMAL, 0));
 		AddEvent(WepEvt().BulletFired().PunchRandom(2, 0));
 
 		PrecacheEvents();

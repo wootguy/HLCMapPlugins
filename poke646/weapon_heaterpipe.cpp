@@ -91,7 +91,7 @@ public:
 
 		AddEvent(WepEvt().Primary().WepAnim(PIPE_ATTACK1MISS, 0, FL_WC_ANIM_ORDERED)
 			.AddAnim(PIPE_ATTACK2MISS).AddAnim(PIPE_ATTACK3MISS));
-		AddEvent(WepEvt().Primary().PlaySound(missSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET));
+		AddEvent(WepEvt().Primary().PlaySound(missSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET, 0));
 
 		PrecacheEvents();
 	}

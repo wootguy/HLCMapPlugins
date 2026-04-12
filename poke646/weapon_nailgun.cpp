@@ -90,7 +90,7 @@ class CNailgun : public CWeaponCustom {
 		int bulletf = FL_WC_BULLETS_NO_DECAL;
 
 		AddEvent(WepEvt().Primary().WepAnim(NAILGUN_FIRE1).AddAnim(NAILGUN_FIRE2).AddAnim(NAILGUN_FIRE3));
-		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_NORMAL));
+		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_NORMAL, 0));
 		AddEvent(WepEvt().Primary().PunchSet(-1.5f, 0));
 
 		WepEvt projEvt = WepEvt().Secondary().Projectile(WC_PROJECTILE_OTHER);

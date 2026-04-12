@@ -110,7 +110,7 @@ class CBradNailer : public CWeaponCustom {
 		int bulletf = FL_WC_BULLETS_NO_DECAL;
 
 		AddEvent(WepEvt().Primary().WepAnim(BRADNAILER_SHOOT));
-		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_NORMAL));
+		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_NORMAL, 0));
 		AddEvent(WepEvt().Primary().PunchSet(-1.5f, 0));
 
 		WepEvt projEvt = WepEvt().Primary().Projectile(WC_PROJECTILE_OTHER);
@@ -126,7 +126,7 @@ class CBradNailer : public CWeaponCustom {
 		AddEvent(WepEvt().SecondaryStop().WepAnim(BRADNAILER_TILT_UP));
 		AddEvent(WepEvt().SecondaryStop().Cooldown(450, FL_WC_COOLDOWN_IDLE | FL_WC_COOLDOWN_PRIMARY | FL_WC_COOLDOWN_SECONDARY));
 		AddEvent(WepEvt().Secondary().WepAnim(BRADNAILER_FAST_SHOOT));
-		AddEvent(WepEvt().Secondary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET));
+		AddEvent(WepEvt().Secondary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET, 0));
 		AddEvent(WepEvt().Secondary().PunchSet(-1.5f, 0));
 
 		WepEvt projEvt2 = WepEvt().Secondary().Projectile(WC_PROJECTILE_OTHER);

@@ -73,10 +73,11 @@ class CSpear : public CWeaponCustom {
 		params.idles[0] = { SPEAR_IDLE, 100, 1000 };
 
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
-		primary.flags = FL_WC_SHOOT_UNDERWATER | FL_WC_SHOOT_IS_MELEE | FL_WC_SHOOT_CHARGEUP_ONCE;
+		primary.flags = FL_WC_SHOOT_UNDERWATER | FL_WC_SHOOT_IS_MELEE;
 		primary.melee.damage = 50;
 		primary.melee.range = 48;
 		primary.melee.attackOffset = Vector(0, -5, 5);
+		primary.chargeMode = WC_CHARGEUP_SINGLE;
 		primary.chargeTime = 300;
 		primary.chargeCancelTime = 300;
 		primary.melee.missCooldown = 700;
@@ -145,7 +146,7 @@ class CSpear : public CWeaponCustom {
 		RestoreMoveSpeed();
 	}
 
-	bool Chargeup(int attackIdx, bool leftHand, bool akimboFire) override {
+	bool Chargeup(int attackIdx, int* clip, bool leftHand, bool akimboFire) override {
 		CBasePlayer* m_pPlayer = GetPlayer();
 		if (!m_pPlayer)
 			return false;
@@ -159,7 +160,7 @@ class CSpear : public CWeaponCustom {
 			return false;
 		}
 
-		return CWeaponCustom::Chargeup(attackIdx, leftHand, akimboFire);
+		return CWeaponCustom::Chargeup(attackIdx, clip, leftHand, akimboFire);
 	}
 
 	bool MeleeHit(CBasePlayer* plr, CBaseEntity* target) override {

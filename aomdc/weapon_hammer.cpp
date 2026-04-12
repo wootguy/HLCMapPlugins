@@ -57,9 +57,10 @@ class CHammer : public CWeaponCustom {
 		params.idles[0] = { HAMMER_IDLE, 100, 1000 };
 
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
-		primary.flags = FL_WC_SHOOT_UNDERWATER | FL_WC_SHOOT_IS_MELEE | FL_WC_SHOOT_CHARGEUP_ONCE;
+		primary.flags = FL_WC_SHOOT_UNDERWATER | FL_WC_SHOOT_IS_MELEE;
 		primary.melee.damage = 40;
 		primary.melee.range = 32;
+		primary.chargeMode = WC_CHARGEUP_SINGLE;
 		primary.chargeTime = 500;
 		primary.chargeCancelTime = 500;
 		primary.melee.missCooldown = 1000;

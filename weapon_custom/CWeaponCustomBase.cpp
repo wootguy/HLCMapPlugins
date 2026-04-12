@@ -82,13 +82,15 @@ public:
 		totalDelay += opts.delay;
 		evt = evt.Delay(totalDelay*1000);
 
-		if (opts.isDefault()) {
-			AddEvent(evt.IdleSound(sndIdx));
-		}
-		else {
-			AddEvent(evt.PlaySound(sndIdx, opts.channel, opts.volume, opts.attn,
+		if (opts.file) {
+			if (opts.isDefault()) {
+				AddEvent(evt.IdleSound(sndIdx));
+			}
+			else {
+				AddEvent(evt.PlaySound(sndIdx, opts.channel, opts.volume, opts.attn,
 					opts.pitch - opts.pitchRand, opts.pitch + opts.pitchRand,
-					isLoud ? DISTANT_9MM : DISTANT_NONE, isLoud ? WC_AIVOL_NORMAL : WC_AIVOL_QUIET));
+					isLoud ? DISTANT_9MM : DISTANT_NONE, isLoud ? WC_AIVOL_NORMAL : WC_AIVOL_QUIET, 0));
+			}
 		}
 
 		if (opts.nextSnd) {
@@ -114,7 +116,8 @@ public:
 			}
 
 			for (int i = 0; i < effect->sounds.size; i++) {
-				AddSoundChainEvents(baseEvent, effect->sounds.data[i], 0, isLoud, forceChannel);
+				// TODO: select randomly from here, don't add them all
+				AddSoundChainEvents(baseEvent, effect->sounds.data[i], totalDelay, isLoud, forceChannel);
 			}
 		}
 
@@ -266,6 +269,9 @@ public:
 		WepEvt attackStartEvt = WepEvt();
 		WepEvt attackEndEvt = WepEvt();
 		WepEvt attackFailEvt = WepEvt();
+		WepEvt attackChargeEvt = WepEvt();
+		WepEvt attackOverchargeEvt = WepEvt();
+		WepEvt attackFinishEvt = WepEvt();
 		int attackFlag = 0;
 		switch (attackIdx) {
 		default:
@@ -274,6 +280,8 @@ public:
 			attackStartEvt = attackStartEvt.PrimaryStart();
 			attackEndEvt = attackEndEvt.PrimaryStop();
 			attackFailEvt = attackFailEvt.PrimaryFail();
+			attackChargeEvt = attackChargeEvt.PrimaryCharge();
+			attackOverchargeEvt = attackOverchargeEvt.PrimaryOvercharge();
 			attackFlag = FL_WC_WEP_HAS_PRIMARY;
 			break;
 		case 1:
@@ -281,6 +289,8 @@ public:
 			attackStartEvt = attackStartEvt.SecondaryStart();
 			attackEndEvt = attackEndEvt.SecondaryStop();
 			attackFailEvt = attackFailEvt.SecondaryFail();
+			attackChargeEvt = attackChargeEvt.SecondaryCharge();
+			attackOverchargeEvt = attackOverchargeEvt.SecondaryOvercharge();
 			attackFlag = FL_WC_WEP_HAS_SECONDARY;
 			break;
 		case 2:
@@ -288,6 +298,8 @@ public:
 			attackStartEvt = attackStartEvt.Tertiary();
 			attackEndEvt = attackEndEvt.Tertiary();
 			attackFailEvt = attackFailEvt.Tertiary();
+			attackChargeEvt = attackChargeEvt.Tertiary();
+			attackOverchargeEvt = attackOverchargeEvt.Tertiary();
 			attackFlag = FL_WC_WEP_HAS_TERTIARY;
 			break;
 		case 3:
@@ -295,6 +307,8 @@ public:
 			attackStartEvt = attackStartEvt.PrimaryAlt();
 			attackEndEvt = attackEndEvt.PrimaryAlt();
 			attackFailEvt = attackFailEvt.PrimaryAlt();
+			attackChargeEvt = attackChargeEvt.PrimaryAlt();
+			attackOverchargeEvt = attackOverchargeEvt.PrimaryAlt();
 			attackFlag = FL_WC_WEP_HAS_ALT_PRIMARY;
 			break;
 		}
@@ -451,13 +465,78 @@ public:
 			}
 		}
 
+		float damageScale = 1.0f;
+
+		// windup / chargeup
+		if (config->windup_time > 0) {
+			opts.chargeTime = config->windup_time * 1000;
+			opts.chargeCancelTime = config->windup_min_time * 1000;
+			
+			int action = config->windup_action;
+			if (action == WINDUP_SHOOT_ON_RELEASE)		opts.chargeMode = WC_CHARGEUP_HOLD;
+			if (action == WINDUP_SHOOT_ONCE)			opts.chargeMode = WC_CHARGEUP_SINGLE;
+			if (action == WINDUP_SHOOT_CONSTANT)		opts.chargeMode = WC_CHARGEUP_CONSTANT;
+			if (action == WINDUP_SHOOT_ONCE_IF_HELD)	opts.chargeMode = WC_CHARGEUP_SINGLE_HOLD;
+
+			if (config->windup_movespeed != 1.0f)
+				opts.chargeMoveSpeedMult = config->windup_movespeed * 65535;
+
+			if (config->windup_snd.file) {
+				SoundOpts opts = config->windup_snd.getOpts();
+				int sndIdx = SOUND_INDEX(STRING(opts.file));
+
+				AddEvent(attackChargeEvt.PlaySound(sndIdx, CHAN_WEAPON, opts.volume, opts.attn,
+					config->windup_pitch_start, config->windup_pitch_end,
+					DISTANT_NONE, WC_AIVOL_QUIET, FL_WC_SOUND_CHARGE_PITCH));
+			}
+			if (config->windup_loop_snd.file) {
+				AddSoundChainEvents(attackChargeEvt, config->windup_snd, 0, false, forceChannel);
+			}
+
+			AddEvent(attackChargeEvt.WepAnim(config->windup_anim));
+			AddEvent(attackChargeEvt.Delay(config->windup_anim_time*1000)
+				.WepAnim(config->windup_anim_loop));
+
+			if (config->windup_overcharge_action == OVERCHARGE_SHOOT) {
+				ALERT(at_error, "Overcharge shoot action not implemented\n");
+			}
+			if (config->windup_overcharge_action == OVERCHARGE_CANCEL) {
+				opts.overchargeMode = WC_OVERCHARGE_CANCEL;
+			}
+			if (config->windup_overcharge_action == OVERCHARGE_CONTINUE) {
+				opts.overchargeMode = WC_OVERCHARGE_CONTINUE;
+			}
+			if (config->user_effect2) {
+				opts.overchargeTime = config->windup_overcharge_time*1000;
+				AddEffectChainEvents(attackOverchargeEvt, config->user_effect2, 0, false);
+			}
+			if (config->windup_overcharge_anim != -1) {
+				AddEvent(attackOverchargeEvt.WepAnim(config->windup_overcharge_anim));
+			}
+			if (config->windup_overcharge_cooldown) {
+				AddEvent(attackOverchargeEvt.Cooldown(config->windup_overcharge_cooldown*1000,
+					FL_WC_COOLDOWN_PRIMARY | FL_WC_COOLDOWN_SECONDARY | FL_WC_COOLDOWN_TERTIARY));
+			}
+
+			if (config->windup_cost) {
+				opts.chargeAmmoMode = WC_CHARGE_AMMO_LOAD;
+				opts.ammoCost = config->windup_cost;
+			}
+			else if (config->ammo_cost) {
+				opts.chargeAmmoMode = WC_CHARGE_AMMO_ATTACK;
+			}
+
+			damageScale = config->windup_mult;
+			opts.chargeFlags |= FL_WC_CHARGE_DAMAGE | FL_WC_CHARGE_KICKBACK;
+		}
+
 		// attack
 		float spread = UTIL_ConeFromDegrees(config->bullet_spread).x;
 
 		switch (config->shoot_type) {
 		case SHOOT_BULLETS: {
 			bool showTracers = config->bullets == 1;
-			AddEvent(attackEvt.Bullets(config->bullets, config->bullet_delay * 1000, config->damage,
+			AddEvent(attackEvt.Bullets(config->bullets, config->bullet_delay * 1000, config->damage*damageScale,
 				spread, spread, showTracers ? 1 : 0, WC_FLASH_NORMAL, 0));
 			break;
 		}
@@ -486,7 +565,7 @@ public:
 			evt.proj.life = opt.life;
 			evt.proj.size = opt.size;
 			evt.proj.sprite = opt.sprite;
-			evt.proj.damage = config->damage;
+			evt.proj.damage = config->damage*damageScale;
 			evt.proj.damageBits = config->damage_type | config->damage_type2;
 			evt.proj.model = opt.model ? MODEL_INDEX(STRING(opt.model)) : 0;
 			evt.proj.sprite_color = opt.sprite_color;
@@ -538,8 +617,8 @@ public:
 				constantMode |= opt.time == 0;
 
 				AddEvent(attackEvt
-					.Beam(id, opt.time, config->max_range)
-					.BeamDamage(config->damage, spread, spread, config->beam_impact_speed*1000)
+					.Beam(id, opt.time*1000, config->max_range)
+					.BeamDamage(config->damage*damageScale, spread, spread, config->beam_impact_speed*1000)
 					.BeamStyle(spriteIdx, opt.color, opt.width, opt.noise, opt.scrollRate, 1, flags)
 				);
 
@@ -558,12 +637,13 @@ public:
 				AddSoundChainEvents(attackEndEvt, config->hook_snd2, 0, false, forceChannel);
 			}
 
-			AddEvent(attackEndEvt.WepAnim(config->hook_anim));
-
 			if (constantMode) {
 				// use normal cooldown for spending ammo, and an event to cooldown attacks
 				opts.cooldown = config->beam_ammo_cooldown * 1000;
 				AddEvent(attackEndEvt.Cooldown(config->cooldown * 1000, 0xff));
+
+				// finish attack anim
+				AddEvent(attackEndEvt.WepAnim(config->hook_anim));
 			}
 
 			break;
@@ -582,8 +662,12 @@ public:
 		}
 
 		if (config->kickback != g_vecZero) {
+			bool kickbackScaling = false;
 			float force = config->kickback.Length();
 			Vector dir = config->kickback.Normalize();
+			if (config->windup_time > 0) {
+				force *= config->windup_kick_mult;
+			}
 			AddEvent(attackEvt.Kickback(force, dir.z * -100, dir.x * 100, 0, dir.y * 100));
 		}
 		

@@ -101,12 +101,12 @@ class CSawedOff : public CWeaponCustom
 		AddEvent(WepEvt().Primary().EjectShell(m_iShell, TE_BOUNCE_SHOTSHELL, 9, -8, 4));
 		AddEvent(WepEvt().Primary().EjectShell(m_iShell, TE_BOUNCE_SHOTSHELL, 9, -8, 4));
 
-		AddEvent(WepEvt().BulletFired().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_556, WC_AIVOL_NORMAL));
+		AddEvent(WepEvt().BulletFired().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_556, WC_AIVOL_NORMAL, 0));
 		AddEvent(WepEvt().BulletFired().PunchSet(-4, 0));
 		AddEvent(WepEvt().BulletFired().Kickback(200));
 
 		AddEvent(WepEvt().Reload().Delay(16)
-			.PlaySound(reloadSnd1, CHAN_WEAPON, 1.0f, ATTN_IDLE, 100, 100, DISTANT_NONE, WC_AIVOL_SILENT)
+			.PlaySound(reloadSnd1, CHAN_WEAPON, 1.0f, ATTN_IDLE, 100, 100, DISTANT_NONE, WC_AIVOL_SILENT, 0)
 			.AddSound(reloadSnd2));
 
 		AddEvent(WepEvt().Primary().Delay(600).IdleSound(pumpSnd));

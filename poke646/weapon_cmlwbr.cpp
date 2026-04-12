@@ -105,7 +105,7 @@ class CCmlwbr : public CWeaponCustom {
 		AddEvent(WepEvt().Primary().WepAnim(CMLWBR_FIRE));
 		AddEvent(WepEvt().PrimaryEmpty().WepAnim(CMLWBR_FIRE_LAST));
 		AddEvent(WepEvt().PrimaryNotEmpty().Delay(280).IdleSound(drawbackSnd));
-		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET));
+		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET, 0));
 		
 		WepEvt projEvt = WepEvt().Primary().Projectile(WC_PROJECTILE_OTHER);
 		projEvt.proj.speed = 2000;
