@@ -204,9 +204,7 @@ void custom_effect(Vector pos, EHANDLE h_effect, EHANDLE creator, EHANDLE target
 		UTIL_Implosion(pos, effect->implode_radius, effect->implode_count, effect->implode_life);
 	}
 	if (effect->rico_part_count > 0 && effect->rico_part_spr) {
-		UTIL_SpriteTrail(pos, pos + dt->tr.vecPlaneNormal, MODEL_INDEX(STRING(effect->rico_part_spr)),
-			effect->rico_part_count, 0, effect->rico_part_scale,
-			effect->rico_part_speed, effect->rico_part_speed / 2);
+		// moved to event code
 	}
 	if (effect->blood_stream != 0)
 	{
@@ -237,18 +235,7 @@ void custom_effect(Vector pos, EHANDLE h_effect, EHANDLE creator, EHANDLE target
 	}
 	if (effect->rico_decal != DECAL_NONE && dt->ent)
 	{
-		const char* decal = getBulletDecalOverride(dt->ent, getDecal(effect->rico_decal));
-		int decalIdx = DECAL_INDEX(decal);
-
-		if (decalIdx != -1) {
-			if ((effect->pev->spawnflags & FL_EFFECT_GUNSHOT_RICOCHET) != 0)
-				UTIL_GunshotDecal(dt->ent->entindex(), pos, decalIdx);
-			else
-				UTIL_Decal(dt->ent->entindex(), pos, decalIdx);
-		}
-		else {
-			ALERT(at_error, "Unknown decal: %s\n", decal);
-		}
+		// moved to event code
 	}
 
 	if (effect->explode_gibs > 0 && effect->explode_gib_mdl)

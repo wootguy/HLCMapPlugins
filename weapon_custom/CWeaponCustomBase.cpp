@@ -272,6 +272,7 @@ public:
 		WepEvt attackChargeEvt = WepEvt();
 		WepEvt attackOverchargeEvt = WepEvt();
 		WepEvt attackFinishEvt = WepEvt();
+		int impactAnyArg = 0;
 		int attackFlag = 0;
 		switch (attackIdx) {
 		default:
@@ -283,6 +284,7 @@ public:
 			attackChargeEvt = attackChargeEvt.PrimaryCharge();
 			attackOverchargeEvt = attackOverchargeEvt.PrimaryOvercharge();
 			attackFlag = FL_WC_WEP_HAS_PRIMARY;
+			impactAnyArg = WC_TRIG_IMPACT_PRIMARY_ANY;
 			break;
 		case 1:
 			attackEvt = attackEvt.Secondary();
@@ -292,6 +294,7 @@ public:
 			attackChargeEvt = attackChargeEvt.SecondaryCharge();
 			attackOverchargeEvt = attackOverchargeEvt.SecondaryOvercharge();
 			attackFlag = FL_WC_WEP_HAS_SECONDARY;
+			impactAnyArg = WC_TRIG_IMPACT_SECONDARY_ANY;
 			break;
 		case 2:
 			attackEvt = attackEvt.Tertiary();
@@ -301,6 +304,7 @@ public:
 			attackChargeEvt = attackChargeEvt.Tertiary();
 			attackOverchargeEvt = attackOverchargeEvt.Tertiary();
 			attackFlag = FL_WC_WEP_HAS_TERTIARY;
+			impactAnyArg = WC_TRIG_IMPACT_TERTIARY_ANY;
 			break;
 		case 3:
 			attackEvt = attackEvt.PrimaryAlt();
@@ -310,6 +314,7 @@ public:
 			attackChargeEvt = attackChargeEvt.PrimaryAlt();
 			attackOverchargeEvt = attackOverchargeEvt.PrimaryAlt();
 			attackFlag = FL_WC_WEP_HAS_ALT_PRIMARY;
+			impactAnyArg = WC_TRIG_IMPACT_PRIMARY_ALT_ANY;
 			break;
 		}
 
@@ -362,9 +367,7 @@ public:
 		params.flags |= attackFlag;
 
 		int flags = config->pev->spawnflags;
-		if (flags & (FL_SHOOT_IF_NOT_DAMAGE | FL_SHOOT_IF_NOT_MISS
-			| FL_SHOOT_RESPONSIVE_WINDUP | FL_SHOOT_QUAKE_MUZZLEFLASH
-			| FL_SHOOT_DETONATE_SATCHELS)) {
+		if (flags & (FL_SHOOT_IF_NOT_DAMAGE | FL_SHOOT_IF_NOT_MISS | FL_SHOOT_DETONATE_SATCHELS)) {
 			EALERT(at_error, "Unimplemented shoot flags used\n");
 		}
 
@@ -376,10 +379,6 @@ public:
 		if (config->can_fire_underwater())			opts.flags |= FL_WC_SHOOT_UNDERWATER;
 		if (!(flags & FL_SHOOT_PARTIAL_AMMO_SHOOT)) opts.flags |= FL_WC_SHOOT_NEED_FULL_COST;
 		if (flags & FL_SHOOT_NO_AUTOFIRE)			opts.flags |= FL_WC_SHOOT_NO_AUTOFIRE;
-
-		if (config->windup_time) {
-			EALERT(at_error, "windups not implemented\n");
-		}
 
 		// general setup
 		opts.ammoCost = config->ammo_cost;
@@ -471,6 +470,10 @@ public:
 		if (config->windup_time > 0) {
 			opts.chargeTime = config->windup_time * 1000;
 			opts.chargeCancelTime = config->windup_min_time * 1000;
+
+			if (!(config->pev->spawnflags & FL_SHOOT_RESPONSIVE_WINDUP)) {
+				opts.chargeCancelTime = opts.chargeTime;
+			}
 			
 			int action = config->windup_action;
 			if (action == WINDUP_SHOOT_ON_RELEASE)		opts.chargeMode = WC_CHARGEUP_HOLD;
@@ -599,6 +602,7 @@ public:
 		case SHOOT_BEAM: {
 			float spread = config->bullet_spread;
 			bool constantMode = false;
+			bool addedImpactSprite = false;
 
 			for (int i = 0; i < 2; i++) {
 				BeamOptions& opt = config->beams[i];
@@ -616,15 +620,33 @@ public:
 				int id = opt.time == 0 ? constId : 0;
 				constantMode |= opt.time == 0;
 
-				AddEvent(attackEvt
-					.Beam(id, opt.time*1000, config->max_range)
-					.BeamDamage(config->damage*damageScale, spread, spread, config->beam_impact_speed*1000)
-					.BeamStyle(spriteIdx, opt.color, opt.width, opt.noise, opt.scrollRate, 1, flags)
-				);
+				WepEvt beamEvt = attackEvt
+					.Beam(id, opt.time * 1000, config->max_range)
+					.BeamDamage(config->damage * damageScale, spread, spread, config->beam_impact_speed * 1000)
+					.BeamStyle(spriteIdx, opt.color, opt.width, opt.noise, opt.scrollRate, 1, flags);
 
-				if (opt.alt_mode != BEAM_ALT_DISABLED) {
-					ALERT(at_error, "Beam animations not implemented\n");
+				if (opt.alt_mode > BEAM_ALT_DISABLED) {
+					if (opt.alt_mode == BEAM_ALT_RANDOM) {
+						beamEvt = beamEvt.BeamStyleAlt(BEAM_ALT_TOGGLE, 10,
+							opt.alt_color, opt.alt_width, opt.alt_noise, opt.alt_scrollRate);
+					}
+					else {
+						beamEvt = beamEvt.BeamStyleAlt(opt.alt_mode, opt.alt_time * 1000,
+							opt.alt_color, opt.alt_width, opt.alt_noise, opt.alt_scrollRate);
+					}
 				}
+
+				if (config->beam_impact_spr && !addedImpactSprite) {
+					beamEvt = beamEvt.BeamImpactSprite(MODEL_INDEX(STRING(config->beam_impact_spr)),
+						config->beam_impact_spr_fps, config->beam_impact_spr_scale, config->beam_impact_spr_color);
+					addedImpactSprite = true;
+				}
+
+				AddEvent(beamEvt);
+			}
+
+			if (config->beam_ricochet_limit > 0) {
+				EALERT(at_error, "Beam ricochets not implemented\n");
 			}
 
 			// running sound
@@ -661,6 +683,10 @@ public:
 			AddEvent(attackEvt.PunchSet(-punchMidPoint, 0));
 		}
 
+		if (config->shoot_type != SHOOT_BULLETS && (config->pev->spawnflags & FL_SHOOT_QUAKE_MUZZLEFLASH)) {
+			AddEvent(attackEvt.MuzzleFlash(WC_FLASH_NORMAL));
+		}
+
 		if (config->kickback != g_vecZero) {
 			bool kickbackScaling = false;
 			float force = config->kickback.Length();
@@ -681,6 +707,31 @@ public:
 			if (config->shell_delay > 0 && config->shell_delay_snd.file) {
 				SoundOpts opts = config->shell_delay_snd.getOpts();
 				AddSoundChainEvents(attackEvt, config->shell_delay_snd, config->shell_delay, false);
+			}
+		}
+
+		// impact effects
+		if (config->effect1) {
+			CWeaponCustomEffect* ef = (CWeaponCustomEffect*)config->effect1.GetEntity();
+			WepEvt impactEvt = WepEvt().Impact(impactAnyArg);
+
+			if (ef->rico_part_count > 0 && ef->rico_part_spr) {
+				AddEvent(impactEvt.SpriteTrail(MODEL_INDEX(STRING(ef->rico_part_spr)),
+					ef->rico_part_count, ef->rico_part_scale, ef->rico_part_speed, ef->rico_part_speed / 2));
+			}
+			if (ef->rico_decal == -1) {
+				ALERT(at_error, "Player decals not implemented\n");
+			}
+			if (ef->rico_decal >= 0) {
+				const char* decal = getDecal(ef->rico_decal);
+				int decalIdx = DECAL_INDEX(decal);
+
+				if (decalIdx != -1) {
+					AddEvent(impactEvt.Decal(decalIdx, ef->pev->spawnflags & FL_EFFECT_GUNSHOT_RICOCHET));
+				}
+				else {
+					ALERT(at_error, "Unknown decal: %s\n", decal);
+				}
 			}
 		}
 	}
