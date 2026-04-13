@@ -12,7 +12,8 @@ public:
 
 	void KeyValue(KeyValueData* pkvd);
 	void loadExternalSoundSettings();
-	void Spawn();
+	const char* GetAmmoType();
+	void Spawn() ;
 	void PrecacheModel(string_t model);
 	void PrecacheSound(string_t sound);
 	void Precache();

@@ -133,13 +133,31 @@ vector< vector<const char*> > g_decals = {
 	{"{yblood1", "{yblood2", "{yblood3", "{yblood4", "{yblood5", "{yblood6"},
 };
 
+StringMap g_decal_remap = {
+	{"{handi", "{capsh"},
+	{"{ofscorch1", "{smscorch3"},
+	{"{ofscorch2", "{smscorch3"},
+	{"{ofscorch3", "{smscorch3"},
+	{"{ofscorch4", "{scorch1"},
+	{"{ofscorch5", "{scorch2"},
+	{"{ofscorch6", "{scorch2"},
+	{"{ofsmscorch1", "{smscorch1"},
+	{"{ofsmscorch2", "{smscorch2"},
+	{"{ofsmscorch3", "{smscorch1"},
+	{"{spr_spit1", "{spit1"},
+	{"{spr_spit2", "{spit2"},
+	{"{spr_spit3", "{spit1"},
+};
+
 const char* getDecal(int decalType)
 {
 	if (decalType < 0 || decalType >= int(g_decals.size()))
 		decalType = DECAL_SMALLSHOT;
 
 	vector<const char*> decals = g_decals[decalType];
-	return decals[RANDOM_LONG(0, decals.size() - 1)];
+	const char* decal = decals[RANDOM_LONG(0, decals.size() - 1)];
+	const char* remap = g_decal_remap.get(decal);
+	return remap ? remap : decal;
 }
 
 const char* getBulletDecalOverride(CBaseEntity* ent, const char* currentDecal)

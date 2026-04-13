@@ -285,6 +285,8 @@ public:
 			attackOverchargeEvt = attackOverchargeEvt.PrimaryOvercharge();
 			attackFlag = FL_WC_WEP_HAS_PRIMARY;
 			impactAnyArg = WC_TRIG_IMPACT_PRIMARY_ANY;
+			if (settings->primary_empty_snd.file)
+				opts.emptySound = SOUND_INDEX(STRING(settings->primary_empty_snd.file));
 			break;
 		case 1:
 			attackEvt = attackEvt.Secondary();
@@ -295,6 +297,8 @@ public:
 			attackOverchargeEvt = attackOverchargeEvt.SecondaryOvercharge();
 			attackFlag = FL_WC_WEP_HAS_SECONDARY;
 			impactAnyArg = WC_TRIG_IMPACT_SECONDARY_ANY;
+			if (settings->secondary_empty_snd.file)
+				opts.emptySound = SOUND_INDEX(STRING(settings->secondary_empty_snd.file));
 			break;
 		case 2:
 			attackEvt = attackEvt.Tertiary();
@@ -305,6 +309,8 @@ public:
 			attackOverchargeEvt = attackOverchargeEvt.Tertiary();
 			attackFlag = FL_WC_WEP_HAS_TERTIARY;
 			impactAnyArg = WC_TRIG_IMPACT_TERTIARY_ANY;
+			if (settings->tertiary_empty_snd.file)
+				opts.emptySound = SOUND_INDEX(STRING(settings->tertiary_empty_snd.file));
 			break;
 		case 3:
 			attackEvt = attackEvt.PrimaryAlt();
@@ -315,6 +321,7 @@ public:
 			attackOverchargeEvt = attackOverchargeEvt.PrimaryAlt();
 			attackFlag = FL_WC_WEP_HAS_ALT_PRIMARY;
 			impactAnyArg = WC_TRIG_IMPACT_PRIMARY_ALT_ANY;
+			opts.emptySound = params.shootOpts[0].emptySound;
 			break;
 		}
 
@@ -538,9 +545,13 @@ public:
 
 		switch (config->shoot_type) {
 		case SHOOT_BULLETS: {
-			bool showTracers = config->bullets == 1;
-			AddEvent(attackEvt.Bullets(config->bullets, config->bullet_delay * 1000, config->damage*damageScale,
-				spread, spread, showTracers ? 1 : 0, WC_FLASH_NORMAL, 0));
+			bool showTracers = config->bullet_color != -1;
+			int tracerColor = config->bullet_color != -1 ? config->bullet_color : WC_TRACER_COLOR_DEFAULT;
+			AddEvent(attackEvt
+				.Bullets(config->bullets, config->bullet_delay * 1000, config->damage*damageScale,
+				spread, spread, showTracers ? 1 : 0, WC_FLASH_NORMAL, 0)
+				.BulletColor(tracerColor)
+			);
 			break;
 		}
 		case SHOOT_MELEE:
@@ -576,6 +587,9 @@ public:
 			(Vector)evt.proj.player_vel_inf = opt.player_vel_inf;
 			(Vector)evt.proj.angles = opt.angles;
 			evt.proj.trail_spr = opt.trail_spr;
+			evt.proj.trail_life = opt.trail_life;
+			evt.proj.trail_width = opt.trail_width;
+			evt.proj.trail_color = opt.trail_color;
 			evt.proj.follow_mode = opt.follow_mode;
 
 			if (config->pev->spawnflags & FL_SHOOT_PROJ_NO_ORIENT) {

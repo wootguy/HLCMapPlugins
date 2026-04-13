@@ -108,9 +108,10 @@ void custom_explosion(Vector pos, Vector vel, CWeaponCustomEffect* effect, Vecto
 		}
 	}
 
-	if (effect->explode_smoke_spr)
+	if (effect->explode_smoke_spr) {
 		g_Scheduler.SetTimeout(UTIL_Smoke, effect->explode_smoke_delay, pos,
 			MODEL_INDEX(STRING(effect->explode_smoke_spr)), smokeScale, smokeFps);
+	}
 }
 
 void custom_effect(Vector pos, EHANDLE h_effect, EHANDLE creator, EHANDLE target,
@@ -194,7 +195,7 @@ void custom_effect(Vector pos, EHANDLE h_effect, EHANDLE creator, EHANDLE target
 		UTIL_QuakeTeleport(pos);
 	}
 	if (effect->glow_spr) {
-		UTIL_GlowSprite(pos, effect->glow_spr, effect->glow_spr_life, effect->glow_spr_scale, effect->glow_spr_opacity);
+		UTIL_GlowSprite(pos, MODEL_INDEX(STRING(effect->glow_spr)), effect->glow_spr_life, effect->glow_spr_scale, effect->glow_spr_opacity);
 	}
 	if (effect->spray_count > 0 && effect->spray_sprite > 0) {
 		UTIL_SpriteSpray(pos, dir, MODEL_INDEX(STRING(effect->spray_sprite)), effect->spray_count,
@@ -204,7 +205,9 @@ void custom_effect(Vector pos, EHANDLE h_effect, EHANDLE creator, EHANDLE target
 		UTIL_Implosion(pos, effect->implode_radius, effect->implode_count, effect->implode_life);
 	}
 	if (effect->rico_part_count > 0 && effect->rico_part_spr) {
-		// moved to event code
+		UTIL_SpriteTrail(pos, pos + dt->tr.vecPlaneNormal, MODEL_INDEX(STRING(effect->rico_part_spr)),
+			effect->rico_part_count, 0, effect->rico_part_scale,
+			effect->rico_part_speed, effect->rico_part_speed / 2);
 	}
 	if (effect->blood_stream != 0)
 	{
@@ -233,9 +236,20 @@ void custom_effect(Vector pos, EHANDLE h_effect, EHANDLE creator, EHANDLE target
 		UTIL_StreakSplash(pos, dt->tr.vecPlaneNormal, effect->rico_trace_color,
 			effect->rico_trace_count, effect->rico_trace_speed, effect->rico_trace_rand);
 	}
-	if (effect->rico_decal != DECAL_NONE && dt->ent)
+	if (effect->rico_decal != DECAL_NONE)
 	{
-		// moved to event code
+		const char* decal = getBulletDecalOverride(dt->ent, getDecal(effect->rico_decal));
+		int decalIdx = DECAL_INDEX(decal);
+
+		if (decalIdx != -1) {
+			if ((effect->pev->spawnflags & FL_EFFECT_GUNSHOT_RICOCHET) != 0)
+				UTIL_GunshotDecal(dt->ent ? dt->ent->entindex() : 0, dt->pos, decalIdx);
+			else
+				UTIL_Decal(dt->ent ? dt->ent->entindex() : 0, dt->pos, decalIdx);
+		}
+		else {
+			ALERT(at_error, "Unknown decal: %s\n", decal);
+		}
 	}
 
 	if (effect->explode_gibs > 0 && effect->explode_gib_mdl)

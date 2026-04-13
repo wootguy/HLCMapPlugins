@@ -49,6 +49,17 @@ HOOK_RETURN_DATA MapInit() {
 		"weapon_custom_sound"
 	};
 
+	// spawn ammo entities now so weapons can get their max capacity
+	for (StringMap& kv : g_bsp.ents) {
+		const char* cname = kv.get("classname");
+
+		if (!cname || strcmp(cname, "weapon_custom_ammo")) {
+			continue;
+		}
+
+		CBaseEntity::Create(cname, g_vecZero, g_vecZero, true, 0, kv);
+	}
+
 	// all weapon configs must be set up now or else the engine won't spawn map weapons properly
 	for (StringMap& kv : g_bsp.ents) {
 		const char* cname = kv.get("classname");
