@@ -30,9 +30,15 @@ class CWeaponCustomBase : public CWeaponCustom {
 public:
 	int infoIdx; // index into global item info
 	EHANDLE h_settings;
+	string_t displayName;
 
 	void Spawn() override {
 		h_settings = *custom_weapons.get(STRING(pev->classname));
+
+		CWeaponCustomConfig* settings = getSettings();
+		if (settings) {
+			displayName = settings->display_name;
+		}
 		CWeaponCustom::Spawn();
 	}
 
@@ -60,7 +66,7 @@ public:
 		return wrongClientWeapon ? wrongClientWeapon : "weapon_9mmhandgun";
 	}
 
-	const char* DisplayName() override { return STRING(pev->classname); }
+	const char* DisplayName() override { return displayName ? STRING(displayName) : STRING(pev->classname); }
 
 	WepEvt MakeAnimEvt(WepEvt evt, PodArray<string_t, MAX_KV_ARRAY> anims) {
 		evt = evt.WepAnim(atoi(STRING(anims.data[0])), 0, FL_WC_ANIM_ORDERED);
@@ -805,8 +811,11 @@ public:
 
 	void ConfigureWeapon(CWeaponCustomConfig* settings) {
 		animExt = settings->getPlayerAnimExt();
-		//wrongClientWeapon = "weapon_9mmhandgun";
-		EALERT(at_warning, "Wrong client weapon not implemented\n");
+		wrongClientWeapon = settings->hl_client_weapon ? STRING(settings->hl_client_weapon) : NULL;
+
+		if (!wrongClientWeapon) {
+			EALERT(at_warning, "HL Client weapon not set\n");
+		}
 
 		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = settings->deploy_anim;

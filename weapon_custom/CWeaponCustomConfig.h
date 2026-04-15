@@ -98,6 +98,9 @@ public:
 	//weapon_custom_ammo@ primary_custom_ammo;
 	//weapon_custom_ammo@ secondary_custom_ammo;
 
+	string_t hl_client_weapon;	// weapon given to players who don't have the custom client
+	string_t display_name;
+
 	void KeyValue(KeyValueData* pkvd);
 
 	void update_active_weapons(const char* changedKey, const char* newValue);

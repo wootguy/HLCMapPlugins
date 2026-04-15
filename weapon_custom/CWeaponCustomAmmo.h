@@ -8,11 +8,12 @@ public:
 	int give_ammo;
 	int max_ammo;
 	int ammo_type;
+	int ammo_type_hl; // ammo type given to HL players who don't have the client installed
 	string_t custom_ammo_type;
 
 	void KeyValue(KeyValueData* pkvd);
 	void loadExternalSoundSettings();
-	const char* GetAmmoType();
+	const char* GetAmmoType(bool isHlClient);
 	void Spawn() ;
 	void PrecacheModel(string_t model);
 	void PrecacheSound(string_t sound);

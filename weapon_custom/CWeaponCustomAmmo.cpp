@@ -31,7 +31,8 @@ class CWeaponCustomAmmoBase : public CBasePlayerAmmo {
 		if (!settings)
 			return 0;
 
-		int bResult = pOther->GiveAmmo(settings->give_ammo, settings->GetAmmoType(), settings->max_ammo) != -1;
+		bool isHlClient = pOther->IsPlayer() && !pOther->MyPlayerPointer()->UseSevenKewpGuns();
+		int bResult = pOther->GiveAmmo(settings->give_ammo, settings->GetAmmoType(isHlClient), settings->max_ammo) != -1;
 
 		if (bResult && settings->pickup_snd.file) {
 			settings->pickup_snd.play(pev->origin, CHAN_ITEM);
@@ -51,6 +52,7 @@ void CWeaponCustomAmmo::KeyValue(KeyValueData* pkvd)
 	else if (HandleKv(pkvd, "give_ammo")) give_ammo = atoi(pkvd->szValue);
 	else if (HandleKv(pkvd, "max_ammo")) max_ammo = atoi(pkvd->szValue);
 	else if (HandleKv(pkvd, "ammo_type")) ammo_type = atoi(pkvd->szValue);
+	else if (HandleKv(pkvd, "ammo_type_hl")) ammo_type_hl = atoi(pkvd->szValue);
 	else if (HandleKv(pkvd, "custom_ammo_type")) custom_ammo_type = ALLOC_STRING(pkvd->szValue);
 
 	else CBaseEntity::KeyValue(pkvd);
@@ -61,8 +63,8 @@ void CWeaponCustomAmmo::loadExternalSoundSettings()
 	loadSoundSettings(pickup_snd);
 }
 
-const char* CWeaponCustomAmmo::GetAmmoType() {
-	switch (ammo_type) {
+const char* CWeaponCustomAmmo::GetAmmoType(bool isHlClient) {
+	switch (isHlClient ? ammo_type_hl : ammo_type) {
 	case AMMO_BUCKSHOT: return "buckshot";
 	case AMMO_HEALTH: return "health";
 	case AMMO_556: return "556";

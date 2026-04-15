@@ -84,7 +84,8 @@ void CWeaponCustomConfig::KeyValue(KeyValueData* pkvd)
 	else if (HandleKv(pkvd, "sprite_directory")) hud_sprite_folder = ALLOC_STRING(pkvd->szValue);
 	else if (HandleKv(pkvd, "weapon_priority")) priority = atoi(pkvd->szValue);
 	else if (HandleKv(pkvd, "player_anims")) player_anims = atoi(pkvd->szValue);
-	else if (HandleKv(pkvd, "projectile_max_alive")) max_live_projectiles = atoi(pkvd->szValue);
+	else if (HandleKv(pkvd, "hl_client_weapon")) hl_client_weapon = ALLOC_STRING(pkvd->szValue);
+	else if (HandleKv(pkvd, "display_name")) display_name = ALLOC_STRING(pkvd->szValue);
 	else CBaseEntity::KeyValue(pkvd);
 
 	// dead code in the original scripts
