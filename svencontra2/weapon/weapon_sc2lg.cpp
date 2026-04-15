@@ -36,9 +36,7 @@ ItemInfo g_wepinfo_sc2lg = {
     3,								// iSlot
     3,								// iPosition (-1 = automatic)
     "uranium",						// pszAmmo1
-    100,				            // iMaxAmmo1
     NULL,       					// pszAmmo2
-    -1,				                // iMaxAmmo2
     "svencontra2/weapon_sc2lg",     // pszName (path to HUD config)
     -1,             				// iMaxClip
     -1,								// iId (-1 = automatic)

@@ -22,9 +22,7 @@ ItemInfo g_fiveseven_info = {
 	1,								// iSlot
 	-1,								// iPosition (-1 = automatic)
 	"9mm",							// pszAmmo1
-	FIVE7_MAX_CARRY,				// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"kuilu/weapon_fiveseven",		// pszName (path to HUD config)
 	FIVE7_MAX_CLIP,					// iMaxClip
 	-1,								// iId (-1 = automatic)

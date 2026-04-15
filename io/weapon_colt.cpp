@@ -22,9 +22,7 @@ ItemInfo g_colt_info = {
 	1,								// iSlot
 	-1,								// iPosition (-1 = automatic)
 	"357",							// pszAmmo1
-	DEAGLE_MAX_CARRY,				// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"kuilu/weapon_colt",			// pszName (path to HUD config)
 	DEAGLE_MAX_CLIP,				// iMaxClip
 	-1,								// iId (-1 = automatic)

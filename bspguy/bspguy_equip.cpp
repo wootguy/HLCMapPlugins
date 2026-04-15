@@ -269,7 +269,7 @@ namespace bspguy {
 						newAmmo = V_max(items[i].primaryAmmo, plr->m_rgAmmo[primaryAmmoIdx]);
 					}
 					
-					int maxAmmo = itemInfo.iMaxAmmo1;
+					int maxAmmo = UTIL_GetMaxAmmo(itemInfo.pszAmmo1);
 					plr->m_rgAmmo[primaryAmmoIdx] = V_min(newAmmo, maxAmmo);
 				}
 				
@@ -281,7 +281,7 @@ namespace bspguy {
 						newAmmo = V_max(items[i].secondaryAmmo, plr->m_rgAmmo[secondaryAmmoIdx]);
 					}
 					
-					int maxAmmo = itemInfo.iMaxAmmo2;
+					int maxAmmo = UTIL_GetMaxAmmo(itemInfo.pszAmmo2);
 					plr->m_rgAmmo[secondaryAmmoIdx] = V_min(newAmmo, maxAmmo);
 				}
 			}

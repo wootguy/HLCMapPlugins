@@ -19,9 +19,7 @@ ItemInfo g_spear_info = {
 	0,								// iSlot
 	0,								// iPosition (-1 = automatic)
 	NULL,							// pszAmmo1
-	-1,								// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"aomdc/weapon_spear",			// pszName (path to HUD config)
 	-1,								// iMaxClip
 	-1,								// iId (-1 = automatic)

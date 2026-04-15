@@ -11,9 +11,7 @@ ItemInfo g_shotgun_info = {
 	2,								// iSlot
 	4,								// iPosition (-1 = automatic)
 	"buckshot",						// pszAmmo1
-	(int)gSkillData.sk_ammo_max_buckshot,// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"aomdc/weapon_aom_shotgun",			// pszName (path to HUD config)
 	SHOTGUN_MAX_CLIP,				// iMaxClip
 	-1,								// iId (-1 = automatic)

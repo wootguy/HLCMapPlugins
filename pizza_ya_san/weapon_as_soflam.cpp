@@ -28,9 +28,7 @@ ItemInfo g_soflam_info = {
 	1,								// iSlot
 	-1,								// iPosition (-1 = automatic)
 	"rockets",						// pszAmmo1
-	SOFLAM_MAX_AMMO,				// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"pizza_ya_san/weapon_as_soflam",// pszName (path to HUD config)
 	SOFLAM_MAX_CLIP,				// iMaxClip
 	-1,								// iId (-1 = automatic)

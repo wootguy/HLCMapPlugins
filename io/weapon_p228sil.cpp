@@ -33,9 +33,7 @@ ItemInfo g_usp_info = {
 	1,								// iSlot
 	-1,								// iPosition (-1 = automatic)
 	"9mm",							// pszAmmo1
-	USP_MAX_CARRY,					// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"kuilu/weapon_usp",				// pszName (path to HUD config)
 	USP_MAX_CLIP,					// iMaxClip
 	-1,								// iId (-1 = automatic)

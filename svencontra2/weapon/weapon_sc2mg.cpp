@@ -6,10 +6,8 @@
 ItemInfo g_wepinfo_sc2mg = {
     2,								// iSlot
     -1,								// iPosition (-1 = automatic)
-    "556",						    // pszAmmo1 (TODO: 556)
-    200,				            // iMaxAmmo1 (reduced for HL clients -w00tguy)
+    "556",						    // pszAmmo1
     NULL,         					// pszAmmo2
-    -1,				                // iMaxAmmo2
     "svencontra2/weapon_sc2mg",     // pszName (path to HUD config)
     -1,             				// iMaxClip
     -1,								// iId (-1 = automatic)

@@ -17,9 +17,7 @@ ItemInfo g_sawedoff_info = {
 	2,								// iSlot
 	-1,								// iPosition (-1 = automatic)
 	"buckshot",						// pszAmmo1
-	(int)gSkillData.sk_ammo_max_buckshot,// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"poke646/weapon_sawedoff",		// pszName (path to HUD config)
 	SAWEDOFF_MAX_CLIP,				// iMaxClip
 	-1,								// iId (-1 = automatic)

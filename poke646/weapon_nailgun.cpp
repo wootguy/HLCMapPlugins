@@ -28,9 +28,7 @@ ItemInfo g_nailgun_info = {
 	1,								// iSlot
 	-1,								// iPosition (-1 = automatic)
 	"9mm",							// pszAmmo1
-	NAILGUN_MAX_AMMO,				// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"poke646/weapon_nailgun",		// pszName (path to HUD config)
 	NAILGUN_MAX_CLIP,				// iMaxClip
 	-1,								// iId (-1 = automatic)

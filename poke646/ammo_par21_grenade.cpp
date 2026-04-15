@@ -14,7 +14,7 @@ class CPar21Grenade : public CBasePlayerAmmo
 
 	BOOL AddAmmo(CBaseEntity* pOther)
 	{
-		int bResult = (pOther->GiveAmmo(AMMO_PAR21GL_GIVE, "ARgrenades", AMMO_PAR21GL_MAX_CARRY) != -1);
+		int bResult = (pOther->GiveAmmo(AMMO_PAR21GL_GIVE, "ARgrenades") != -1);
 
 		if (bResult)
 		{

@@ -22,9 +22,7 @@ ItemInfo g_beretta_info = {
 	1,								// iSlot
 	2,								// iPosition (-1 = automatic)
 	"9mm",							// pszAmmo1
-	gSkillData.sk_ammo_max_9mm,		// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"aomdc/weapon_beretta",			// pszName (path to HUD config)
 	BERETTA_MAX_CLIP,				// iMaxClip
 	-1,								// iId (-1 = automatic)
@@ -131,7 +129,7 @@ class CAmmoBeretta : public CBasePlayerAmmo
 	}
 
 	BOOL AddAmmo(CBaseEntity* pOther) {
-		int bResult = pOther->GiveAmmo(BERETTA_MAX_CLIP, "9mm", gSkillData.sk_ammo_max_9mm) != -1;
+		int bResult = pOther->GiveAmmo(BERETTA_MAX_CLIP, "9mm") != -1;
 		if (bResult) {
 			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
 		}

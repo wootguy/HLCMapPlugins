@@ -34,9 +34,7 @@ ItemInfo g_contra_wep_info = {
 	CONTRA_WEAPON_SLOT,				// iSlot
 	CONTRA_WEAPON_POSITION,			// iPosition (-1 = automatic)
 	NULL,							// pszAmmo1
-	CONTRA_WEAPON_MAXAMMO,			// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"weapon_contra",				// pszName (path to HUD config)
 	CONTRA_WEAPON_MAXAMMO,			// iMaxClip
 	-1,								// iId (-1 = automatic)

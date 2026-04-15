@@ -10,9 +10,7 @@ ItemInfo g_wepinfo_sc2ar = {
     1,								// iSlot
     4,								// iPosition (-1 = automatic)
     "9mm",						// pszAmmo1
-    100,				            // iMaxAmmo1
     "ARgrenades",					// pszAmmo2
-    6,				                // iMaxAmmo2
     "svencontra2/weapon_sc2ar",     // pszName (path to HUD config)
     -1,             				// iMaxClip
     -1,								// iId (-1 = automatic)
@@ -88,7 +86,7 @@ public:
         DispatchSpawn( pBullet->edict() );
     }
     void RechargeThink(){
-        if(m_pPlayer->rgAmmo( m_iPrimaryAmmoType ) >= wepinfo->iMaxAmmo1){
+        if(m_pPlayer->rgAmmo( m_iPrimaryAmmoType ) >= UTIL_GetMaxAmmo(wepinfo->pszAmmo1)){
             bInRecharg = false;
             SetThink(NULL);
             return;

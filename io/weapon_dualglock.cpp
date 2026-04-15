@@ -35,9 +35,7 @@ ItemInfo g_glocks_info = {
 	4,								// iSlot
 	-1,								// iPosition (-1 = automatic)
 	"9mm",							// pszAmmo1
-	ELITES_MAX_CARRY,				// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"kuilu/weapon_dualglock",		// pszName (path to HUD config)
 	ELITES_MAX_CLIP,				// iMaxClip
 	-1,								// iId (-1 = automatic)

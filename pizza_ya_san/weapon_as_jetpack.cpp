@@ -36,9 +36,7 @@ ItemInfo g_jetpack_info = {
 	1,								// iSlot
 	-1,								// iPosition (-1 = automatic)
 	"9mm",							// pszAmmo1
-	JETPACK_MAX_AMMO,				// iMaxAmmo1
 	"uranium",						// pszAmmo2
-	JETPACK_MAX_AMMO2,				// iMaxAmmo2
 	"pizza_ya_san/weapon_as_jetpack",// pszName (path to HUD config)
 	JETPACK_MAX_CLIP,				// iMaxClip
 	-1,								// iId (-1 = automatic)

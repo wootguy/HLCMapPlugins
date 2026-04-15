@@ -466,9 +466,7 @@ void CWeaponCustomConfig::Spawn()
 				slot,							// iSlot
 				slotPosition,					// iPosition (-1 = auto)
 				ammoType1,						// pszAmmo1
-				-1,								// iMaxAmmo1 (-1 = auto)
 				hideAmmo2 ? NULL : ammoType2,	// pszAmmo2
-				-1,								// iMaxAmmo2 (-1 = auto)
 				STRING(hud_path),				// pszName (path to HUD config)
 				clip_size(),					// iMaxClip
 				-1,								// iId (-1 = automatic)

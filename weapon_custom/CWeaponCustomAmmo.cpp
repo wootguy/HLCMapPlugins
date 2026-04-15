@@ -32,7 +32,7 @@ class CWeaponCustomAmmoBase : public CBasePlayerAmmo {
 			return 0;
 
 		bool isHlClient = pOther->IsPlayer() && !pOther->MyPlayerPointer()->UseSevenKewpGuns();
-		int bResult = pOther->GiveAmmo(settings->give_ammo, settings->GetAmmoType(isHlClient), settings->max_ammo) != -1;
+		int bResult = pOther->GiveAmmo(settings->give_ammo, settings->GetAmmoType(isHlClient)) != -1;
 
 		if (bResult && settings->pickup_snd.file) {
 			settings->pickup_snd.play(pev->origin, CHAN_ITEM);

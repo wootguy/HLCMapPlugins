@@ -35,9 +35,7 @@ ItemInfo g_bradnailer_info = {
 	1,								// iSlot
 	-1,								// iPosition (-1 = automatic)
 	"9mm",							// pszAmmo1
-	BRADNAILER_MAX_CARRY,			// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"poke646/weapon_bradnailer",	// pszName (path to HUD config)
 	BRADNAILER_MAX_CLIP,			// iMaxClip
 	-1,								// iId (-1 = automatic)

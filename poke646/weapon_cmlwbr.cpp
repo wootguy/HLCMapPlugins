@@ -29,9 +29,7 @@ ItemInfo g_cmlwbr_info = {
 	3,								// iSlot
 	-1,								// iPosition (-1 = automatic)
 	"bolts",						// pszAmmo1
-	CMLWBR_MAX_CARRY,				// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"poke646/weapon_cmlwbr",// pszName (path to HUD config)
 	CMLWBR_MAX_CLIP,				// iMaxClip
 	-1,								// iId (-1 = automatic)

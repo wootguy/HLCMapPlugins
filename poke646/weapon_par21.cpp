@@ -29,9 +29,7 @@ ItemInfo g_par21_info = {
 	2,								// iSlot
 	-1,								// iPosition (-1 = automatic)
 	"9mm",							// pszAmmo1
-	PAR_MAX_AMMO,					// iMaxAmmo1
 	"ARgrenades",					// pszAmmo2
-	PAR_MAX_AMMO2,					// iMaxAmmo2
 	"poke646/weapon_par21",			// pszName (path to HUD config)
 	PAR_MAX_CLIP,					// iMaxClip
 	-1,								// iId (-1 = automatic)

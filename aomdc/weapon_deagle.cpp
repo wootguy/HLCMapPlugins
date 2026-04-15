@@ -22,9 +22,7 @@ ItemInfo g_deagle_info = {
 	3,								// iSlot
 	0,								// iPosition (-1 = automatic)
 	"357",							// pszAmmo1
-	gSkillData.sk_ammo_max_357,		// iMaxAmmo1
 	NULL,							// pszAmmo2
-	-1,								// iMaxAmmo2
 	"aomdc/weapon_deagle",			// pszName (path to HUD config)
 	DEAGLE_MAX_CLIP,				// iMaxClip
 	-1,								// iId (-1 = automatic)
@@ -122,7 +120,7 @@ class CAmmoDeagle : public CBasePlayerAmmo
 	}
 
 	BOOL AddAmmo(CBaseEntity* pOther) {
-		int bResult = pOther->GiveAmmo(DEAGLE_MAX_CLIP, "357", gSkillData.sk_ammo_max_357) != -1;
+		int bResult = pOther->GiveAmmo(DEAGLE_MAX_CLIP, "357") != -1;
 		if (bResult) {
 			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
 		}

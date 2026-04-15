@@ -7,9 +7,7 @@ ItemInfo g_wepinfo_sc2fg = {
     3,								// iSlot
     4,								// iPosition (-1 = automatic)
     "rockets",						// pszAmmo1
-    100,				            // iMaxAmmo1
     NULL,         					// pszAmmo2
-    -1,				                // iMaxAmmo2
     "svencontra2/weapon_sc2fg",     // pszName (path to HUD config)
     -1,             				// iMaxClip
     -1,								// iId (-1 = automatic)
