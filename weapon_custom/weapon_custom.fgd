@@ -16,7 +16,8 @@
 	
 	targetname(target_source) : "Name"
 	weapon_name(string) : "Weapon Class" : "weapon_test"
-	hl_client_weapon(string) : "Weapon Class (HL Clients)" : "weapon_test"
+	hl_client_weapon(string) : "Weapon Class (HL Clients)" : ""
+	replace_weapon(string) : "Replace Weapon Class" : ""
 	display_name(string) : "Display Name" : ""
 	default_ammo(integer) : "Default Ammo (-1 = full clip)" : -1
 	movespeed(string) : "Movement Speed Multiplier" : "1.0"

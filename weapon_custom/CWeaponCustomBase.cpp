@@ -859,6 +859,11 @@ public:
 		ConfigureWeapon(settings);
 
 		PrecacheEvents();
+
+		studiohdr_t* hdr = GET_MODEL_PTR(MODEL_INDEX(GetModelV()));
+		if (hdr) {
+			params.deployAnimTime = GetSequenceDuration(hdr, params.deployAnim) * 1000;
+		}
 	}
 
 	void CustomServerEvent(WepEvt& evt, CBasePlayer* m_pPlayer) override {

@@ -86,6 +86,7 @@ void CWeaponCustomConfig::KeyValue(KeyValueData* pkvd)
 	else if (HandleKv(pkvd, "player_anims")) player_anims = atoi(pkvd->szValue);
 	else if (HandleKv(pkvd, "hl_client_weapon")) hl_client_weapon = ALLOC_STRING(pkvd->szValue);
 	else if (HandleKv(pkvd, "display_name")) display_name = ALLOC_STRING(pkvd->szValue);
+	else if (HandleKv(pkvd, "replace_weapon")) replace_weapon = ALLOC_STRING(pkvd->szValue);
 	else CBaseEntity::KeyValue(pkvd);
 
 	// dead code in the original scripts
@@ -415,6 +416,8 @@ void CWeaponCustomConfig::Spawn()
 	{
 		validateSettings();
 
+		Precache();
+
 		// load ammo drop amounts if a specific drop class was set
 		primary_ammo_drop_amt = getAmmoDropAmt(STRING(primary_ammo_drop_class));
 		secondary_ammo_drop_amt = getAmmoDropAmt(STRING(secondary_ammo_drop_class));
@@ -447,6 +450,10 @@ void CWeaponCustomConfig::Spawn()
 		UTIL_RegisterEquipmentEntity(STRING(weapon_classname));
 		g_entityRemap.put(STRING(weapon_classname), weapon_custom_base);
 
+		if (replace_weapon) {
+			g_weaponRemapHL.put(STRING(replace_weapon), STRING(weapon_classname));
+		}
+
 		if (g_wep_info_count < MAX_WEAPONS) {
 			string_t hud_path;
 			if (hud_sprite_folder)
@@ -459,7 +466,7 @@ void CWeaponCustomConfig::Spawn()
 			const char* ammoType1 = primary_ammo_type ? STRING(primary_ammo_type) : NULL;
 			const char* ammoType2 = secondary_ammo_type ? STRING(secondary_ammo_type) : NULL;
 			bool hideAmmo2 = pev->spawnflags & FL_WEP_HIDE_SECONDARY_AMMO;
-			int zoomFlag = zoom_fov != 0 ? WEP_FLAG_USE_ZOOM_CROSSHAIR : 0;
+			int zoomFlag = has_zoom_sprite && zoom_fov != 0 ? WEP_FLAG_USE_ZOOM_CROSSHAIR : 0;
 
 			ItemInfo& info = g_wep_info[g_wep_info_count++];
 			info = {
@@ -483,7 +490,6 @@ void CWeaponCustomConfig::Spawn()
 		}
 
 		matchingAmmoTypes = toLowerCase(STRING(primary_ammo_type)) == toLowerCase(STRING(secondary_ammo_type));
-		Precache();
 	}
 	else {
 		EALERT(at_error, "creation failed. No weapon_class specified\n");
@@ -522,9 +528,9 @@ void CWeaponCustomConfig::Precache()
 	PrecacheModel(laser_sprite);
 
 	if (hud_sprite_folder)
-		PRECACHE_HUD_FILES(UTIL_VarArgs("sprites/%s/%s.txt", STRING(hud_sprite_folder), STRING(weapon_classname)));
+		has_zoom_sprite = PRECACHE_HUD_FILES(UTIL_VarArgs("sprites/%s/%s.txt", STRING(hud_sprite_folder), STRING(weapon_classname)));
 	else
-		PRECACHE_HUD_FILES(UTIL_VarArgs("sprites/%s.txt", STRING(weapon_classname)));
+		has_zoom_sprite = PRECACHE_HUD_FILES(UTIL_VarArgs("sprites/%s.txt", STRING(weapon_classname)));
 
 	if (primary_ammo_drop_class)
 		UTIL_PrecacheOther(STRING(primary_ammo_drop_class));

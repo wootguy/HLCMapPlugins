@@ -100,6 +100,8 @@ public:
 
 	string_t hl_client_weapon;	// weapon given to players who don't have the custom client
 	string_t display_name;
+	string_t replace_weapon;	// default weapon to replace with this weapon (for weapons dropped by NPCs/breakables)
+	bool has_zoom_sprite;
 
 	void KeyValue(KeyValueData* pkvd);
 
