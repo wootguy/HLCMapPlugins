@@ -11,7 +11,7 @@ class CEnvHideHud : public CPointEntity
 	}
 
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value) {
-		for (int i = 1; i < gpGlobals->maxClients; i++) {
+		for (int i = 1; i <= gpGlobals->maxClients; i++) {
 			CBasePlayer* plr = UTIL_PlayerByIndex(i);
 
 			if (plr) {

@@ -1,14 +1,14 @@
+#include "extdll.h"
+#include "util.h"
+#include "crossedpaths.h"
+
 /**
  * Make it easier to create message parameters.
  */
 
-const string INFO_MSG = "info";
-const string SUCCESS_MSG = "success";
-const string WARNING_MSG = "warning";
-
-
-HUDTextParams CreateHudTextParams(const string &in tone, const int &in channel) {
-    auto hudTextParams = HUDTextParams();
+hudtextparms_t CreateHudTextParams(const char* tone, int channel) {
+    hudtextparms_t hudTextParams;
+    memset(&hudTextParams, 0, sizeof(hudTextParams));
 
     hudTextParams.x = -1;
     hudTextParams.effect = 0;
@@ -27,7 +27,7 @@ HUDTextParams CreateHudTextParams(const string &in tone, const int &in channel) 
         hudTextParams.y = 0.4;
     }
 
-    if (INFO_MSG == tone) {
+    if (!strcmp(INFO_MSG, tone)) {
         hudTextParams.r1 = 200;
         hudTextParams.g1 = 200;
         hudTextParams.b1 = 200;
@@ -35,7 +35,7 @@ HUDTextParams CreateHudTextParams(const string &in tone, const int &in channel) 
         hudTextParams.r2 = 255;
         hudTextParams.g2 = 255;
         hudTextParams.b2 = 255;
-    } else if (SUCCESS_MSG == tone) {
+    } else if (!strcmp(SUCCESS_MSG, tone)) {
         hudTextParams.r1 = 200;
         hudTextParams.g1 = 255;
         hudTextParams.b1 = 200;
@@ -43,7 +43,7 @@ HUDTextParams CreateHudTextParams(const string &in tone, const int &in channel) 
         hudTextParams.r2 = 50;
         hudTextParams.g2 = 255;
         hudTextParams.b2 = 50;
-    } else if (WARNING_MSG == tone) {
+    } else if (!strcmp(WARNING_MSG, tone)) {
         hudTextParams.r1 = 255;
         hudTextParams.g1 = 200;
         hudTextParams.b1 = 200;

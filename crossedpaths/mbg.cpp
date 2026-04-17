@@ -1,6 +1,10 @@
-const string EN_MBG = "_mbg_bgrm";
-const string EN_MBG_DEAD = "_mm_end";
-const string EN_GT_MBG_LEFT = "_gt_end_mbgleft";
+#include "extdll.h"
+#include "util.h"
+#include "crossedpaths.h"
+
+#define EN_MBG "_mbg_bgrm"
+#define EN_MBG_DEAD "_mm_end"
+#define EN_GT_MBG_LEFT "_gt_end_mbgleft"
 
 /**
  * Make sure there are no bodyguards left.
