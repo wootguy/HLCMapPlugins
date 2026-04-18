@@ -91,7 +91,7 @@ class CNailgun : public CWeaponCustom {
 		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_NORMAL, 0));
 		AddEvent(WepEvt().Primary().PunchSet(-1.5f, 0));
 
-		WepEvt projEvt = WepEvt().Secondary().Projectile(WC_PROJECTILE_OTHER);
+		WepEvt projEvt = WepEvt().Primary().Projectile(WC_PROJECTILE_CUSTOM);
 		projEvt.proj.speed = 4000;
 		projEvt.proj.spreadX = spread;
 		projEvt.proj.spreadY = spread;

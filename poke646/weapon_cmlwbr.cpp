@@ -105,7 +105,7 @@ class CCmlwbr : public CWeaponCustom {
 		AddEvent(WepEvt().PrimaryNotEmpty().Delay(280).IdleSound(drawbackSnd));
 		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET, 0));
 		
-		WepEvt projEvt = WepEvt().Primary().Projectile(WC_PROJECTILE_OTHER);
+		WepEvt projEvt = WepEvt().Primary().Projectile(WC_PROJECTILE_CUSTOM);
 		projEvt.proj.speed = 2000;
 		projEvt.proj.entity_class = ALLOC_STRING("cmlwbr_bolt");
 		projEvt.proj.model = boltMdl;

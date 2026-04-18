@@ -98,6 +98,7 @@ class CBradNailer : public CWeaponCustom {
 		secondary.ammoPool = WC_AMMOPOOL_PRIMARY_CLIP;
 		secondary.cooldown = 200;
 		secondary.chargeTime = 450;
+		secondary.chargeMode = WC_CHARGEUP_CONSTANT;
 		secondary.chargeCancelTime = 450;
 		secondary.accuracyX = 6 * 100;
 		secondary.accuracyY = 6 * 100;
@@ -111,7 +112,7 @@ class CBradNailer : public CWeaponCustom {
 		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_NORMAL, 0));
 		AddEvent(WepEvt().Primary().PunchSet(-1.5f, 0));
 
-		WepEvt projEvt = WepEvt().Primary().Projectile(WC_PROJECTILE_OTHER);
+		WepEvt projEvt = WepEvt().Primary().Projectile(WC_PROJECTILE_CUSTOM);
 		projEvt.proj.speed = 4000;
 		projEvt.proj.spreadX = spread;
 		projEvt.proj.spreadY = spread;
@@ -127,7 +128,7 @@ class CBradNailer : public CWeaponCustom {
 		AddEvent(WepEvt().Secondary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET, 0));
 		AddEvent(WepEvt().Secondary().PunchSet(-1.5f, 0));
 
-		WepEvt projEvt2 = WepEvt().Secondary().Projectile(WC_PROJECTILE_OTHER);
+		WepEvt projEvt2 = WepEvt().Secondary().Projectile(WC_PROJECTILE_CUSTOM);
 		projEvt2.proj.speed = 4000;
 		projEvt2.proj.spreadX = spread2;
 		projEvt2.proj.spreadY = spread2;
