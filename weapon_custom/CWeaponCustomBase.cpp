@@ -821,6 +821,7 @@ public:
 		params.deployAnim = settings->deploy_anim;
 		params.deployTime = settings->deploy_time * 1000;
 		params.maxClip = settings->clip_size();
+		params.defaultAmmo = settings->default_ammo;
 
 		ConfigureReload(settings);
 
