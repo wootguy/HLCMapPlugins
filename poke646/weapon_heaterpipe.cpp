@@ -259,7 +259,7 @@ public:
 			Cooldown(0, m_flDelayMulti * 1000);
 		}
 		else {
-			switch (animCount % 3)
+			switch (events.animCount % 3)
 			{
 			case 0:
 				SendWeaponAnim(PIPE_ATTACK1HIT, -1); break;
