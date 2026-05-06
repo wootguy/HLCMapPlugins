@@ -405,7 +405,7 @@ namespace bspguy {
 		no_delete_ents.put("path_track"); // messes up track_train if spawned late
 		no_delete_ents.put("soundcache"); // plugin entity
 		no_delete_ents.put("bodyque"); // preallocated corpse ents
-		no_delete_ents.put("trigger_camera"); // thirdperson plugin entity
+		no_delete_ents.put("hlcoop_camera"); // thirdperson plugin entity
 
 		return HOOK_CONTINUE;
 	}
