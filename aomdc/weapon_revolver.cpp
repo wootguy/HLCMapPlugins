@@ -66,7 +66,6 @@ class CRevolver : public CWeaponCustom {
 		wrongClientWeapon = "weapon_357";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = REVOLVER_DEPLOY;
 		params.deployAnimTime = 1280;
 		params.maxClip = REVOLVER_MAX_CLIP;

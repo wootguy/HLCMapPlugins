@@ -65,7 +65,6 @@ class CSpear : public CWeaponCustom {
 		animExt = "gauss";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY | FL_WC_WEP_NO_PREDICTION;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = SPEAR_DRAW;
 		params.deployAnimTime = 910;
 		params.idles[0] = { SPEAR_IDLE, 100, 1000 };

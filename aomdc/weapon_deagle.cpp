@@ -68,7 +68,6 @@ class CDeagle : public CWeaponCustom {
 		wrongClientWeapon = "weapon_357";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = DEAGLE_DEPLOY;
 		params.deployAnimTime = 620;
 		params.maxClip = DEAGLE_MAX_CLIP;

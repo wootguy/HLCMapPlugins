@@ -71,7 +71,6 @@ class CP228 : public CWeaponCustom {
 		wrongClientWeapon = "weapon_9mmhandgun";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = P228_DEPLOY;
 		params.deployAnimTime = 520;
 		params.maxClip = P228_MAX_CLIP;

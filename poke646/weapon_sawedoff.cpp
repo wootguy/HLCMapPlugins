@@ -74,7 +74,6 @@ class CSawedOff : public CWeaponCustom
 		wrongClientWeapon = "weapon_shotgun";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_SHOTGUN_RELOAD;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = SAWEDOFF_DEPLOY;
 		params.deployAnimTime = 630;
 		params.maxClip = SAWEDOFF_MAX_CLIP;

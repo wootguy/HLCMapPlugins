@@ -327,7 +327,6 @@ public:
 			attackOverchargeEvt = attackOverchargeEvt.PrimaryAlt();
 			attackFlag = FL_WC_WEP_HAS_ALT_PRIMARY;
 			impactAnyArg = WC_TRIG_IMPACT_PRIMARY_ALT_ANY;
-			opts.emptySound = params.shootOpts[0].emptySound;
 			break;
 		}
 
@@ -349,15 +348,15 @@ public:
 			switch (action) {
 			case FIRE_ACT_LASER:
 				params.flags |= FL_WC_WEP_UNLINK_COOLDOWNS;
-				AddEvent(attackEvt.ToggleState(FL_WC_STATE_LASER | FL_WC_STATE_PRIMARY_ALT));
+				AddEvent(attackEvt.clone().ToggleState(FL_WC_STATE_LASER | FL_WC_STATE_PRIMARY_ALT));
 				return;
 			case FIRE_ACT_ZOOM:
 				params.flags |= FL_WC_WEP_UNLINK_COOLDOWNS;
-				AddEvent(attackEvt.ToggleZoom(settings->zoom_fov));
-				AddEvent(attackEvt.ToggleState(FL_WC_STATE_PRIMARY_ALT));
+				AddEvent(attackEvt.clone().ToggleZoom(settings->zoom_fov));
+				AddEvent(attackEvt.clone().ToggleState(FL_WC_STATE_PRIMARY_ALT));
 				return;
 			case FIRE_ACT_ALT:
-				AddEvent(attackEvt.ToggleState(FL_WC_STATE_PRIMARY_ALT));
+				AddEvent(attackEvt.clone().ToggleState(FL_WC_STATE_PRIMARY_ALT));
 				return;
 			case FIRE_ACT_WINDUP:
 				if (attackIdx == 2) {
@@ -452,7 +451,7 @@ public:
 		}
 		else {
 			WepEvt evt = isConstantBeam ? attackStartEvt : attackEvt;
-			AddEvent(MakeAnimEvt(evt, config->shoot_anims));
+			AddEvent(MakeAnimEvt(evt.clone(), config->shoot_anims));
 		}
 
 		// sounds
@@ -473,9 +472,12 @@ public:
 		else {
 			WepEvt evt = isConstantBeam ? attackStartEvt : attackEvt;
 			for (int i = 0; i < config->sounds.size; i++) {
-				AddSoundChainEvents(evt, config->sounds.data[i],0,  true, forceChannel);
+				AddSoundChainEvents(evt, config->sounds.data[i], 0,  true, forceChannel);
 			}
 		}
+
+		if (attackIdx == 3)
+			opts.emptySound = params.shootOpts[0].emptySound;
 
 		float damageScale = 1.0f;
 
@@ -501,7 +503,7 @@ public:
 				SoundOpts opts = config->windup_snd.getOpts();
 				int sndIdx = SOUND_INDEX(STRING(opts.file));
 
-				AddEvent(attackChargeEvt.PlaySound(sndIdx, CHAN_WEAPON, opts.volume, opts.attn,
+				AddEvent(attackChargeEvt.clone().PlaySound(sndIdx, CHAN_WEAPON, opts.volume, opts.attn,
 					config->windup_pitch_start, config->windup_pitch_end,
 					DISTANT_NONE, WC_AIVOL_QUIET, FL_WC_SOUND_CHARGE_PITCH));
 			}
@@ -509,8 +511,8 @@ public:
 				AddSoundChainEvents(attackChargeEvt, config->windup_snd, 0, false, forceChannel);
 			}
 
-			AddEvent(attackChargeEvt.WepAnim(config->windup_anim));
-			AddEvent(attackChargeEvt.Delay(config->windup_anim_time*1000)
+			AddEvent(attackChargeEvt.clone().WepAnim(config->windup_anim));
+			AddEvent(attackChargeEvt.clone().Delay(config->windup_anim_time*1000)
 				.WepAnim(config->windup_anim_loop));
 
 			if (config->windup_overcharge_action == OVERCHARGE_SHOOT) {
@@ -527,10 +529,10 @@ public:
 				AddEffectChainEvents(attackOverchargeEvt, config->user_effect2, 0, false);
 			}
 			if (config->windup_overcharge_anim != -1) {
-				AddEvent(attackOverchargeEvt.WepAnim(config->windup_overcharge_anim));
+				AddEvent(attackOverchargeEvt.clone().WepAnim(config->windup_overcharge_anim));
 			}
 			if (config->windup_overcharge_cooldown) {
-				AddEvent(attackOverchargeEvt.Cooldown(config->windup_overcharge_cooldown*1000,
+				AddEvent(attackOverchargeEvt.clone().Cooldown(config->windup_overcharge_cooldown*1000,
 					FL_WC_COOLDOWN_PRIMARY | FL_WC_COOLDOWN_SECONDARY | FL_WC_COOLDOWN_TERTIARY));
 			}
 
@@ -553,7 +555,7 @@ public:
 		case SHOOT_BULLETS: {
 			bool showTracers = config->bullet_color != -1;
 			int tracerColor = config->bullet_color != -1 ? config->bullet_color : WC_TRACER_COLOR_DEFAULT;
-			AddEvent(attackEvt
+			AddEvent(attackEvt.clone()
 				.Bullets(config->bullets, config->bullet_delay * 1000, config->damage*damageScale,
 				spread, spread, showTracers ? 1 : 0, WC_FLASH_NORMAL, 0)
 				.BulletColor(tracerColor)
@@ -568,30 +570,32 @@ public:
 			ProjectileOptions opt = config->projectile;
 			WeaponCustomProjectile ptype = (WeaponCustomProjectile)opt.type;
 
-			WepEvt evt = attackEvt.Projectile(ptype);
+			WepEvt evt = attackEvt.clone().Projectile(ptype);
 			evt.proj.entity_class = ALLOC_STRING("custom_projectile_plugin");
 			evt.proj.speed = opt.speed;
 			evt.proj.spreadX = spread;
 			evt.proj.spreadY = spread;
-			(Vector)evt.proj.offset = opt.offset;
-			(Vector)evt.proj.dir = opt.dir;
+			*(Vector*)evt.proj.offset = opt.offset;
+			*(Vector*)evt.proj.dir = opt.dir;
 			evt.proj.gravity = opt.gravity;
 			evt.proj.elasticity = opt.elasticity;
 			evt.proj.world_event = opt.world_event;
 			evt.proj.monster_event = opt.monster_event;
 			evt.proj.air_friction = opt.air_friction;
 			evt.proj.water_friction = opt.water_friction;
-			(Vector)evt.proj.avel = opt.avel;
+			*(Vector*)evt.proj.avel = opt.avel;
 			evt.proj.life = opt.life;
 			evt.proj.size = opt.size;
-			evt.proj.sprite = opt.sprite;
 			evt.proj.damage = config->damage*damageScale;
 			evt.proj.damageBits = config->damage_type | config->damage_type2;
 			evt.proj.model = opt.model ? MODEL_INDEX(STRING(opt.model)) : 0;
-			evt.proj.sprite_color = opt.sprite_color;
-			evt.proj.sprite_scale = opt.sprite_scale;
-			(Vector)evt.proj.player_vel_inf = opt.player_vel_inf;
-			(Vector)evt.proj.angles = opt.angles;
+			if (opt.sprite) {
+				evt.proj.sprite = opt.sprite;
+				evt.proj.sprite_color = opt.sprite_color;
+				evt.proj.sprite_scale = opt.sprite_scale;
+			}
+			*(Vector*)evt.proj.player_vel_inf = opt.player_vel_inf;
+			*(Vector*)evt.proj.angles = opt.angles;
 			evt.proj.trail_spr = opt.trail_spr;
 			evt.proj.trail_life = opt.trail_life;
 			evt.proj.trail_width = opt.trail_width;
@@ -640,7 +644,7 @@ public:
 				int id = opt.time == 0 ? constId : 0;
 				constantMode |= opt.time == 0;
 
-				WepEvt beamEvt = attackEvt
+				WepEvt beamEvt = attackEvt.clone()
 					.Beam(id, opt.time * 1000, config->max_range)
 					.BeamDamage(config->damage * damageScale, spread, spread, config->beam_impact_speed * 1000)
 					.BeamStyle(spriteIdx, opt.color, opt.width, opt.noise, opt.scrollRate, 1, flags);
@@ -682,10 +686,10 @@ public:
 			if (constantMode) {
 				// use normal cooldown for spending ammo, and an event to cooldown attacks
 				opts.cooldown = config->beam_ammo_cooldown * 1000;
-				AddEvent(attackEndEvt.Cooldown(config->cooldown * 1000, 0xff));
+				AddEvent(attackEndEvt.clone().Cooldown(config->cooldown * 1000, 0xff));
 
 				// finish attack anim
-				AddEvent(attackEndEvt.WepAnim(config->hook_anim));
+				AddEvent(attackEndEvt.clone().WepAnim(config->hook_anim));
 			}
 
 			break;
@@ -696,15 +700,15 @@ public:
 		float punchRange = fabs(config->recoil[0] - config->recoil[1]);
 		float punchMidPoint = config->recoil[0] + (config->recoil[1] - config->recoil[0]) * 0.5f;
 		if (punchRange > 0) {
-			AddEvent(attackEvt.PunchRandom(punchRange * 0.5f, 0));
-			AddEvent(attackEvt.PunchAdd(-punchMidPoint, 0));
+			AddEvent(attackEvt.clone().PunchRandom(punchRange * 0.5f, 0));
+			AddEvent(attackEvt.clone().PunchAdd(-punchMidPoint, 0));
 		}
 		else {
-			AddEvent(attackEvt.PunchSet(-punchMidPoint, 0));
+			AddEvent(attackEvt.clone().PunchSet(-punchMidPoint, 0));
 		}
 
 		if (config->shoot_type != SHOOT_BULLETS && (config->pev->spawnflags & FL_SHOOT_QUAKE_MUZZLEFLASH)) {
-			AddEvent(attackEvt.MuzzleFlash(WC_FLASH_NORMAL));
+			AddEvent(attackEvt.clone().MuzzleFlash(WC_FLASH_NORMAL));
 		}
 
 		if (config->kickback != g_vecZero) {
@@ -714,14 +718,14 @@ public:
 			if (config->windup_time > 0) {
 				force *= config->windup_kick_mult;
 			}
-			AddEvent(attackEvt.Kickback(force, dir.z * -100, dir.x * 100, 0, dir.y * 100));
+			AddEvent(attackEvt.clone().Kickback(force, dir.z * -100, dir.x * 100, 0, dir.y * 100));
 		}
 		
 		if (config->shell_type != SHELL_NONE) {
 			Vector shellOfs = config->shell_offset;
 			int sound = config->shell_type == SHELL_SHOTGUN ? TE_BOUNCE_SHOTSHELL : TE_BOUNCE_SHELL;
 
-			AddEvent(attackEvt.Delay(config->shell_delay)
+			AddEvent(attackEvt.clone().Delay(config->shell_delay)
 				.EjectShell(config->shell_idx, sound, shellOfs.z, shellOfs.y, shellOfs.x));
 
 			if (config->shell_delay > 0 && config->shell_delay_snd.file) {
@@ -736,7 +740,7 @@ public:
 			WepEvt impactEvt = WepEvt().Impact(impactAnyArg);
 
 			if (ef->rico_part_count > 0 && ef->rico_part_spr) {
-				AddEvent(impactEvt.SpriteTrail(MODEL_INDEX(STRING(ef->rico_part_spr)),
+				AddEvent(impactEvt.clone().SpriteTrail(MODEL_INDEX(STRING(ef->rico_part_spr)),
 					ef->rico_part_count, ef->rico_part_scale, ef->rico_part_speed, ef->rico_part_speed / 2));
 			}
 			if (ef->rico_decal == -1) {
@@ -747,7 +751,7 @@ public:
 				int decalIdx = DECAL_INDEX(decal);
 
 				if (decalIdx != -1) {
-					AddEvent(impactEvt.Decal(decalIdx, ef->pev->spawnflags & FL_EFFECT_GUNSHOT_RICOCHET));
+					AddEvent(impactEvt.clone().Decal(decalIdx, ef->pev->spawnflags & FL_EFFECT_GUNSHOT_RICOCHET));
 				}
 				else {
 					ALERT(at_error, "Unknown decal: %s\n", decal);
@@ -817,7 +821,6 @@ public:
 			EALERT(at_warning, "HL Client weapon not set\n");
 		}
 
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = settings->deploy_anim;
 		params.deployTime = settings->deploy_time * 1000;
 		params.maxClip = settings->clip_size();
@@ -856,6 +859,8 @@ public:
 		m_defaultModelP = STRING(settings->wpn_p_model);
 		m_defaultModelW = STRING(settings->wpn_w_model);
 		CBasePlayerWeapon::Precache();
+
+		params.vmodel = MODEL_INDEX(GetModelV());
 
 		ConfigureWeapon(settings);
 

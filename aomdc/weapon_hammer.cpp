@@ -49,7 +49,6 @@ class CHammer : public CWeaponCustom {
 		animExt = "crowbar";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY | FL_WC_WEP_NO_PREDICTION;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = HAMMER_DRAW;
 		params.deployAnimTime = 700;
 		params.idles[0] = { HAMMER_IDLE, 100, 1000 };

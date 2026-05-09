@@ -88,7 +88,6 @@ class CPizzaShotgun : public CWeaponCustom
 		wrongClientWeapon = "weapon_shotgun";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_SHOTGUN_RELOAD;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = SHOTGUN_DRAW;
 		params.deployAnimTime = 530;
 		params.maxClip = AS_SHOTGUN_MAX_CLIP;

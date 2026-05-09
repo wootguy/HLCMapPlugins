@@ -70,7 +70,6 @@ class CGlock : public CWeaponCustom {
 		wrongClientWeapon = "weapon_9mmhandgun";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = GLOCK_DEPLOY;
 		params.deployAnimTime = 520;
 		params.maxClip = GLOCK_MAX_CLIP;

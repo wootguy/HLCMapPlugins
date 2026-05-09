@@ -63,7 +63,6 @@ class CColt : public CWeaponCustom {
 		wrongClientWeapon = "weapon_9mmhandgun";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = DEAGLE_DRAW;
 		params.deployTime = 1000;
 		params.deployAnimTime = 1030;

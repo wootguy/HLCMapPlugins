@@ -69,7 +69,6 @@ class CAomShotgun : public CWeaponCustom
 		wrongClientWeapon = "weapon_shotgun";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_SHOTGUN_RELOAD | FL_WC_WEP_USE_ONLY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = SHOTGUN_DEPLOY;
 		params.deployAnimTime = 520;
 		params.maxClip = SHOTGUN_MAX_CLIP;

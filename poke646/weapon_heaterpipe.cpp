@@ -76,7 +76,6 @@ public:
 		//wrongClientWeapon = "weapon_crowbar";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_NO_PREDICTION;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = PIPE_DRAW;
 		params.deployAnimTime = 630;
 		params.idles[0] = { PIPE_IDLE, 100, 1000 };

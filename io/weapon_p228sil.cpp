@@ -84,7 +84,6 @@ class CUsp : public CWeaponCustom {
 		wrongClientWeapon = "weapon_9mmhandgun";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = USP_DRAW_UNSIL;
 		params.deployTime = 1000;
 		params.deployAnimTime = 1040;

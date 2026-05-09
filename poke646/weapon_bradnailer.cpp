@@ -77,7 +77,6 @@ class CBradNailer : public CWeaponCustom {
 		//wrongClientWeapon = "weapon_mp5";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = BRADNAILER_DRAW;
 		params.deployAnimTime = 1130;
 		params.maxClip = BRADNAILER_MAX_CLIP;

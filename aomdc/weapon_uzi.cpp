@@ -68,7 +68,6 @@ class CAomUzi : public CWeaponCustom {
 		wrongClientWeapon = "weapon_9mmAR";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = UZI_DEPLOY;
 		params.deployAnimTime = 1100;
 		params.maxClip = UZI_MAX_CLIP;

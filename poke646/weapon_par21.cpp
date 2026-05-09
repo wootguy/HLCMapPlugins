@@ -69,7 +69,6 @@ class CPar21 : public CWeaponCustom {
 		wrongClientWeapon = "weapon_9mmAR";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = PAR_DEPLOY;
 		params.deployAnimTime = 1000;
 		params.maxClip = PAR_MAX_CLIP;

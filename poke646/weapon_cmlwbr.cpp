@@ -77,7 +77,6 @@ class CCmlwbr : public CWeaponCustom {
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY | FL_WC_WEP_UNLINK_COOLDOWNS
 			| FL_WC_WEP_ZOOM_SPR_STRETCH | FL_WC_WEP_ZOOM_SPR_ASPECT | FL_WC_WEP_EMPTY_IDLES;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = CMLWBR_DRAW;
 		params.deployAnimTime = 600;
 		params.maxClip = CMLWBR_MAX_CLIP;

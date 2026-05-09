@@ -77,7 +77,6 @@ class CDualGlock : public CWeaponCustom {
 		wrongClientWeapon = "weapon_9mmhandgun";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = ELITES_DRAW;
 		params.deployTime = 1100;
 		params.deployAnimTime = 1110;

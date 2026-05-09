@@ -68,7 +68,6 @@ class CMp5k : public CWeaponCustom {
 		wrongClientWeapon = "weapon_9mmAR";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = MP5K_DEPLOY;
 		params.deployAnimTime = 1030;
 		params.maxClip = MP5K_MAX_CLIP;

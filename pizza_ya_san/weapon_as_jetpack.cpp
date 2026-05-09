@@ -106,7 +106,6 @@ class CJetpack : public CWeaponCustom {
 		//wrongClientWeapon = "weapon_shotgun";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY | FL_WC_WEP_UNLINK_COOLDOWNS;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = GLOCK_DRAW;
 		params.deployAnimTime = 840;
 		params.maxClip = JETPACK_MAX_CLIP;

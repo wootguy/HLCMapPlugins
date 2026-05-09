@@ -52,7 +52,6 @@ class CKnife : public CWeaponCustom {
 		animExt = "crowbar";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY | FL_WC_WEP_NO_PREDICTION;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = KNIFE_DRAW;
 		params.deployAnimTime = 640;
 		params.idles[0] = { KNIFE_IDLE, 100, 4000 };

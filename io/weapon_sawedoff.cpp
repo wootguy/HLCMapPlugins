@@ -70,7 +70,6 @@ class CSawedOff : public CWeaponCustom {
 		wrongClientWeapon = "weapon_shotgun";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = TOZ34_DRAW;
 		params.deployTime = 1150;
 		params.deployAnimTime = 1150;

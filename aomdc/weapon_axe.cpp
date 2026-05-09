@@ -49,7 +49,6 @@ class CAxe : public CWeaponCustom {
 		animExt = "crowbar";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY | FL_WC_WEP_NO_PREDICTION;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = AXE_DRAW;
 		params.deployAnimTime = 1400;
 		params.idles[0] = { AXE_IDLE, 100, 1000 };

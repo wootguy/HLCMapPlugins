@@ -69,7 +69,6 @@ class CNailgun : public CWeaponCustom {
 		//wrongClientWeapon = "weapon_mp5";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY;
-		params.vmodel = MODEL_INDEX(GetModelV());
 		params.deployAnim = NAILGUN_DEPLOY;
 		params.deployAnimTime = 1000;
 		params.maxClip = NAILGUN_MAX_CLIP;
