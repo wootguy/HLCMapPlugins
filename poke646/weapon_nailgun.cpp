@@ -79,8 +79,8 @@ class CNailgun : public CWeaponCustom {
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 1;
 		primary.cooldown = 100;
-		primary.accuracyX = 3 * 100;
-		primary.accuracyY = 3 * 100;
+		primary.accuracy[0] = 3 * 100;
+		primary.accuracy[1] = 3 * 100;
 		primary.flags = FL_WC_SHOOT_UNDERWATER;
 
 		float spread = VECTOR_CONE_3DEGREES.x;
@@ -92,8 +92,8 @@ class CNailgun : public CWeaponCustom {
 
 		WepEvt projEvt = WepEvt().Primary().Projectile(WC_PROJECTILE_CUSTOM);
 		projEvt.proj.speed = 4000;
-		projEvt.proj.spreadX = spread;
-		projEvt.proj.spreadY = spread;
+		projEvt.proj.accuracy[0] = FLOAT_TO_SPREAD(spread);
+		projEvt.proj.accuracy[1] = FLOAT_TO_SPREAD(spread);
 		(Vector)projEvt.proj.offset = Vector(8, 16, -6);
 		projEvt.proj.entity_class = ALLOC_STRING("nail");
 		projEvt.proj.model = nailMdl;

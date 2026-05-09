@@ -78,8 +78,8 @@ class CMp5k : public CWeaponCustom {
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 1;
 		primary.cooldown = 60;
-		primary.accuracyX = 4 * 100;
-		primary.accuracyY = 4 * 100;
+		primary.accuracy[0] = 4 * 100;
+		primary.accuracy[1] = 4 * 100;
 
 		float spread = VECTOR_CONE_4DEGREES.x;
 		int damage = 31;

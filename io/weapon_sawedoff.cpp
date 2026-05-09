@@ -81,16 +81,16 @@ class CSawedOff : public CWeaponCustom {
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 1;
 		primary.cooldown = 123;
-		primary.accuracyX = 12.3f * 100;
-		primary.accuracyY = 14.6f * 100;
+		primary.accuracy[0] = 12.3f * 100;
+		primary.accuracy[1] = 14.6f * 100;
 		primary.flags = FL_WC_SHOOT_NO_AUTOFIRE;
 
 		CustomWeaponShootOpts& secondary = params.shootOpts[1];
 		secondary.ammoCost = 2;
 		secondary.ammoPool = WC_AMMOPOOL_PRIMARY_CLIP;
 		secondary.cooldown = 600;
-		secondary.accuracyX = 14.6f * 100;
-		secondary.accuracyY = 18.8f * 100;
+		secondary.accuracy[0] = 14.6f * 100;
+		secondary.accuracy[1] = 18.8f * 100;
 		secondary.flags = FL_WC_SHOOT_NEED_FULL_COST;
 
 		// scaled down because HL has fewer pellets than sven

@@ -90,8 +90,8 @@ class CCmlwbr : public CWeaponCustom {
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 1;
 		primary.cooldown = 1500;
-		primary.accuracyX = 0 * 100;
-		primary.accuracyY = 0 * 100;
+		primary.accuracy[0] = 0 * 100;
+		primary.accuracy[1] = 0 * 100;
 		primary.flags = FL_WC_SHOOT_UNDERWATER;
 
 		CustomWeaponShootOpts& secondary = params.shootOpts[1];

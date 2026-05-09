@@ -87,8 +87,8 @@ class CDualGlock : public CWeaponCustom {
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 1;
 		primary.cooldown = 140;
-		primary.accuracyX = 6 * 100;
-		primary.accuracyY = 6 * 100;
+		primary.accuracy[0] = 6 * 100;
+		primary.accuracy[1] = 6 * 100;
 
 		float spread = VECTOR_CONE_6DEGREES.x;
 		int damage = 36;

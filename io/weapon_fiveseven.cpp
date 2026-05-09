@@ -73,8 +73,8 @@ class CFiveSeven : public CWeaponCustom {
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 1;
 		primary.cooldown = 160;
-		primary.accuracyX = 1 * 100;
-		primary.accuracyY = 1 * 100;
+		primary.accuracy[0] = 1 * 100;
+		primary.accuracy[1] = 1 * 100;
 
 		float spread = VECTOR_CONE_1DEGREES.x;
 		int damage = 24;

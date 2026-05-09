@@ -88,8 +88,8 @@ class CBradNailer : public CWeaponCustom {
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 1;
 		primary.cooldown = 300;
-		primary.accuracyX = 1 * 100;
-		primary.accuracyY = 1 * 100;
+		primary.accuracy[0] = 1 * 100;
+		primary.accuracy[1] = 1 * 100;
 		primary.flags = FL_WC_SHOOT_UNDERWATER;
 
 		CustomWeaponShootOpts& secondary = params.shootOpts[1];
@@ -99,8 +99,8 @@ class CBradNailer : public CWeaponCustom {
 		secondary.chargeTime = 450;
 		secondary.chargeMode = WC_CHARGEUP_CONSTANT;
 		secondary.chargeCancelTime = 450;
-		secondary.accuracyX = 6 * 100;
-		secondary.accuracyY = 6 * 100;
+		secondary.accuracy[0] = 6 * 100;
+		secondary.accuracy[1] = 6 * 100;
 		secondary.flags = FL_WC_SHOOT_UNDERWATER;
 
 		float spread = VECTOR_CONE_1DEGREES.x;
@@ -113,8 +113,8 @@ class CBradNailer : public CWeaponCustom {
 
 		WepEvt projEvt = WepEvt().Primary().Projectile(WC_PROJECTILE_CUSTOM);
 		projEvt.proj.speed = 4000;
-		projEvt.proj.spreadX = spread;
-		projEvt.proj.spreadY = spread;
+		projEvt.proj.accuracy[0] = FLOAT_TO_SPREAD(spread);
+		projEvt.proj.accuracy[1] = FLOAT_TO_SPREAD(spread);
 		(Vector)projEvt.proj.offset = Vector(8, 16, -6);
 		projEvt.proj.entity_class = ALLOC_STRING("nail");
 		projEvt.proj.model = nailMdl;
@@ -129,8 +129,8 @@ class CBradNailer : public CWeaponCustom {
 
 		WepEvt projEvt2 = WepEvt().Secondary().Projectile(WC_PROJECTILE_CUSTOM);
 		projEvt2.proj.speed = 4000;
-		projEvt2.proj.spreadX = spread2;
-		projEvt2.proj.spreadY = spread2;
+		projEvt2.proj.accuracy[0] = FLOAT_TO_SPREAD(spread2);
+		projEvt2.proj.accuracy[1] = FLOAT_TO_SPREAD(spread2);
 		(Vector)projEvt2.proj.offset = Vector(0, 16, -6);
 		projEvt2.proj.entity_class = ALLOC_STRING("nail");
 		projEvt2.proj.model = nailMdl;

@@ -101,8 +101,8 @@ class CPizzaShotgun : public CWeaponCustom
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 1;
 		primary.cooldown = 650;
-		primary.accuracyX = 15 * 100;
-		primary.accuracyY = 15 * 100;
+		primary.accuracy[0] = 15 * 100;
+		primary.accuracy[1] = 15 * 100;
 
 		float spread = VECTOR_CONE_15DEGREES.x;
 		int bulletf = 0;

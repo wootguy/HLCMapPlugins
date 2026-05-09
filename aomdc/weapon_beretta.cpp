@@ -81,8 +81,8 @@ class CBeretta : public CWeaponCustom {
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 1;
 		primary.cooldown = 50;
-		primary.accuracyX = 2 * 100;
-		primary.accuracyY = 2 * 100;
+		primary.accuracy[0] = 2 * 100;
+		primary.accuracy[1] = 2 * 100;
 		primary.flags = FL_WC_SHOOT_NO_AUTOFIRE;
 
 		float spread = VECTOR_CONE_2DEGREES.x;

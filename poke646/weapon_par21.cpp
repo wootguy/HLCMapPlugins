@@ -79,14 +79,14 @@ class CPar21 : public CWeaponCustom {
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 1;
 		primary.cooldown = 100;
-		primary.accuracyX = 3 * 100;
-		primary.accuracyY = 3 * 100;
+		primary.accuracy[0] = 3 * 100;
+		primary.accuracy[1] = 3 * 100;
 
 		CustomWeaponShootOpts& secondary = params.shootOpts[1];
 		secondary.ammoCost = 1;
 		secondary.cooldown = 1000;
-		secondary.accuracyX = 3 * 100;
-		secondary.accuracyY = 3 * 100;
+		secondary.accuracy[0] = 3 * 100;
+		secondary.accuracy[1] = 3 * 100;
 
 		float spread = VECTOR_CONE_3DEGREES.x;
 

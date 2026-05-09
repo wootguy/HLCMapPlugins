@@ -400,8 +400,8 @@ public:
 		opts.chargeTime = 0;
 		opts.chargeCancelTime = 0;
 		opts.chargeMoveSpeedMult = 0;
-		opts.accuracyX = config->bullet_spread * 100;
-		opts.accuracyY = config->bullet_spread * 100;
+		opts.accuracy[0] = config->bullet_spread * 100;
+		opts.accuracy[1] = config->bullet_spread * 100;
 
 		// ammo pool
 		if (attackIdx == 0) {
@@ -573,8 +573,8 @@ public:
 			WepEvt evt = attackEvt.clone().Projectile(ptype);
 			evt.proj.entity_class = ALLOC_STRING("custom_projectile_plugin");
 			evt.proj.speed = opt.speed;
-			evt.proj.spreadX = spread;
-			evt.proj.spreadY = spread;
+			evt.proj.accuracy[0] = FLOAT_TO_SPREAD(spread);
+			evt.proj.accuracy[1] = FLOAT_TO_SPREAD(spread);
 			*(Vector*)evt.proj.offset = opt.offset;
 			*(Vector*)evt.proj.dir = opt.dir;
 			evt.proj.gravity = opt.gravity;
@@ -584,7 +584,7 @@ public:
 			evt.proj.air_friction = opt.air_friction;
 			evt.proj.water_friction = opt.water_friction;
 			*(Vector*)evt.proj.avel = opt.avel;
-			evt.proj.life = opt.life;
+			evt.proj.life = opt.life * 1000;
 			evt.proj.size = opt.size;
 			evt.proj.damage = config->damage*damageScale;
 			evt.proj.damageBits = config->damage_type | config->damage_type2;

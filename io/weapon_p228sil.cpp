@@ -94,13 +94,13 @@ class CUsp : public CWeaponCustom {
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 1;
 		primary.cooldown = 217;
-		primary.accuracyX = 2 * 100;
-		primary.accuracyY = 2 * 100;
+		primary.accuracy[0] = 2 * 100;
+		primary.accuracy[1] = 2 * 100;
 
 		CustomWeaponShootOpts& secondary = params.shootOpts[1];
 		secondary.cooldown = 3135;
-		secondary.accuracyX = 2 * 100;
-		secondary.accuracyY = 2 * 100;
+		secondary.accuracy[0] = 2 * 100;
+		secondary.accuracy[1] = 2 * 100;
 		secondary.flags = FL_WC_SHOOT_NO_ATTACK | FL_WC_SHOOT_COOLDOWN_IDLE;
 
 		// unsilenced params
@@ -145,10 +145,10 @@ class CUsp : public CWeaponCustom {
 			params.reloadStage[0] = { USP_RELOAD, 2730 };
 			params.idles[0] = { USP_IDLE, 99, 2000 };
 
-			primary.accuracyX = 1.2f * 100;
-			primary.accuracyY = 1.2f * 100;
-			secondary.accuracyX = 1.2f * 100;
-			secondary.accuracyY = 1.2f * 100;
+			primary.accuracy[0] = 1.2f * 100;
+			primary.accuracy[1] = 1.2f * 100;
+			secondary.accuracy[0] = 1.2f * 100;
+			secondary.accuracy[1] = 1.2f * 100;
 
 			AddEvent(WepEvt().PrimaryNotEmpty().WepAnim(USP_SHOOT1)); // 2 and 3 don't return to idle pose
 			AddEvent(WepEvt().PrimaryEmpty().WepAnim(USP_SHOOTLAST));
@@ -189,7 +189,7 @@ class CUsp : public CWeaponCustom {
 		m_silencer = !m_silencer;
 		params = m_silencer ? silenced_params : unsilenced_params;
 
-		SendPredictionData(m_pPlayer->edict(), WC_PRED_SEND_BOTH);
+		UTIL_SendCustomWeaponPredictionData(m_pPlayer->edict(), this, WC_PRED_SEND_BOTH);
 		m_pPlayer->SetAnimation(PLAYER_RELOAD, 3.0f);
 	}
 };

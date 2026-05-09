@@ -81,8 +81,8 @@ class CAomShotgun : public CWeaponCustom
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 1;
 		primary.cooldown = 1310;
-		primary.accuracyX = 8 * 100;
-		primary.accuracyY = 8 * 100;
+		primary.accuracy[0] = 8 * 100;
+		primary.accuracy[1] = 8 * 100;
 
 		float spread = VECTOR_CONE_8DEGREES.x;
 		int bulletf = 0;

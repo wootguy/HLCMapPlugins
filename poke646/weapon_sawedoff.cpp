@@ -86,8 +86,8 @@ class CSawedOff : public CWeaponCustom
 		CustomWeaponShootOpts& primary = params.shootOpts[0];
 		primary.ammoCost = 2;
 		primary.cooldown = 1150;
-		primary.accuracyX = 10 * 100;
-		primary.accuracyY = 10 * 100;
+		primary.accuracy[0] = 10 * 100;
+		primary.accuracy[1] = 10 * 100;
 		primary.flags = FL_WC_SHOOT_NEED_FULL_COST;
 
 		float spread = VECTOR_CONE_10DEGREES.x;

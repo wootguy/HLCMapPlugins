@@ -117,15 +117,15 @@ class CJetpack : public CWeaponCustom {
 		primary.ammoCost = 1;
 		primary.ammoPool = WC_AMMOPOOL_PRIMARY_RESERVE;
 		primary.cooldown = 50;
-		primary.accuracyX = 6 * 100;
-		primary.accuracyY = 6 * 100;
+		primary.accuracy[0] = 6 * 100;
+		primary.accuracy[1] = 6 * 100;
 
 		CustomWeaponShootOpts& secondary = params.shootOpts[1];
 		secondary.ammoCost = 1;
 		secondary.ammoFreq = 50;
 		secondary.cooldown = 20;
-		secondary.accuracyX = 6 * 100;
-		secondary.accuracyY = 6 * 100;
+		secondary.accuracy[0] = 6 * 100;
+		secondary.accuracy[1] = 6 * 100;
 
 		float spread = VECTOR_CONE_6DEGREES.x;
 		int bulletf = 0;
@@ -152,11 +152,11 @@ class CJetpack : public CWeaponCustom {
 
 	int AddToPlayer(CBasePlayer* pPlayer) {
 		// resend event data in case the player altered boost levels and picked up a new gun
-		bool refreshPredData = HasPredictionData(pPlayer->edict());
+		bool refreshPredData = UTIL_HasCustomWeaponPredictionData(pPlayer->edict(), this);
 
 		if (CWeaponCustom::AddToPlayer(pPlayer)) {
 			if (refreshPredData)
-				SendPredictionData(pPlayer->edict(), WC_PRED_SEND_EVT);
+				UTIL_SendCustomWeaponPredictionData(pPlayer->edict(), this, WC_PRED_SEND_EVT);
 
 			return 1;
 		}
@@ -293,7 +293,8 @@ class CJetpack : public CWeaponCustom {
 					evt.kickback.pushForce = getBoostForce();
 				}
 			}
-			SendPredictionData(m_pPlayer->edict(), WC_PRED_SEND_EVT);
+
+			UTIL_SendCustomWeaponPredictionData(m_pPlayer->edict(), this, WC_PRED_SEND_EVT);
 
 			UTIL_ClientPrint(m_pPlayer, print_center, UTIL_VarArgs("Boost Level: %d", m_iClip));
 		}
