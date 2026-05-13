@@ -64,13 +64,13 @@ class CDeagle : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/aomdc/weapon_deagle.txt");
 
-		animExt = "python";
-		wrongClientWeapon = "weapon_357";
+		params.animExt = ALLOC_STRING("python");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_357");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY;
 		params.deployAnim = DEAGLE_DEPLOY;
 		params.deployAnimTime = 620;
-		params.maxClip = DEAGLE_MAX_CLIP;
+		params.ammoInfo[0].maxClip = DEAGLE_MAX_CLIP;
 		params.reloadStage[0] = { DEAGLE_RELOAD, 2400 };
 		params.reloadStage[1] = { DEAGLE_RELOAD_EMPTY, 2400 };
 		params.idles[0] = { DEAGLE_IDLE, 99, 1030 };

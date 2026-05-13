@@ -84,13 +84,13 @@ class CPizzaShotgun : public CWeaponCustom
 
 		PRECACHE_HUD_FILES("sprites/pizza_ya_san/weapon_as_shotgun.txt");
 
-		animExt = "shotgun";
-		wrongClientWeapon = "weapon_shotgun";
+		params.animExt = ALLOC_STRING("shotgun");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_shotgun");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_SHOTGUN_RELOAD;
 		params.deployAnim = SHOTGUN_DRAW;
 		params.deployAnimTime = 530;
-		params.maxClip = AS_SHOTGUN_MAX_CLIP;
+		params.ammoInfo[0].maxClip = AS_SHOTGUN_MAX_CLIP;
 		params.reloadStage[0] = { SHOTGUN_START_RELOAD, 500 }; // 750 = anim time
 		params.reloadStage[1] = { SHOTGUN_RELOAD, 250 }; // 480 = anim time
 		params.reloadStage[2] = { SHOTGUN_PUMP, 850 };

@@ -62,7 +62,7 @@ class CSpear : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/aomdc/weapon_spear.txt");
 
-		animExt = "gauss";
+		params.animExt = ALLOC_STRING("gauss");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY | FL_WC_WEP_NO_PREDICTION;
 		params.deployAnim = SPEAR_DRAW;

@@ -102,13 +102,13 @@ class CJetpack : public CWeaponCustom {
 		m_gBurnSprite = PRECACHE_MODEL("sprites/xflare2.spr");
 		m_gSmokeSprite = PRECACHE_MODEL("sprites/boom3.spr");
 
-		animExt = "onehanded";
+		params.animExt = ALLOC_STRING("onehanded");
 		//wrongClientWeapon = "weapon_shotgun";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY | FL_WC_WEP_UNLINK_COOLDOWNS;
 		params.deployAnim = GLOCK_DRAW;
 		params.deployAnimTime = 840;
-		params.maxClip = JETPACK_MAX_CLIP;
+		params.ammoInfo[0].maxClip = JETPACK_MAX_CLIP;
 		params.idles[0] = { GLOCK_IDLE1, 50, 3100 };
 		params.idles[1] = { GLOCK_IDLE2, 50, 1440 };
 		//params.idles[2] = { GLOCK_IDLE3, 80, 4670 };

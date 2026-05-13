@@ -65,13 +65,13 @@ class CAomShotgun : public CWeaponCustom
 
 		PRECACHE_HUD_FILES("sprites/aomdc/weapon_aom_shotgun.txt");
 
-		animExt = "shotgun";
-		wrongClientWeapon = "weapon_shotgun";
+		params.animExt = ALLOC_STRING("shotgun");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_shotgun");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_SHOTGUN_RELOAD | FL_WC_WEP_USE_ONLY;
 		params.deployAnim = SHOTGUN_DEPLOY;
 		params.deployAnimTime = 520;
-		params.maxClip = SHOTGUN_MAX_CLIP;
+		params.ammoInfo[0].maxClip = SHOTGUN_MAX_CLIP;
 		params.reloadStage[0] = { SHOTGUN_RELOAD_START, 470 };
 		params.reloadStage[1] = { SHOTGUN_RELOAD_INSERT, 530 };
 		params.reloadStage[2] = { SHOTGUN_RELOAD_END, 800 };

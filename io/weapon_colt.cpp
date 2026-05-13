@@ -59,14 +59,14 @@ class CColt : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/kuilu/weapon_colt.txt");
 
-		animExt = "onehanded";
-		wrongClientWeapon = "weapon_9mmhandgun";
+		params.animExt = ALLOC_STRING("onehanded");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_9mmhandgun");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY;
 		params.deployAnim = DEAGLE_DRAW;
 		params.deployTime = 1000;
 		params.deployAnimTime = 1030;
-		params.maxClip = DEAGLE_MAX_CLIP;
+		params.ammoInfo[0].maxClip = DEAGLE_MAX_CLIP;
 		params.reloadStage[0] = { DEAGLE_RELOAD, 2200 };
 		params.idles[0] = { DEAGLE_IDLE, 99, 1500 };
 

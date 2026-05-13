@@ -46,7 +46,7 @@ class CHammer : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/aomdc/weapon_hammer.txt");
 
-		animExt = "crowbar";
+		params.animExt = ALLOC_STRING("crowbar");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY | FL_WC_WEP_NO_PREDICTION;
 		params.deployAnim = HAMMER_DRAW;

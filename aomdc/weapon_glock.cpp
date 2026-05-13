@@ -66,13 +66,13 @@ class CGlock : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/aomdc/weapon_p228.txt");
 
-		animExt = "onehanded";
-		wrongClientWeapon = "weapon_9mmhandgun";
+		params.animExt = ALLOC_STRING("onehanded");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_9mmhandgun");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY;
 		params.deployAnim = GLOCK_DEPLOY;
 		params.deployAnimTime = 520;
-		params.maxClip = GLOCK_MAX_CLIP;
+		params.ammoInfo[0].maxClip = GLOCK_MAX_CLIP;
 		params.reloadStage[0] = { GLOCK_RELOAD, 2100 };
 		params.reloadStage[1] = { GLOCK_RELOAD_EMPTY, 2100 };
 		params.idles[0] = { GLOCK_IDLE, 99, 1030 };

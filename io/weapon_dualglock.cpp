@@ -73,14 +73,14 @@ class CDualGlock : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/kuilu/weapon_dualglock.txt");
 
-		animExt = "uzis";
-		wrongClientWeapon = "weapon_9mmhandgun";
+		params.animExt = ALLOC_STRING("uzis");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_9mmhandgun");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY;
 		params.deployAnim = ELITES_DRAW;
 		params.deployTime = 1100;
 		params.deployAnimTime = 1110;
-		params.maxClip = ELITES_MAX_CLIP;
+		params.ammoInfo[0].maxClip = ELITES_MAX_CLIP;
 		params.reloadStage[0] = { ELITES_RELOAD, 4600 };
 		params.idles[0] = { ELITES_IDLE, 99, 1500 };
 

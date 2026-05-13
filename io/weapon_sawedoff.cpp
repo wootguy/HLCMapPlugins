@@ -66,14 +66,14 @@ class CSawedOff : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/kuilu/weapon_sawedoff.txt");
 
-		animExt = "shotgun";
-		wrongClientWeapon = "weapon_shotgun";
+		params.animExt = ALLOC_STRING("shotgun");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_shotgun");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY;
 		params.deployAnim = TOZ34_DRAW;
 		params.deployTime = 1150;
 		params.deployAnimTime = 1150;
-		params.maxClip = SAWEDOFF_MAX_CLIP;
+		params.ammoInfo[0].maxClip = SAWEDOFF_MAX_CLIP;
 		params.reloadStage[0] = { TOZ34_RELOAD_SINGLE, 3620 };
 		params.reloadStage[1] = { TOZ34_RELOAD, 3020 };
 		params.idles[0] = { TOZ34_IDLE, 100, 2000 };

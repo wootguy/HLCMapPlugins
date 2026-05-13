@@ -59,14 +59,14 @@ class CFiveSeven : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/kuilu/weapon_fiveseven.txt");
 
-		animExt = "onehanded";
-		wrongClientWeapon = "weapon_9mmhandgun";
+		params.animExt = ALLOC_STRING("onehanded");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_9mmhandgun");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY;
 		params.deployAnim = FIVE7_DRAW;
 		params.deployTime = 1000;
 		params.deployAnimTime = 1070;
-		params.maxClip = FIVE7_MAX_CLIP;
+		params.ammoInfo[0].maxClip = FIVE7_MAX_CLIP;
 		params.reloadStage[0] = { FIVE7_RELOAD, 3240 };
 		params.idles[0] = { FIVE7_IDLE, 99, 500 };
 

@@ -65,13 +65,13 @@ class CPar21 : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/poke646/weapon_par21.txt");
 
-		animExt = "mp5";
-		wrongClientWeapon = "weapon_9mmAR";
+		params.animExt = ALLOC_STRING("mp5");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_9mmAR");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY;
 		params.deployAnim = PAR_DEPLOY;
 		params.deployAnimTime = 1000;
-		params.maxClip = PAR_MAX_CLIP;
+		params.ammoInfo[0].maxClip = PAR_MAX_CLIP;
 		params.reloadStage[0] = { PAR_RELOAD, 1570 };
 		params.idles[0] = { PAR_LONGIDLE, 20, 5130 };
 		params.idles[1] = { PAR_IDLE1, 80, 3170 };

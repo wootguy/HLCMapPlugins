@@ -64,13 +64,13 @@ class CAomUzi : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/aomdc/weapon_aom_uzi.txt");
 
-		animExt = "onehanded";
-		wrongClientWeapon = "weapon_9mmAR";
+		params.animExt = ALLOC_STRING("onehanded");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_9mmAR");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY;
 		params.deployAnim = UZI_DEPLOY;
 		params.deployAnimTime = 1100;
-		params.maxClip = UZI_MAX_CLIP;
+		params.ammoInfo[0].maxClip = UZI_MAX_CLIP;
 		params.reloadStage[0] = { UZI_RELOAD, 2600 };
 		params.idles[0] = { UZI_IDLE, 100, 1000 };
 

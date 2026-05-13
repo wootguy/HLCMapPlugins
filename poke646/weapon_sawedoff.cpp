@@ -70,13 +70,13 @@ class CSawedOff : public CWeaponCustom
 
 		PRECACHE_HUD_FILES("sprites/poke646/weapon_sawedoff.txt");
 
-		animExt = "shotgun";
-		wrongClientWeapon = "weapon_shotgun";
+		params.animExt = ALLOC_STRING("shotgun");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_shotgun");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_SHOTGUN_RELOAD;
 		params.deployAnim = SAWEDOFF_DEPLOY;
 		params.deployAnimTime = 630;
-		params.maxClip = SAWEDOFF_MAX_CLIP;
+		params.ammoInfo[0].maxClip = SAWEDOFF_MAX_CLIP;
 		params.reloadStage[0] = { SAWEDOFF_START_RELOAD, 550 }; // 750 = anim time
 		params.reloadStage[1] = { SAWEDOFF_INSERT, 340 }; // 480 = anim time
 		params.reloadStage[2] = { SAWEDOFF_PUMP, 1000 };

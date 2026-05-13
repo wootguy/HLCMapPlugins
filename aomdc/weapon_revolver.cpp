@@ -62,13 +62,13 @@ class CRevolver : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/aomdc/weapon_revolver.txt");
 
-		animExt = "python";
-		wrongClientWeapon = "weapon_357";
+		params.animExt = ALLOC_STRING("python");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_357");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY;
 		params.deployAnim = REVOLVER_DEPLOY;
 		params.deployAnimTime = 1280;
-		params.maxClip = REVOLVER_MAX_CLIP;
+		params.ammoInfo[0].maxClip = REVOLVER_MAX_CLIP;
 		params.reloadStage[0] = { REVOLVER_RELOAD, 2760 };
 		params.idles[0] = { REVOLVER_IDLE, 99, 1030 };
 

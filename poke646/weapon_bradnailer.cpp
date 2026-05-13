@@ -73,13 +73,13 @@ class CBradNailer : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/poke646/weapon_bradnailer.txt");
 
-		animExt = "mp5";
+		params.animExt = ALLOC_STRING("mp5");
 		//wrongClientWeapon = "weapon_mp5";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY;
 		params.deployAnim = BRADNAILER_DRAW;
 		params.deployAnimTime = 1130;
-		params.maxClip = BRADNAILER_MAX_CLIP;
+		params.ammoInfo[0].maxClip = BRADNAILER_MAX_CLIP;
 		params.reloadStage[0] = { BRADNAILER_RELOAD, 2390 };
 		params.idles[0] = { BRADNAILER_IDLE1, 20, 3940 };
 		params.idles[1] = { BRADNAILER_IDLE2, 20, 2690 };

@@ -63,7 +63,7 @@ public:
 	}
 
 	virtual const char* GetDeathNoticeWeapon() override {
-		return wrongClientWeapon ? wrongClientWeapon : "weapon_9mmhandgun";
+		return params.wrongClientWeapon ? STRING(params.wrongClientWeapon) : "weapon_9mmhandgun";
 	}
 
 	const char* DisplayName() override { return displayName ? STRING(displayName) : STRING(pev->classname); }
@@ -814,17 +814,17 @@ public:
 	}
 
 	void ConfigureWeapon(CWeaponCustomConfig* settings) {
-		animExt = settings->getPlayerAnimExt();
-		wrongClientWeapon = settings->hl_client_weapon ? STRING(settings->hl_client_weapon) : NULL;
+		params.animExt = ALLOC_STRING(settings->getPlayerAnimExt());
+		params.wrongClientWeapon = settings->hl_client_weapon ? settings->hl_client_weapon : 0;
 
-		if (!wrongClientWeapon) {
+		if (!params.wrongClientWeapon) {
 			EALERT(at_warning, "HL Client weapon not set\n");
 		}
 
 		params.deployAnim = settings->deploy_anim;
 		params.deployTime = settings->deploy_time * 1000;
-		params.maxClip = settings->clip_size();
-		params.defaultAmmo = settings->default_ammo;
+		params.ammoInfo[0].maxClip = settings->clip_size();
+		params.ammoInfo[0].defaultGive = settings->default_ammo;
 
 		ConfigureReload(settings);
 

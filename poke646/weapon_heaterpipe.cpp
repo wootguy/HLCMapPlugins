@@ -72,7 +72,7 @@ public:
 
 		PRECACHE_HUD_FILES("sprites/poke646/weapon_heaterpipe.txt");
 
-		animExt = "crowbar";
+		params.animExt = ALLOC_STRING("crowbar");
 		//wrongClientWeapon = "weapon_crowbar";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_NO_PREDICTION;

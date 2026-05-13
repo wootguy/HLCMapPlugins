@@ -65,13 +65,13 @@ class CNailgun : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/poke646/weapon_nailgun.txt");
 
-		animExt = "mp5";
+		params.animExt = ALLOC_STRING("mp5");
 		//wrongClientWeapon = "weapon_mp5";
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY;
 		params.deployAnim = NAILGUN_DEPLOY;
 		params.deployAnimTime = 1000;
-		params.maxClip = NAILGUN_MAX_CLIP;
+		params.ammoInfo[0].maxClip = NAILGUN_MAX_CLIP;
 		params.reloadStage[0] = { NAILGUN_RELOAD, 1630 };
 		params.idles[0] = { NAILGUN_LONGIDLE, 80, 5380 };
 		params.idles[1] = { NAILGUN_IDLE1, 20, 3230 };

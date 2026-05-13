@@ -80,14 +80,14 @@ class CUsp : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/kuilu/weapon_usp.txt");
 
-		animExt = "onehanded";
-		wrongClientWeapon = "weapon_9mmhandgun";
+		params.animExt = ALLOC_STRING("onehanded");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_9mmhandgun");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY;
 		params.deployAnim = USP_DRAW_UNSIL;
 		params.deployTime = 1000;
 		params.deployAnimTime = 1040;
-		params.maxClip = USP_MAX_CLIP;
+		params.ammoInfo[0].maxClip = USP_MAX_CLIP;
 		params.reloadStage[0] = { USP_RELOAD_UNSIL, 2730 };
 		params.idles[0] = { USP_IDLE_UNSIL, 99, 2000 };
 

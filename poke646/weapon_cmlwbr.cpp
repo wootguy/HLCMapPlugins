@@ -71,15 +71,15 @@ class CCmlwbr : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/poke646/weapon_cmlwbr.txt");
 
-		animExt = "bow";
-		animExtZoom = "bowscope";
-		wrongClientWeapon = "weapon_crossbow";
+		params.animExt = ALLOC_STRING("bow");
+		params.animExtZoom = ALLOC_STRING("bowscope");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_crossbow");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY | FL_WC_WEP_UNLINK_COOLDOWNS
 			| FL_WC_WEP_ZOOM_SPR_STRETCH | FL_WC_WEP_ZOOM_SPR_ASPECT | FL_WC_WEP_EMPTY_IDLES;
 		params.deployAnim = CMLWBR_DRAW;
 		params.deployAnimTime = 600;
-		params.maxClip = CMLWBR_MAX_CLIP;
+		params.ammoInfo[0].maxClip = CMLWBR_MAX_CLIP;
 		params.reloadStage[0] = { CMLWBR_RELOAD, 7530 };
 		params.reloadStage[1] = { CMLWBR_RELOAD_EMPTY, 6100 };
 		params.idles[0] = { CMLWBR_IDLE1, 80, 3100 };

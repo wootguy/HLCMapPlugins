@@ -64,13 +64,13 @@ class CMp5k : public CWeaponCustom {
 
 		PRECACHE_HUD_FILES("sprites/aomdc/weapon_mp5k.txt");
 
-		animExt = "mp5";
-		wrongClientWeapon = "weapon_9mmAR";
+		params.animExt = ALLOC_STRING("mp5");
+		params.wrongClientWeapon = ALLOC_STRING("weapon_9mmAR");
 
 		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_USE_ONLY;
 		params.deployAnim = MP5K_DEPLOY;
 		params.deployAnimTime = 1030;
-		params.maxClip = MP5K_MAX_CLIP;
+		params.ammoInfo[0].maxClip = MP5K_MAX_CLIP;
 		params.reloadStage[0] = { MP5K_RELOAD, 3370 };
 		params.idles[0] = { MP5K_IDLE, 90, 1030 };
 		params.idles[1] = { MP5K_FIDGET, 10, 2700 };
