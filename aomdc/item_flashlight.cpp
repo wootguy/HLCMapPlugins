@@ -183,4 +183,4 @@ class CItemFlashlight : public CItem
 };
 
 LINK_ENTITY_TO_CLASS(item_flashlight, CItemFlashlight)
-LINK_ENTITY_TO_CLASS(item_battery, CItemFlashBattery)
+LINK_ENTITY_TO_CLASS(item_aom_battery, CItemFlashBattery)

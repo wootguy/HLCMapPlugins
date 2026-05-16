@@ -1,6 +1,6 @@
 [general]
 classname               = weapon_colt
-hl_client_classname     = weapon_9mmhandgun
+hl_client_classname     = weapon_357
 kill_feed_icon          = weapon_357
 display_name            = Colt
 v_model                 = models/rngstuff/kuilu/weapons/v_colt.mdl

@@ -79,12 +79,12 @@ class CAomAGrunt : public CAGrunt {
 	}
 };
 
-LINK_ENTITY_TO_CLASS(monster_zombie, CAomZombie)
+LINK_ENTITY_TO_CLASS(monster_aom_zombie, CAomZombie)
 LINK_ENTITY_TO_CLASS(monster_zombie2, CAomZombie2)
 LINK_ENTITY_TO_CLASS(monster_zombie3, CAomZombie3)
 LINK_ENTITY_TO_CLASS(monster_zombie4, CAomZombie4)
-LINK_ENTITY_TO_CLASS(monster_bullchicken, CAomBullSquid)
-LINK_ENTITY_TO_CLASS(monster_headcrab, CAomHeadCrab)
-LINK_ENTITY_TO_CLASS(monster_houndeye, CAomHoundeye)
-LINK_ENTITY_TO_CLASS(monster_alien_controller, CAomController)
-LINK_ENTITY_TO_CLASS(monster_alien_grunt, CAomAGrunt)
+LINK_ENTITY_TO_CLASS(monster_aom_bullchicken, CAomBullSquid)
+LINK_ENTITY_TO_CLASS(monster_aom_headcrab, CAomHeadCrab)
+LINK_ENTITY_TO_CLASS(monster_aom_houndeye, CAomHoundeye)
+LINK_ENTITY_TO_CLASS(monster_aom_alien_controller, CAomController)
+LINK_ENTITY_TO_CLASS(monster_aom_alien_grunt, CAomAGrunt)
