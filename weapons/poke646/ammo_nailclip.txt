@@ -1,0 +1,5 @@
+[general]
+classname    = ammo_nailclip
+model        = models/poke646/items/w_nailclip.mdl
+ammo_type    = 9mm
+ammo_given   = 25

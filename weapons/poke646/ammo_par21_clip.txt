@@ -1,0 +1,5 @@
+[general]
+classname    = ammo_par21_clip
+model        = models/vendetta/items/w_par21_clip.mdl
+ammo_type    = 9mm
+ammo_given   = 30

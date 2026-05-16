@@ -18,7 +18,7 @@ thirdperson_anims       = onehanded
 [primary_ammo]
 type                    = 9mm
 clip_size               = 25
-drop_entity             = ammo_aom_uzi
+drop_entity             = ammo_uzi
 drop_amount             = 25
 
 [idle]

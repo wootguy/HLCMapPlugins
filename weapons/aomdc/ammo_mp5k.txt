@@ -1,0 +1,5 @@
+[general]
+classname    = ammo_mp5k
+model        = models/aomdc/w_weaponclips/w_mp5kclip.mdl
+ammo_type    = 9mm
+ammo_given   = 30

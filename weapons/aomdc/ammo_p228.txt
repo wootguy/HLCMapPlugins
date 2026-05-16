@@ -1,0 +1,5 @@
+[general]
+classname    = ammo_p228
+model        = models/aomdc/w_weaponclips/w_p228clip.mdl
+ammo_type    = 9mm
+ammo_given   = 13

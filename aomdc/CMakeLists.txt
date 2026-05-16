@@ -10,7 +10,6 @@ add_library(${PROJECT_NAME} SHARED
 	wheelchair_monster.cpp
 	zombie.cpp
 	
-	ammo.cpp
 	weapon_hammer.cpp
 	weapon_spear.cpp
 	
