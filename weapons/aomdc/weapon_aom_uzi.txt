@@ -1,0 +1,102 @@
+[general]
+classname               = weapon_aom_uzi
+hl_client_classname     = weapon_9mmAR
+kill_feed_icon          = weapon_9mmAR
+display_name            = AOM Uzi
+flags                   = use_only
+v_model                 = models/aomdc/v_uzi.mdl
+p_model                 = models/aomdc/p_uzi.mdl
+w_model                 = models/aomdc/w_uzi.mdl
+hud_folder              = aomdc
+slot                    = 2
+slot_position           = 4
+weight                  = 15
+deploy_anim             = 2
+deploy_anim_time        = 1100ms
+thirdperson_anims       = onehanded
+
+[primary_ammo]
+type                    = 9mm
+clip_size               = 25
+drop_entity             = ammo_aom_uzi
+drop_amount             = 25
+
+[idle]
+anim                    = 0
+weight                  = 100
+time                    = 1000ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+ammo_cost               = 1
+cooldown                = 80ms
+accuracy                = 4.00
+
+[event.primary_attack.weapon_anim]
+anims                   = 3 4
+
+[event.primary_attack.sound]
+volume_for_ai           = normal
+channel                 = weapon
+sound                   = aomdc/weapons/uzi_fire.wav
+attenuation             = 0.80
+distant_sound           = distant_9mm
+
+[event.primary_attack.bullets]
+count                   = 1
+damage                  = 37
+accuracy                = 4.00
+tracer_frequency        = 2
+
+
+
+; --------------------------------
+; Reload
+; --------------------------------
+
+[reload]
+anim                    = 1
+time                    = 2600ms
+
+[event.reload.sound]
+delay                   = 510ms
+sound                   = aomdc/weapons/uzi_magout.wav
+
+[event.reload.sound]
+delay                   = 1290ms
+sound                   = aomdc/weapons/uzi_magin.wav
+
+[event.reload.sound]
+delay                   = 1910ms
+sound                   = aomdc/weapons/uzi_boltpull.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.sound]
+delay                   = 450ms
+sound                   = aomdc/weapons/uzi_boltpull.wav
+
+
+
+; --------------------------------
+; Reactionary events
+; --------------------------------
+
+[event.bullet_fired.eject_shell]
+sound                   = shell
+model                   = models/shell.mdl
+offset                  = 26 -8 15
+
+[event.bullet_fired.dynamic_light]
+color                   = 255 255 255
+radius                  = 20
+life                    = 1

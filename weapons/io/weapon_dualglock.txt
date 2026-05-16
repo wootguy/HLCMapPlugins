@@ -1,0 +1,125 @@
+[general]
+classname               = weapon_dualglock
+hl_client_classname     = weapon_9mmhandgun
+kill_feed_icon          = weapon_9mmhandgun
+display_name            = Colt
+v_model                 = models/rngstuff/kuilu/weapons/v_glock.mdl
+p_model                 = models/rngstuff/kuilu/weapons/p_glock.mdl
+w_model                 = models/rngstuff/kuilu/weapons/w_glock.mdl
+hud_folder              = kuilu
+slot                    = 4
+slot_position           = -1
+weight                  = 5
+deploy_anim             = 15
+deploy_time             = 1100ms
+deploy_anim_time        = 1110ms
+thirdperson_anims       = uzis
+
+[primary_ammo]
+type                    = 9mm
+clip_size               = 30
+drop_entity             = ammo_9mmclip
+drop_amount             = 15
+
+[idle]
+anim                    = 0
+weight                  = 99
+time                    = 1500ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+ammo_cost               = 1
+cooldown                = 140ms
+accuracy                = 6.00
+
+[event.primary_clip_is_even.weapon_anim]
+anims                   = 2
+
+[event.primary_clip_is_even.eject_shell]
+sound                   = shell
+model                   = models/shell.mdl
+offset                  = 26 -8 9
+
+[event.primary_clip_is_odd.weapon_anim]
+anims                   = 8
+
+[event.primary_clip_is_odd.eject_shell]
+sound                   = shell
+model                   = models/shell.mdl
+offset                  = 26 -8 -9
+
+[event.primary_clip_is_1.weapon_anim]
+anims                   = 7
+
+[event.primary_clip_is_0.weapon_anim]
+anims                   = 13
+
+[event.primary_clip_is_1.cooldown]
+time                    = 65535ms
+actions                 = idle
+
+[event.primary_attack.sound]
+volume_for_ai           = normal
+channel                 = weapon
+sound                   = rng/kuilu/weapons/glock_fire.wav
+volume                  = 0.90
+attenuation             = 0.80
+distant_sound           = distant_9mm
+
+[event.primary_attack.bullets]
+count                   = 1
+damage                  = 36
+accuracy                = 6.00
+tracer_frequency        = 2
+
+
+
+; --------------------------------
+; Reload
+; --------------------------------
+
+[reload]
+anim                    = 14
+time                    = 4600ms
+
+[event.reload.sound]
+sound                   = rng/kuilu/weapons/glock_reloadstart.wav
+
+[event.reload.sound]
+delay                   = 570ms
+sound                   = rng/kuilu/weapons/glock_clipout.wav
+
+[event.reload.sound]
+delay                   = 1710ms
+sound                   = rng/kuilu/weapons/glock_clipin_right.wav
+
+[event.reload.sound]
+delay                   = 2810ms
+sound                   = rng/kuilu/weapons/glock_clipin_left.wav
+
+[event.reload.sound]
+delay                   = 3860ms
+sound                   = rng/kuilu/weapons/glock_slide.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.sound]
+sound                   = rng/kuilu/weapons/glock_draw.wav
+
+
+
+; --------------------------------
+; Reactionary events
+; --------------------------------
+
+[event.bullet_fired.recoil]
+angles                  = 2.00 0.00 0.00

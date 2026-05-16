@@ -1,0 +1,126 @@
+[general]
+classname               = weapon_usp
+hl_client_classname     = weapon_9mmhandgun
+kill_feed_icon          = weapon_9mmhandgun
+display_name            = USP
+v_model                 = models/rngstuff/kuilu/weapons/v_p228.mdl
+p_model                 = models/rngstuff/kuilu/weapons/p_p228.mdl
+w_model                 = models/rngstuff/kuilu/weapons/w_p228.mdl
+hud_folder              = kuilu
+slot                    = 1
+slot_position           = -1
+weight                  = 5
+deploy_anim             = 14
+deploy_time             = 1000ms
+deploy_anim_time        = 1040ms
+thirdperson_anims       = onehanded
+
+[primary_ammo]
+type                    = 9mm
+clip_size               = 12
+drop_entity             = ammo_9mmclip
+drop_amount             = 12
+
+[idle]
+anim                    = 8
+weight                  = 99
+time                    = 2000ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+ammo_cost               = 1
+cooldown                = 217ms
+accuracy                = 2.00
+
+[event.primary_clip_is_not_empty.weapon_anim]
+anims                   = 9 10 11
+
+[event.primary_clip_is_0.weapon_anim]
+anims                   = 12
+
+[event.primary_attack.sound]
+volume_for_ai           = normal
+channel                 = weapon
+sound                   = rng/kuilu/weapons/p228_fire.wav
+volume                  = 0.90
+attenuation             = 0.80
+distant_sound           = distant_9mm
+
+[event.primary_attack.bullets]
+count                   = 1
+damage                  = 40
+accuracy                = 2.00
+tracer_frequency        = 2
+flash_size              = bright
+
+
+
+; --------------------------------
+; Secondary attack
+; --------------------------------
+
+[secondary_attack]
+flags                   = not_an_attack + always_cooldown_idle
+cooldown                = 3135ms
+accuracy                = 2.00
+
+[event.secondary_attack.weapon_anim]
+anims                   = 7
+
+[event.secondary_attack.sound]
+delay                   = 1020ms
+sound                   = rng/kuilu/weapons/p228_silencer_off.wav
+
+
+
+; --------------------------------
+; Reload
+; --------------------------------
+
+[reload]
+anim                    = 13
+time                    = 2730ms
+
+[event.reload.sound]
+delay                   = 460ms
+sound                   = rng/kuilu/weapons/p228_clipout.wav
+
+[event.reload.sound]
+delay                   = 1080ms
+sound                   = rng/kuilu/weapons/p228_clipin.wav
+
+[event.reload.sound]
+delay                   = 2220ms
+sound                   = rng/kuilu/weapons/p228_slide.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.sound]
+sound                   = rng/kuilu/weapons/p228_draw.wav
+
+[event.deploy.sound]
+delay                   = 540ms
+sound                   = rng/kuilu/weapons/p228_slidepull.wav
+
+
+
+; --------------------------------
+; Reactionary events
+; --------------------------------
+
+[event.bullet_fired.recoil]
+angles                  = 2.00 0.00 0.00
+
+[event.bullet_fired.eject_shell]
+sound                   = shell
+model                   = models/shell.mdl
+offset                  = 26 -8 9

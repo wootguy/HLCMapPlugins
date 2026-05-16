@@ -7,122 +7,9 @@
 const int CMLWBR_MOD_PROJ_SPEED = 2000;
 const int CMLWBR_MOD_PROJ_SPEED_UNDERWATER = 1000;
 
-const int CMLWBR_DEFAULT_AMMO = 5;
-const int CMLWBR_MAX_CARRY = 20;
-const int CMLWBR_MAX_CLIP = 5;
-const int CMLWBR_WEIGHT = 5;
-
-enum CMLWBRAnimation
-{
-	CMLWBR_IDLE1 = 0,
-	CMLWBR_IDLE2,
-	CMLWBR_FIDGET1,
-	CMLWBR_FIDGET2,
-	CMLWBR_FIRE,
-	CMLWBR_FIRE_LAST,
-	CMLWBR_RELOAD,
-	CMLWBR_RELOAD_EMPTY,
-	CMLWBR_DRAW
-};
-
-ItemInfo g_cmlwbr_info = {
-	3,								// iSlot
-	-1,								// iPosition (-1 = automatic)
-	"bolts",						// pszAmmo1
-	NULL,							// pszAmmo2
-	"poke646/weapon_cmlwbr",// pszName (path to HUD config)
-	CMLWBR_MAX_CLIP,				// iMaxClip
-	-1,								// iId (-1 = automatic)
-	0,								// iFlags
-	CMLWBR_WEIGHT,					// iWeight
-	WEP_FLAG_USE_ZOOM_CROSSHAIR,	// iFlagsEx
-	0								// accuracy degrees
-};
-
 class CCmlwbr : public CWeaponCustom {
 
 	float m_lastText;
-
-	void Spawn()
-	{
-		m_iDefaultAmmo = CMLWBR_DEFAULT_AMMO;
-		m_iId = g_cmlwbr_info.iId;
-		CWeaponCustom::Spawn();
-	}
-
-	virtual const char* GetDeathNoticeWeapon() { return "weapon_crossbow"; }
-
-	void Precache() {
-		m_defaultModelV = "models/poke646/weapons/cmlwbr/v_cmlwbr.mdl";
-		m_defaultModelP = "models/poke646/weapons/cmlwbr/p_cmlwbr.mdl";
-		m_defaultModelW = "models/poke646/weapons/cmlwbr/w_cmlwbr.mdl";
-		CBasePlayerWeapon::Precache();
-
-		PRECACHE_SOUND("weapons/xbow_hitbod1.wav");
-		PRECACHE_SOUND("weapons/xbow_hitbod2.wav");
-
-		int shootSnd = PRECACHE_SOUND("poke646/weapons/cmlwbr/cmlwbr_fire.wav");
-		int zoomSnd = PRECACHE_SOUND("poke646/weapons/cmlwbr/cmlwbr_zoom.wav");
-		int reloadSnd = PRECACHE_SOUND("poke646/weapons/cmlwbr/cmlwbr_reload.wav");
-		int reloadSnd2 = PRECACHE_SOUND("poke646/weapons/cmlwbr/cmlwbr_reload_empty.wav");
-		int drawbackSnd = PRECACHE_SOUND("poke646/weapons/cmlwbr/cmlwbr_drawback.wav");
-		
-		int boltMdl = PRECACHE_MODEL("models/poke646/items/crossbow_bolt.mdl");
-
-		PRECACHE_HUD_FILES("sprites/poke646/weapon_cmlwbr.txt");
-
-		params.animExt = ALLOC_STRING("bow");
-		params.animExtZoom = ALLOC_STRING("bowscope");
-		params.wrongClientWeapon = ALLOC_STRING("weapon_crossbow");
-
-		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_HAS_SECONDARY | FL_WC_WEP_UNLINK_COOLDOWNS
-			| FL_WC_WEP_ZOOM_SPR_STRETCH | FL_WC_WEP_ZOOM_SPR_ASPECT | FL_WC_WEP_EMPTY_IDLES;
-		params.deployAnim = CMLWBR_DRAW;
-		params.deployAnimTime = 600;
-		params.ammoInfo[0].maxClip = CMLWBR_MAX_CLIP;
-		params.reloadStage[0] = { CMLWBR_RELOAD, 7530 };
-		params.reloadStage[1] = { CMLWBR_RELOAD_EMPTY, 6100 };
-		params.idles[0] = { CMLWBR_IDLE1, 80, 3100 };
-		params.idles[1] = { CMLWBR_FIDGET1, 20, 2770 };
-		params.idles[2] = { CMLWBR_IDLE2, 80, 3100 };
-		params.idles[3] = { CMLWBR_FIDGET2, 20, 2770 };
-
-		CustomWeaponShootOpts& primary = params.shootOpts[0];
-		primary.ammoCost = 1;
-		primary.cooldown = 1500;
-		primary.accuracy[0] = 0 * 100;
-		primary.accuracy[1] = 0 * 100;
-		primary.flags = FL_WC_SHOOT_UNDERWATER;
-
-		CustomWeaponShootOpts& secondary = params.shootOpts[1];
-		secondary.ammoCost = 0;
-		secondary.cooldown = 500;
-		secondary.flags = FL_WC_SHOOT_NO_ATTACK;
-
-		AddEvent(WepEvt().Primary().WepAnim(CMLWBR_FIRE));
-		AddEvent(WepEvt().PrimaryEmpty().WepAnim(CMLWBR_FIRE_LAST));
-		AddEvent(WepEvt().PrimaryNotEmpty().Delay(280).IdleSound(drawbackSnd));
-		AddEvent(WepEvt().Primary().PlaySound(shootSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET, 0));
-		
-		WepEvt projEvt = WepEvt().Primary().Projectile(WC_PROJECTILE_CUSTOM);
-		projEvt.proj.speed = 2000;
-		projEvt.proj.entity_class = ALLOC_STRING("cmlwbr_bolt");
-		projEvt.proj.model = boltMdl;
-		AddEvent(projEvt);
-
-		AddEvent(WepEvt().Secondary().IdleSound(zoomSnd));
-		AddEvent(WepEvt().Secondary().ToggleZoom(40, 20));
-
-		AddEvent(WepEvt().ReloadNotEmpty().Delay(150).IdleSound(reloadSnd));
-		AddEvent(WepEvt().ReloadEmpty().Delay(150).IdleSound(reloadSnd2));
-
-		PrecacheEvents();
-	}
-
-	int GetItemInfo(ItemInfo* info) {
-		*info = g_cmlwbr_info;
-		return true;
-	}
 
 	void ItemPostFrame() override {
 		CWeaponCustom::ItemPostFrame();
@@ -239,12 +126,7 @@ public:
 
 		return;
 	}
-
-	void GetAmmoDropInfo(bool secondary, const char*& ammoEntName, int& dropAmount) {
-		ammoEntName = "ammo_crossbow";
-		dropAmount = 5;
-	}
 };
 
-LINK_ENTITY_TO_CLASS(weapon_cmlwbr, CCmlwbr);
-LINK_ENTITY_TO_CLASS(cmlwbr_bolt, CCmlwbrBolt);
+LINK_ENTITY_TO_CLASS(weapon_cmlwbr, CCmlwbr)
+LINK_ENTITY_TO_CLASS(cmlwbr_bolt, CCmlwbrBolt)

@@ -1,0 +1,41 @@
+[general]
+classname               = weapon_hammer
+kill_feed_icon          = weapon_crowbar
+display_name            = Hammer
+flags                   = use_only + no_prediction
+v_model                 = models/aomdc/v_hammer.mdl
+p_model                 = models/aomdc/p_hammer.mdl
+w_model                 = models/aomdc/w_hammer.mdl
+hud_folder              = aomdc
+slot_position           = 0
+deploy_anim             = 2
+deploy_anim_time        = 700ms
+thirdperson_anims       = crowbar
+
+[idle]
+anim                    = 0
+weight                  = 100
+time                    = 1000ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+flags                   = works_underwater
+charge_mode             = single_fire
+charge_time             = 500ms
+charge_cancel_time      = 500ms
+melee_damage            = 40
+melee_damage_type       = slash + nevergib
+melee_range             = 32
+melee_miss_cooldown     = 1000ms
+melee_hit_cooldown      = 1000ms
+melee_hit_wall_sound    = aomdc/weapons/hammer_hit.wav
+melee_hit_flesh_sound   = aomdc/weapons/hammer_hitbody.wav
+melee_miss_sound        = aomdc/weapons/hammer_swing.wav
+
+[event.primary_attack_charge.weapon_anim]
+anims                   = 1

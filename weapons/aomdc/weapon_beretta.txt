@@ -1,0 +1,120 @@
+[general]
+classname               = weapon_beretta
+hl_client_classname     = weapon_9mmhandgun
+kill_feed_icon          = weapon_9mmhandgun
+display_name            = AOM Beretta
+flags                   = use_only
+v_model                 = models/aomdc/v_beretta.mdl
+p_model                 = models/aomdc/p_beretta.mdl
+w_model                 = models/aomdc/w_beretta.mdl
+hud_folder              = aomdc
+slot                    = 1
+slot_position           = 2
+weight                  = 15
+deploy_anim             = 7
+deploy_anim_time        = 520ms
+thirdperson_anims       = onehanded
+
+[primary_ammo]
+type                    = 9mm
+clip_size               = 15
+drop_entity             = ammo_beretta
+drop_amount             = 15
+
+[idle]
+anim                    = 0
+weight                  = 99
+time                    = 1030ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+flags                   = no_autofire
+ammo_cost               = 1
+cooldown                = 50ms
+accuracy                = 2.00
+
+[event.primary_clip_is_not_empty.weapon_anim]
+anims                   = 2 3
+
+[event.primary_clip_is_0.weapon_anim]
+anims                   = 4
+
+[event.primary_attack.sound]
+volume_for_ai           = normal
+channel                 = weapon
+sound                   = aomdc/weapons/ber_fire.wav
+attenuation             = 0.80
+distant_sound           = distant_9mm
+
+[event.primary_attack.bullets]
+count                   = 1
+damage                  = 20
+accuracy                = 2.00
+tracer_frequency        = 2
+
+
+
+; --------------------------------
+; Reload
+; --------------------------------
+
+[reload]
+anim                    = 5
+time                    = 2100ms
+
+[reload_empty]
+anim                    = 6
+time                    = 2100ms
+
+[event.reload_not_empty.sound]
+delay                   = 200ms
+sound                   = aomdc/weapons/p228_magout.wav
+
+[event.reload_not_empty.sound]
+delay                   = 1500ms
+sound                   = aomdc/weapons/ber_magplace.wav
+
+[event.reload_not_empty.sound]
+delay                   = 1666ms
+sound                   = aomdc/weapons/p228_magin.wav
+
+[event.reload_empty.sound]
+delay                   = 360ms
+sound                   = aomdc/weapons/p228_magout.wav
+
+[event.reload_empty.sound]
+delay                   = 960ms
+sound                   = aomdc/weapons/ber_magplace.wav
+
+[event.reload_empty.sound]
+delay                   = 1130ms
+sound                   = aomdc/weapons/p228_magin.wav
+
+[event.reload_empty.sound]
+delay                   = 1530ms
+sound                   = aomdc/weapons/p228_slideforward.wav
+
+
+
+; --------------------------------
+; Reactionary events
+; --------------------------------
+
+[event.bullet_fired.recoil]
+flags                   = add_angles
+angles                  = -2.00 0.00 0.00
+
+[event.bullet_fired.eject_shell]
+sound                   = shell
+model                   = models/shell.mdl
+offset                  = 26 -8 9
+
+[event.bullet_fired.dynamic_light]
+color                   = 255 255 255
+radius                  = 20
+life                    = 1

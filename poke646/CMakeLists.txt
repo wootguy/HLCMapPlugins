@@ -5,12 +5,9 @@ add_library(${PROJECT_NAME} SHARED
 	ammo_nailround.cpp
 	ammo_par21_clip.cpp
 	ammo_par21_grenade.cpp
-	weapon_bradnailer.cpp
 	weapon_cmlwbr.cpp
 	weapon_heaterpipe.cpp
-	weapon_nailgun.cpp
-	weapon_par21.cpp
-	weapon_sawedoff.cpp
+	nail.cpp
 	poke646.cpp
 )
 

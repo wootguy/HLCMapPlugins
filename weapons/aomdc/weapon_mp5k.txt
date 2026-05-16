@@ -1,0 +1,101 @@
+[general]
+classname               = weapon_mp5k
+hl_client_classname     = weapon_9mmAR
+kill_feed_icon          = weapon_9mmAR
+display_name            = AOM MP5K
+flags                   = use_only
+v_model                 = models/aomdc/v_mp5k.mdl
+p_model                 = models/aomdc/p_mp5k.mdl
+w_model                 = models/aomdc/w_mp5k.mdl
+hud_folder              = aomdc
+slot                    = 2
+slot_position           = 4
+weight                  = 15
+deploy_anim             = 5
+deploy_anim_time        = 1030ms
+thirdperson_anims       = mp5
+
+[primary_ammo]
+type                    = 9mm
+clip_size               = 30
+drop_entity             = ammo_mp5k
+drop_amount             = 30
+
+[idle]
+anim                    = 0
+weight                  = 90
+time                    = 1030ms
+
+[idle]
+anim                    = 1
+weight                  = 10
+time                    = 2700ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+ammo_cost               = 1
+cooldown                = 60ms
+accuracy                = 4.00
+
+[event.primary_attack.weapon_anim]
+anims                   = 2 3
+
+[event.primary_attack.sound]
+volume_for_ai           = normal
+channel                 = weapon
+sound                   = aomdc/weapons/mp5k_fire.wav
+attenuation             = 0.80
+distant_sound           = distant_9mm
+
+[event.primary_attack.bullets]
+count                   = 1
+damage                  = 31
+accuracy                = 4.00
+tracer_frequency        = 2
+
+
+
+; --------------------------------
+; Reload
+; --------------------------------
+
+[reload]
+anim                    = 4
+time                    = 3370ms
+
+[event.reload.sound]
+delay                   = 260ms
+sound                   = aomdc/weapons/mp5k_boltback.wav
+
+[event.reload.sound]
+delay                   = 1100ms
+sound                   = aomdc/weapons/mp5k_magout.wav
+
+[event.reload.sound]
+delay                   = 1770ms
+sound                   = aomdc/weapons/mp5k_magin.wav
+
+[event.reload.sound]
+delay                   = 2300ms
+sound                   = aomdc/weapons/mp5k_boltforward.wav
+
+
+
+; --------------------------------
+; Reactionary events
+; --------------------------------
+
+[event.bullet_fired.eject_shell]
+sound                   = shell
+model                   = models/shell.mdl
+offset                  = 26 -8 22
+
+[event.bullet_fired.dynamic_light]
+color                   = 255 255 255
+radius                  = 20
+life                    = 1

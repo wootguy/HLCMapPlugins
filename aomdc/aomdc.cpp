@@ -7,6 +7,7 @@
 #include "aomdc.h"
 #include "te_effects.h"
 #include "CBreakable.h"
+#include "CWeaponCustom.h"
 
 #define BATTERY_RECHARGE_CAP 5
 
@@ -93,50 +94,9 @@ HOOK_RETURN_DATA PlayerFlashlightToggle(CBasePlayer* plr, bool onNotOff) {
 	return HOOK_CONTINUE;
 }
 
-extern ItemInfo g_axe_info;
-extern ItemInfo g_knife_info;
-extern ItemInfo g_hammer_info;
-extern ItemInfo g_spear_info;
-extern ItemInfo g_p228_info;
-extern ItemInfo g_shotgun_info;
-extern ItemInfo g_glock_info;
-extern ItemInfo g_deagle_info;
-extern ItemInfo g_mp5k_info;
-extern ItemInfo g_uzi_info;
-extern ItemInfo g_revolver_info;
-extern ItemInfo g_beretta_info;
-
 HLCOOP_PLUGIN_HOOKS g_hooks;
 
 HOOK_RETURN_DATA MapInit() {
-	g_knife_info = UTIL_RegisterWeapon("weapon_aom_knife");
-	g_axe_info = UTIL_RegisterWeapon("weapon_axe");
-	g_hammer_info = UTIL_RegisterWeapon("weapon_hammer");
-	g_spear_info = UTIL_RegisterWeapon("weapon_spear");
-	g_p228_info = UTIL_RegisterWeapon("weapon_p228");
-	g_shotgun_info = UTIL_RegisterWeapon("weapon_aom_shotgun");
-	g_glock_info = UTIL_RegisterWeapon("weapon_aom_glock");
-	g_deagle_info = UTIL_RegisterWeapon("weapon_deagle");
-	g_revolver_info = UTIL_RegisterWeapon("weapon_revolver");
-	g_mp5k_info = UTIL_RegisterWeapon("weapon_mp5k");
-	g_uzi_info = UTIL_RegisterWeapon("weapon_aom_uzi");
-	g_beretta_info = UTIL_RegisterWeapon("weapon_beretta");
-
-	g_weaponRemapHL.put("weapon_shotgun", "weapon_aom_shotgun");
-	g_weaponRemapHL.put("weapon_9mmhandgun", "weapon_aom_glock");
-	g_weaponRemapHL.put("weapon_357", "weapon_revolver");
-
-	g_entityRemap.put("weapon_knife", weapon_aom_knife);
-	g_entityRemap.put("item_battery", item_battery);
-	g_entityRemap.put("monster_zombie", monster_zombie);
-	g_entityRemap.put("monster_bullchicken", monster_bullchicken);
-	g_entityRemap.put("monster_headcrab", monster_headcrab);
-	g_entityRemap.put("monster_houndeye", monster_houndeye);
-	g_entityRemap.put("monster_alien_controller", monster_alien_controller);
-	g_entityRemap.put("monster_alien_grunt", monster_alien_grunt);
-	g_entityRemap.put("weapon_uzi", weapon_aom_uzi);
-	g_entityRemap.put("ammo_uzi", ammo_aom_uzi);
-
 	UTIL_RegisterEquipmentEntity("item_flashlight");
 	UTIL_RegisterEquipmentEntity("ammo_p228");
 	UTIL_RegisterEquipmentEntity("ammo_glock");

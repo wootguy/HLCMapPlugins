@@ -1,0 +1,162 @@
+[general]
+classname               = weapon_sawedoff
+hl_client_classname     = weapon_shotgun
+kill_feed_icon          = weapon_shotgun
+display_name            = Sawed-off Shotgun
+v_model                 = models/rngstuff/kuilu/weapons/v_sawedoff.mdl
+p_model                 = models/rngstuff/kuilu/weapons/p_sawedoff.mdl
+w_model                 = models/rngstuff/kuilu/weapons/w_sawedoff.mdl
+hud_folder              = kuilu
+slot                    = 2
+slot_position           = -1
+weight                  = 35
+deploy_anim             = 1
+deploy_time             = 1150ms
+deploy_anim_time        = 1150ms
+thirdperson_anims       = shotgun
+
+[primary_ammo]
+type                    = buckshot
+clip_size               = 2
+drop_entity             = ammo_buckshot
+drop_amount             = 12
+
+[idle]
+anim                    = 0
+weight                  = 100
+time                    = 2000ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+flags                   = no_autofire
+ammo_cost               = 1
+cooldown                = 123ms
+accuracy                = 12.30 14.60
+
+[event.primary_attack.weapon_anim]
+anims                   = 4
+
+[event.primary_attack.sound]
+volume_for_ai           = loud
+channel                 = weapon
+sound                   = rng/kuilu/weapons/shotgun_fire.wav
+attenuation             = 0.80
+pitch_min               = 85
+pitch_max               = 116
+distant_sound           = distant_9mm
+
+[event.primary_attack.bullets]
+count                   = 24
+damage                  = 7
+accuracy                = 12.30 14.20
+flash_size              = bright
+
+[event.primary_attack.recoil]
+angles                  = 1.00 0.00 0.00
+
+[event.primary_attack.recoil]
+flags                   = add_angles
+angles                  = -4.00 0.00 0.00
+
+
+
+; --------------------------------
+; Secondary attack
+; --------------------------------
+
+[secondary_attack]
+flags                   = need_full_cost
+ammo_cost               = 2
+ammo_pool               = 1
+cooldown                = 600ms
+accuracy                = 14.60 18.79
+
+[event.secondary_attack.weapon_anim]
+anims                   = 4
+
+[event.secondary_attack.sound]
+volume_for_ai           = loud
+channel                 = weapon
+sound                   = rng/kuilu/weapons/shotgun_fire2.wav
+attenuation             = 0.80
+pitch_min               = 85
+pitch_max               = 116
+distant_sound           = distant_9mm
+
+[event.secondary_attack.bullets]
+count                   = 48
+damage                  = 7
+accuracy                = 12.30 14.20
+flash_size              = bright
+
+[event.secondary_attack.recoil]
+flags                   = add_angles
+angles                  = -10.00 0.00 0.00
+
+
+
+; --------------------------------
+; Reload
+; --------------------------------
+
+[reload]
+anim                    = 2
+time                    = 3620ms
+
+[reload_empty]
+anim                    = 3
+time                    = 3020ms
+
+[event.reload_not_empty.sound]
+delay                   = 360ms
+sound                   = rng/kuilu/weapons/shotgun_open.wav
+
+[event.reload_not_empty.sound]
+delay                   = 920ms
+sound                   = rng/kuilu/weapons/shotgun_shell_out.wav
+
+[event.reload_not_empty.sound]
+delay                   = 2010ms
+sound                   = rng/kuilu/weapons/shotgun_shell1.wav
+
+[event.reload_not_empty.sound]
+delay                   = 2760ms
+sound                   = rng/kuilu/weapons/shotgun_close.wav
+
+[event.reload_empty.sound]
+delay                   = 360ms
+sound                   = rng/kuilu/weapons/shotgun_open.wav
+
+[event.reload_empty.sound]
+delay                   = 420ms
+sound                   = rng/kuilu/weapons/shotgun_shells_eject.wav
+
+[event.reload_empty.sound]
+delay                   = 1400ms
+sound                   = rng/kuilu/weapons/shotgun_shell1.wav
+
+[event.reload_empty.sound]
+delay                   = 1680ms
+sound                   = rng/kuilu/weapons/shotgun_shell2.wav
+
+[event.reload_empty.sound]
+delay                   = 2280ms
+sound                   = rng/kuilu/weapons/shotgun_close.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.sound]
+sound                   = rng/kuilu/weapons/shotgun_draw.wav
+
+[event.deploy.sound]
+delay                   = 350ms
+sound                   = rng/kuilu/weapons/shotgun_close.wav

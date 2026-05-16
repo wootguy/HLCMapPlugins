@@ -10,18 +10,9 @@ add_library(${PROJECT_NAME} SHARED
 	wheelchair_monster.cpp
 	zombie.cpp
 	
-	weapon_aom_knife.cpp
-	weapon_aom_shotgun.cpp
-	weapon_axe.cpp
-	weapon_beretta.cpp
-	weapon_deagle.cpp
-	weapon_glock.cpp
+	ammo.cpp
 	weapon_hammer.cpp
-	weapon_mp5k.cpp
-	weapon_p228.cpp
-	weapon_revolver.cpp
 	weapon_spear.cpp
-	weapon_uzi.cpp
 	
 	item_flashlight.cpp
 	

@@ -1,0 +1,42 @@
+[general]
+classname               = weapon_aom_knife
+kill_feed_icon          = weapon_crowbar
+display_name            = AOM Knife
+flags                   = use_only + no_prediction
+v_model                 = models/aomdc/v_kitchenknife.mdl
+p_model                 = models/aomdc/p_kitchenknife.mdl
+w_model                 = models/aomdc/w_kitchenknife.mdl
+hud_folder              = aomdc
+slot_position           = 0
+deploy_anim             = 1
+deploy_anim_time        = 640ms
+thirdperson_anims       = crowbar
+
+[idle]
+anim                    = 0
+weight                  = 100
+time                    = 4000ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+flags                   = works_underwater
+melee_damage            = 10
+melee_damage_type       = slash + nevergib
+melee_range             = 32
+melee_miss_cooldown     = 500ms
+melee_hit_cooldown      = 250ms
+melee_decal_delay       = 200ms
+melee_hit_wall_sound    = aomdc/weapons/knife_wall1.wav
+melee_hit_wall_sound2   = aomdc/weapons/knife_wall2.wav
+melee_hit_flesh_sound   = aomdc/weapons/knife_hit1.wav
+melee_hit_flesh_sound2  = aomdc/weapons/knife_hit2.wav
+melee_miss_sound        = aomdc/weapons/knife_swing1.wav
+
+[event.primary_attack.weapon_anim]
+flags                   = play_in_order
+anims                   = 3 4

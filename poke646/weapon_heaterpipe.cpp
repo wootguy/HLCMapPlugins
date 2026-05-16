@@ -23,20 +23,6 @@ enum pipe_e
 	PIPE_IDLE3
 };
 
-ItemInfo g_heaterpipe_info = {
-	0,								// iSlot
-	0,								// iPosition (-1 = automatic)
-	NULL,							// pszAmmo1
-	NULL,							// pszAmmo2
-	"poke646/weapon_heaterpipe",	// pszName (path to HUD config)
-	-1,								// iMaxClip
-	-1,								// iId (-1 = automatic)
-	0,								// iFlags
-	0,								// iWeight
-	0,								// iFlagsEx
-	0,								// accuracy degrees
-};
-
 class CHeaterPipe : public CWeaponCustom {
 public:
 	TraceResult m_trHit;
@@ -45,57 +31,16 @@ public:
 	int m_iSwingCount;
 	bool m_bIsBreathing;
 
-	void Spawn()
-	{		m_iId = g_heaterpipe_info.iId;
-		CWeaponCustom::Spawn();
-	}
-
-	virtual void PrecacheWeaponModels() {
-		m_defaultModelV = "models/poke646/weapons/heaterpipe/v_heaterpipe.mdl";
-		m_defaultModelP = "models/poke646/weapons/heaterpipe/p_heaterpipe.mdl";
-		m_defaultModelW = "models/poke646/weapons/heaterpipe/w_heaterpipe.mdl";
-		CBasePlayerWeapon::Precache();
-	}
-
-	virtual const char* GetDeathNoticeWeapon() { return "weapon_crowbar"; }
-
 	void Precache() {
-		PrecacheWeaponModels();
+		PRECACHE_SOUND("poke646/weapons/heaterpipe/heaterpipe_hit1.wav");
+		PRECACHE_SOUND("poke646/weapons/heaterpipe/heaterpipe_hit2.wav");
+		PRECACHE_SOUND("poke646/weapons/heaterpipe/heaterpipe_miss.wav");
+		PRECACHE_SOUND("poke646/weapons/heaterpipe/heaterpipe_breathe.wav");
+		PRECACHE_SOUND("weapons/cbar_hitbod1.wav");
+		PRECACHE_SOUND("weapons/cbar_hitbod2.wav");
+		PRECACHE_SOUND("weapons/cbar_hitbod3.wav");
 
-		int hitSnd1 = PRECACHE_SOUND("poke646/weapons/heaterpipe/heaterpipe_hit1.wav");
-		int hitSnd2 = PRECACHE_SOUND("poke646/weapons/heaterpipe/heaterpipe_hit2.wav");
-		int missSnd = PRECACHE_SOUND("poke646/weapons/heaterpipe/heaterpipe_miss.wav");
-		int breatheSnd = PRECACHE_SOUND("poke646/weapons/heaterpipe/heaterpipe_breathe.wav");
-		int hitBodySnd1 = PRECACHE_SOUND("weapons/cbar_hitbod1.wav");
-		int hitBodySnd2 = PRECACHE_SOUND("weapons/cbar_hitbod2.wav");
-		int hitBodySnd3 = PRECACHE_SOUND("weapons/cbar_hitbod3.wav");
-
-		PRECACHE_HUD_FILES("sprites/poke646/weapon_heaterpipe.txt");
-
-		params.animExt = ALLOC_STRING("crowbar");
-		//wrongClientWeapon = "weapon_crowbar";
-
-		params.flags = FL_WC_WEP_HAS_PRIMARY | FL_WC_WEP_NO_PREDICTION;
-		params.deployAnim = PIPE_DRAW;
-		params.deployAnimTime = 630;
-		params.idles[0] = { PIPE_IDLE, 100, 1000 };
-
-		CustomWeaponShootOpts& primary = params.shootOpts[0];
-		primary.ammoCost = 0;
-		primary.cooldown = 500;
-		primary.flags = FL_WC_SHOOT_UNDERWATER;
-		int bulletf = FL_WC_BULLETS_NO_DECAL;
-
-		AddEvent(WepEvt().Primary().WepAnim(PIPE_ATTACK1MISS, 0, FL_WC_ANIM_ORDERED)
-			.AddAnim(PIPE_ATTACK2MISS).AddAnim(PIPE_ATTACK3MISS));
-		AddEvent(WepEvt().Primary().PlaySound(missSnd, CHAN_WEAPON, 1.0f, ATTN_NORM, 94, 109, DISTANT_NONE, WC_AIVOL_QUIET, 0));
-
-		PrecacheEvents();
-	}
-
-	int GetItemInfo(ItemInfo* info) {
-		*info = g_heaterpipe_info;
-		return true;
+		CWeaponCustom::Precache();
 	}
 
 	void Smack()
@@ -333,30 +278,5 @@ public:
 	}
 };
 
-
-class CLeadPipe : public CHeaterPipe {
-
-	void Spawn()
-	{
-		pev->classname = ALLOC_STRING("weapon_heaterpipe");
-		m_iId = g_heaterpipe_info.iId;
-		g_heaterpipe_info.pszName = "vendetta/weapon_heaterpipe.txt";
-		m_customSpriteDir = ALLOC_STRING("vendetta");
-		CWeaponCustom::Spawn();
-	}
-
-	void Precache() {
-		CHeaterPipe::Precache();
-		PRECACHE_HUD_FILES("sprites/vendetta/weapon_heaterpipe.txt");
-	}
-
-	void PrecacheWeaponModels() override {
-		m_defaultModelV = "models/vendetta/weapons/leadpipe/v_leadpipe.mdl";
-		m_defaultModelP = "models/vendetta/weapons/leadpipe/p_leadpipe.mdl";
-		m_defaultModelW = "models/vendetta/weapons/leadpipe/w_leadpipe.mdl";
-		CBasePlayerWeapon::Precache();
-	}
-};
-
 LINK_ENTITY_TO_CLASS(weapon_heaterpipe, CHeaterPipe)
-LINK_ENTITY_TO_CLASS(weapon_leadpipe, CLeadPipe)
+LINK_ENTITY_TO_CLASS(weapon_leadpipe, CHeaterPipe)

@@ -1,0 +1,119 @@
+[general]
+classname               = weapon_cmlwbr
+hl_client_classname     = weapon_crossbow
+kill_feed_icon          = weapon_crossbow
+flags                   = unlink_cooldowns + strech_zoom_sprite + keep_zoom_sprite_aspect + empty_idles + force_zoom_sprite
+v_model                 = models/poke646/weapons/cmlwbr/v_cmlwbr.mdl
+p_model                 = models/poke646/weapons/cmlwbr/p_cmlwbr.mdl
+w_model                 = models/poke646/weapons/cmlwbr/w_cmlwbr.mdl
+hud_folder              = poke646
+slot                    = 3
+slot_position           = -1
+weight                  = 5
+deploy_anim             = 8
+deploy_anim_time        = 600ms
+thirdperson_anims       = bow
+thirdperson_anims_zoom  = bowscope
+
+[primary_ammo]
+type                    = bolts
+clip_size               = 5
+drop_entity             = ammo_crossbow
+drop_amount             = 5
+
+[idle]
+anim                    = 0
+weight                  = 80
+time                    = 3100ms
+
+[idle]
+anim                    = 2
+weight                  = 20
+time                    = 2770ms
+
+[idle]
+anim                    = 1
+weight                  = 80
+time                    = 3100ms
+
+[idle]
+anim                    = 3
+weight                  = 20
+time                    = 2770ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+flags                   = works_underwater
+ammo_cost               = 1
+cooldown                = 1500ms
+
+[event.primary_attack.weapon_anim]
+anims                   = 4
+
+[event.primary_clip_is_0.weapon_anim]
+anims                   = 5
+
+[event.primary_clip_is_not_empty.sound]
+delay                   = 280ms
+sound                   = poke646/weapons/cmlwbr/cmlwbr_drawback.wav
+
+[event.primary_attack.sound]
+volume_for_ai           = quiet
+channel                 = weapon
+sound                   = poke646/weapons/cmlwbr/cmlwbr_fire.wav
+attenuation             = 0.80
+pitch_min               = 94
+pitch_max               = 109
+
+[event.primary_attack.projectile]
+type                    = custom
+entity_class            = cmlwbr_bolt
+speed                   = 2000
+elasticity              = 0.80
+hull_size               = 0.01
+direction               = 0.00 0.00 1.00
+model                   = models/poke646/items/crossbow_bolt.mdl
+
+
+
+; --------------------------------
+; Secondary attack
+; --------------------------------
+
+[secondary_attack]
+flags                   = not_an_attack
+cooldown                = 500ms
+
+[event.secondary_attack.sound]
+sound                   = poke646/weapons/cmlwbr/cmlwbr_zoom.wav
+
+[event.secondary_attack.toggle_zoom]
+zoom_fov                = 40
+zoom_fov2               = 20
+
+
+
+; --------------------------------
+; Reload
+; --------------------------------
+
+[reload]
+anim                    = 6
+time                    = 7530ms
+
+[reload_empty]
+anim                    = 7
+time                    = 6100ms
+
+[event.reload_not_empty.sound]
+delay                   = 150ms
+sound                   = poke646/weapons/cmlwbr/cmlwbr_reload.wav
+
+[event.reload_empty.sound]
+delay                   = 150ms
+sound                   = poke646/weapons/cmlwbr/cmlwbr_reload_empty.wav

@@ -1,0 +1,94 @@
+[general]
+classname               = weapon_revolver
+hl_client_classname     = weapon_357
+kill_feed_icon          = weapon_357
+display_name            = AOM Revolver
+flags                   = use_only
+v_model                 = models/aomdc/v_revolver.mdl
+p_model                 = models/aomdc/p_revolver.mdl
+w_model                 = models/aomdc/w_revolver.mdl
+hud_folder              = aomdc
+slot                    = 3
+slot_position           = 0
+weight                  = 15
+deploy_anim             = 5
+deploy_anim_time        = 1280ms
+thirdperson_anims       = python
+
+[primary_ammo]
+type                    = 357
+clip_size               = 6
+drop_entity             = ammo_revolver
+drop_amount             = 6
+
+[idle]
+anim                    = 0
+weight                  = 99
+time                    = 1030ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+ammo_cost               = 1
+cooldown                = 900ms
+accuracy                = 3.00
+
+[event.primary_clip_is_not_empty.weapon_anim]
+anims                   = 1 2
+
+[event.primary_clip_is_0.weapon_anim]
+anims                   = 3
+
+[event.primary_attack.sound]
+volume_for_ai           = normal
+channel                 = weapon
+sound                   = aomdc/weapons/revolver_fire.wav
+attenuation             = 0.80
+distant_sound           = distant_9mm
+
+[event.primary_attack.bullets]
+count                   = 1
+damage                  = 200
+accuracy                = 3.00
+tracer_frequency        = 2
+
+
+
+; --------------------------------
+; Reload
+; --------------------------------
+
+[reload]
+anim                    = 4
+time                    = 2760ms
+
+[event.reload.sound]
+sound                   = aomdc/weapons/bull_reload.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.sound]
+sound                   = aomdc/weapons/bull_draw.wav
+
+
+
+; --------------------------------
+; Reactionary events
+; --------------------------------
+
+[event.bullet_fired.recoil]
+flags                   = add_angles
+angles                  = -2.00 0.00 0.00
+
+[event.bullet_fired.dynamic_light]
+color                   = 255 255 255
+radius                  = 20
+life                    = 1

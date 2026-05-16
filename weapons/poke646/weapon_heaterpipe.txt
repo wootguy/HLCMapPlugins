@@ -1,0 +1,40 @@
+[general]
+classname               = weapon_heaterpipe
+kill_feed_icon          = weapon_crowbar
+flags                   = no_prediction
+v_model                 = models/poke646/weapons/heaterpipe/v_heaterpipe.mdl
+p_model                 = models/poke646/weapons/heaterpipe/p_heaterpipe.mdl
+w_model                 = models/poke646/weapons/heaterpipe/w_heaterpipe.mdl
+hud_folder              = poke646
+slot                    = 0
+slot_position           = 0
+deploy_anim             = 1
+deploy_anim_time        = 630ms
+thirdperson_anims       = crowbar
+
+[idle]
+anim                    = 0
+weight                  = 100
+time                    = 1000ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+flags                   = works_underwater
+cooldown                = 500ms
+
+[event.primary_attack.weapon_anim]
+flags                   = play_in_order
+anims                   = 4 5 7
+
+[event.primary_attack.sound]
+volume_for_ai           = quiet
+channel                 = weapon
+sound                   = poke646/weapons/heaterpipe/heaterpipe_miss.wav
+attenuation             = 0.80
+pitch_min               = 94
+pitch_max               = 109

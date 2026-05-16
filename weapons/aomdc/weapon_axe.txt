@@ -1,0 +1,39 @@
+[general]
+classname               = weapon_axe
+kill_feed_icon          = weapon_crowbar
+display_name            = Axe
+flags                   = use_only + no_prediction
+v_model                 = models/aomdc/v_axe.mdl
+p_model                 = models/aomdc/p_axe.mdl
+w_model                 = models/aomdc/w_axe.mdl
+hud_folder              = aomdc
+slot_position           = 0
+deploy_anim             = 2
+deploy_anim_time        = 1400ms
+thirdperson_anims       = crowbar
+
+[idle]
+anim                    = 0
+weight                  = 100
+time                    = 1000ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+flags                   = works_underwater
+melee_damage            = 35
+melee_damage_type       = slash + nevergib
+melee_range             = 32
+melee_miss_cooldown     = 1000ms
+melee_hit_cooldown      = 1000ms
+melee_decal_delay       = 200ms
+melee_hit_wall_sound    = aomdc/weapons/axe_hit.wav
+melee_hit_flesh_sound   = aomdc/weapons/axe_hitbody.wav
+melee_miss_sound        = aomdc/weapons/axe_swing.wav
+
+[event.primary_attack.weapon_anim]
+anims                   = 1

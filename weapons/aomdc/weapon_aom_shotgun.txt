@@ -1,0 +1,102 @@
+[general]
+classname               = weapon_aom_shotgun
+hl_client_classname     = weapon_shotgun
+kill_feed_icon          = weapon_shotgun
+display_name            = AOM Shotgun
+flags                   = use_only
+v_model                 = models/aomdc/v_shotgun.mdl
+p_model                 = models/aomdc/p_shotgun.mdl
+w_model                 = models/aomdc/w_shotgun.mdl
+hud_folder              = aomdc
+slot                    = 2
+slot_position           = 4
+weight                  = 15
+deploy_anim             = 6
+deploy_anim_time        = 520ms
+thirdperson_anims       = shotgun
+
+[primary_ammo]
+type                    = buckshot
+clip_size               = 8
+drop_entity             = ammo_buckshot
+drop_amount             = 4
+
+[idle]
+anim                    = 0
+weight                  = 80
+time                    = 1000ms
+
+[idle]
+anim                    = 1
+weight                  = 20
+time                    = 2700ms
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+ammo_cost               = 1
+cooldown                = 1310ms
+accuracy                = 8.00
+
+[event.primary_attack.bullets]
+count                   = 8
+damage                  = 20
+accuracy                = 8.00
+
+[event.primary_attack.weapon_anim]
+anims                   = 2
+
+[event.primary_attack.eject_shell]
+delay                   = 650ms
+sound                   = shotshell
+model                   = models/shotgunshell.mdl
+offset                  = 19 -22 4
+
+[event.primary_attack.sound]
+delay                   = 500ms
+sound                   = aomdc/weapons/shotgun_pump.wav
+
+
+
+; --------------------------------
+; Reload
+; --------------------------------
+
+[reload]
+anim                    = 3
+time                    = 470ms
+
+[reload_shell]
+anim                    = 4
+time                    = 530ms
+
+[reload_pump]
+anim                    = 5
+time                    = 800ms
+
+[event.reload.sound]
+delay                   = 16ms
+channel                 = weapon
+sound                   = aomdc/weapons/shotgun_insert.wav
+
+
+
+; --------------------------------
+; Reactionary events
+; --------------------------------
+
+[event.bullet_fired.sound]
+volume_for_ai           = normal
+channel                 = weapon
+sound                   = aomdc/weapons/shotgun_fire.wav
+attenuation             = 0.80
+distant_sound           = distant_556
+
+[event.bullet_fired.dynamic_light]
+color                   = 255 255 255
+radius                  = 20
+life                    = 1
