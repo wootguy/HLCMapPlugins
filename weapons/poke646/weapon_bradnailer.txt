@@ -80,7 +80,7 @@ model                   = models/poke646/weapons/nail.mdl
 [secondary_attack]
 flags                   = works_underwater
 ammo_cost               = 1
-ammo_pool               = 1
+ammo_pool               = primary_clip
 cooldown                = 200ms
 accuracy                = 6.00
 charge_mode             = constant_fire

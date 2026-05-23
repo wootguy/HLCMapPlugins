@@ -72,7 +72,7 @@ angles                  = -4.00 0.00 0.00
 [secondary_attack]
 flags                   = need_full_cost
 ammo_cost               = 2
-ammo_pool               = 1
+ammo_pool               = primary_clip
 cooldown                = 600ms
 accuracy                = 14.60 18.79
 
