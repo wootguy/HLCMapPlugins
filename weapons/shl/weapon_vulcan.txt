@@ -1,0 +1,110 @@
+[general]
+classname               = weapon_vulcan
+hl_client_classname     = weapon_9mmAR
+kill_feed_icon          = weapon_9mmAR
+display_name            = Vulcan
+flags                   = link_chargeups + primary_priority + no_autoreload + select_on_empty
+v_model                 = models/shl/weapons/v_768mmvulcan.mdl
+p_model                 = models/shl/weapons/p_768mmvulcan.mdl
+w_model                 = models/shl/weapons/w_768mmvulcan.mdl
+hud_folder              = shl/weapons
+slot                    = 2
+slot_position           = -1
+weight                  = 20
+deploy_anim             = 0
+thirdperson_anims       = saw
+
+[primary_ammo]
+type                    = 768
+default_give            = 100
+drop_entity             = ammo_768mmbox
+drop_amount             = 100
+
+[idle]
+anim                    = 6
+time                    = 1000ms
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+ammo_cost               = 1
+cooldown                = 30ms
+discharged_cooldown		= 140ms
+cooldown_fail           = 200ms
+accuracy                = 2.00
+charge_mode             = constant_fire
+charge_time             = 1100ms
+charge_down_time        = 2000ms
+charge_shoot_time		= 100ms
+
+[event.primary_attack.weapon_anim]
+anims                   = 2
+
+[event.primary_attack.bullets]
+count                   = 1
+damage                  = sk_plr_9mm_bullet
+accuracy                = 2.00
+tracer_frequency        = 2
+
+[event.primary_attack_charge.sound]
+flags					= chargeup_pitch
+sound                   = shl/weapons/hw_spin.wav
+pitch_min				= 20
+pitch_max				= 210
+channel					= item
+
+[event.primary_attack_charge_above_0.weapon_anim]
+anims                   = 3
+
+[event.primary_attack_charge_above_50.weapon_anim]
+anims                   = 4
+
+[event.primary_attack_stop.weapon_anim]
+anims                   = 4
+
+[event.primary_attack_charge_below_50.weapon_anim]
+anims                   = 3
+
+[event.primary_attack_charge_below_0.weapon_anim]
+anims                   = 6
+
+[event.primary_attack_charge_below_0.sound]
+sound                   = buttons/button8.wav
+channel					= item
+
+
+; --------------------------------
+; Secondary attack
+; --------------------------------
+
+[secondary_attack]
+flags                   = not_an_attack
+cooldown                = 25ms
+charge_mode             = constant_fire
+charge_time             = 1100ms
+charge_down_time        = 2000ms
+
+[event.secondary_attack.weapon_anim]
+flags					= no_reset
+anims                   = 4
+
+; --------------------------------
+; Reactionary events
+; --------------------------------
+
+[event.bullet_fired.sound]
+volume_for_ai           = loud
+volume					= 0.70
+channel                 = static
+sound                   = shl/weapons/m16burst.wav
+attenuation             = 0.80
+distant_sound           = distant_9mm
+pitch_min				= 95
+pitch_max				= 105
+
+[event.bullet_fired.recoil]
+flags					= add_angles_rand
+angles                  = 0.8 0.8 0

@@ -1,0 +1,7 @@
+[general]
+classname    = ammo_768mmbox
+model        = models/shl/weapons/w_768ammo.mdl
+ammo_type    = 768
+ammo_type_hl = 9mm
+ammo_given   = 100
+max_ammo     = 250

@@ -1,0 +1,7 @@
+[general]
+classname    = ammo_plasma_cell
+model        = models/shl/weapons/w_plasmaclip.mdl
+ammo_type    = plasma
+ammo_type_hl = 9mm
+ammo_given   = 60
+max_ammo     = 250
