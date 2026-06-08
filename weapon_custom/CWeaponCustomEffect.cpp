@@ -195,7 +195,8 @@ void custom_effect(Vector pos, EHANDLE h_effect, EHANDLE creator, EHANDLE target
 		UTIL_QuakeTeleport(pos);
 	}
 	if (effect->glow_spr) {
-		UTIL_GlowSprite(pos, MODEL_INDEX(STRING(effect->glow_spr)), effect->glow_spr_life, effect->glow_spr_scale, effect->glow_spr_opacity);
+		UTIL_GlowSprite(pos, MODEL_INDEX(STRING(effect->glow_spr)), effect->glow_spr_life,
+			effect->glow_spr_scale*10, effect->glow_spr_opacity);
 	}
 	if (effect->spray_count > 0 && effect->spray_sprite > 0) {
 		UTIL_SpriteSpray(pos, dir, MODEL_INDEX(STRING(effect->spray_sprite)), effect->spray_count,

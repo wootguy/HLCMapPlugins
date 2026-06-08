@@ -66,7 +66,7 @@ void CWeaponCustomConfig::KeyValue(KeyValueData* pkvd)
 	else if (HandleKv(pkvd, "user_effect_r2")) user_effect_r2_str = ALLOC_STRING(pkvd->szValue);
 
 	else if (HandleKv(pkvd, "weapon_slot")) slot = atoi(pkvd->szValue);
-	else if (HandleKv(pkvd, "weapon_slot_pos")) slotPosition = atoi(pkvd->szValue);
+	else if (HandleKv(pkvd, "weapon_slot_pos")) slotPosition = atoi(pkvd->szValue) + 1;
 	else if (HandleKv(pkvd, "wpn_v_model")) wpn_v_model = ALLOC_STRING(pkvd->szValue);
 	else if (HandleKv(pkvd, "wpn_w_model")) wpn_w_model = ALLOC_STRING(pkvd->szValue);
 	else if (HandleKv(pkvd, "wpn_p_model")) wpn_p_model = ALLOC_STRING(pkvd->szValue);

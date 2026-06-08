@@ -42,7 +42,7 @@ time                    = 1440ms
 
 [primary_attack]
 ammo_cost               = 1
-ammo_pool               = 2
+ammo_pool               = primary_reserve
 cooldown                = 50ms
 accuracy                = 6.00
 

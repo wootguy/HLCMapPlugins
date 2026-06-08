@@ -31,6 +31,7 @@ public:
 	int infoIdx; // index into global item info
 	EHANDLE h_settings;
 	string_t displayName;
+	bool predictedEffects[4][2]; // maps [attackIdx][effect_num] to true if effect is predicted by the client
 
 	void Spawn() override {
 		h_settings = *custom_weapons.get(STRING(pev->classname));
@@ -69,13 +70,16 @@ public:
 	const char* DisplayName() override { return displayName ? STRING(displayName) : STRING(pev->classname); }
 
 	WepEvt MakeAnimEvt(WepEvt evt, PodArray<string_t, MAX_KV_ARRAY> anims) {
-		evt = evt.WepAnim(atoi(STRING(anims.data[0])), 0, FL_WC_ANIM_ORDERED);
+		WepEvt animEvt = evt.Type(WC_EVT_WEP_ANIM);
+		animEvt.anim.anims.arr[0] = atoi(STRING(anims.data[0]));
+		animEvt.anim.anims.arrSz = anims.size;
+		animEvt.anim.flags = FL_WC_ANIM_ORDERED;
 
 		for (int i = 1; i < anims.size; i++) {
-			evt = evt.AddAnim(atoi(STRING(anims.data[i])));
+			animEvt.anim.anims.arr[i] = atoi(STRING(anims.data[i]));
 		}
 
-		return evt;
+		return animEvt;
 	}
 
 	void AddSoundChainEvents(WepEvt evt, WeaponSound& sound, float totalDelay, bool isLoud, int forceChannel=-1) {
@@ -90,12 +94,22 @@ public:
 
 		if (opts.file) {
 			if (opts.isDefault()) {
-				AddEvent(evt.IdleSound(sndIdx));
+				WepEvt idleSoundEvt = evt.Type(WC_EVT_IDLE_SOUND);
+				idleSoundEvt.idleSound.sound = sndIdx;
+				AddEvent(idleSoundEvt);
 			}
 			else {
-				AddEvent(evt.PlaySound(sndIdx, opts.channel, opts.volume, opts.attn,
-					opts.pitch - opts.pitchRand, opts.pitch + opts.pitchRand,
-					isLoud ? DISTANT_9MM : DISTANT_NONE, isLoud ? WC_AIVOL_NORMAL : WC_AIVOL_QUIET, 0));
+				WepEvt soundEvt = evt.Type(WC_EVT_PLAY_SOUND);
+				soundEvt.playSound.sound = sndIdx;
+				soundEvt.playSound.channel = opts.channel;
+				soundEvt.playSound.aiVol = isLoud ? WC_AIVOL_NORMAL : WC_AIVOL_QUIET;
+				soundEvt.playSound.volume = (int)(opts.volume * 255.5f);
+				soundEvt.playSound.attn = clampf(opts.attn * 64, 0, 255.0f);
+				soundEvt.playSound.pitchMin = opts.pitch - opts.pitchRand;
+				soundEvt.playSound.pitchMax = opts.pitch + opts.pitchRand;
+				soundEvt.playSound.distantSound = isLoud ? DISTANT_9MM : DISTANT_NONE;
+				soundEvt.playSound.flags = 0;
+				AddEvent(soundEvt);
 			}
 		}
 
@@ -129,7 +143,8 @@ public:
 
 		// self damage
 		if (effect->self_damage != 0) {
-			WepEvt custom = baseEvent.CustomServerLogic(EVT_SELF_DAMAGE);
+			WepEvt custom = baseEvent.Type(WC_EVT_SERVER);
+			custom.server.type = EVT_SELF_DAMAGE;
 			custom.server.fuser1 = effect->self_damage;
 			custom.server.iuser1 = effect->damageType();
 			AddEvent(custom);
@@ -138,14 +153,26 @@ public:
 		// punch angle
 		Vector punch = effect->punch_angle;
 		if (punch != g_vecZero) {
-			AddEvent(baseEvent.PunchAdd(punch.x, punch.y, punch.z));
+			WepEvt punchEvt = baseEvent.Type(WC_EVT_PUNCH);
+			punchEvt.recoil.flags = FL_WC_PUNCH_ADD;
+			punchEvt.recoil.angles[0] = FLOAT_TO_FP_10_6(punch.x);
+			punchEvt.recoil.angles[1] = FLOAT_TO_FP_10_6(punch.y);
+			punchEvt.recoil.angles[2] = FLOAT_TO_FP_10_6(punch.z);
+			AddEvent(punchEvt);
 		}
 
 		// kickback
 		Vector push = effect->push_vel;
 		if (push != g_vecZero) {
 			Vector norm = push.Normalize();
-			AddEvent(baseEvent.Kickback(push.Length(), norm.z * -100, norm.x * 100, 0, norm.y * 100));
+
+			WepEvt kickbackEvt = baseEvent.Type(WC_EVT_KICKBACK);
+			kickbackEvt.kickback.pushForce = push.Length();
+			kickbackEvt.kickback.back = clamp(norm.z * -100, -100, 100);
+			kickbackEvt.kickback.right = clamp(norm.x * 100, -100, 100);
+			kickbackEvt.kickback.up = 0;
+			kickbackEvt.kickback.globalUp = clamp(norm.y * 100, -100, 100);
+			AddEvent(kickbackEvt);
 		}
 
 		// view angle animation
@@ -169,28 +196,39 @@ public:
 
 		// firstperson anim
 		if (effect->wep_anim != -1) {
-			AddEvent(baseEvent.WepAnim(effect->wep_anim));
+			WepEvt animEvt = baseEvent.Type(WC_EVT_WEP_ANIM);
+			animEvt.anim.anims.arr[0] = effect->wep_anim;
+			animEvt.anim.anims.arrSz = 1;
+			AddEvent(animEvt);
 		}
 
 		// primary fire mode toggle
+		WepEvt primToggleEvt = baseEvent.clone();
+		primToggleEvt.evtType = WC_EVT_TOGGLE_STATE;
+		primToggleEvt.toggleState.stateBits = FL_WC_STATE_PRIMARY_ALT;
+
 		switch (effect->primary_mode) {
 		default:
 		case PRIMARY_NO_CHANGE:
 			break;
 		case PRIMARY_FIRE:
-			AddEvent(baseEvent.DisableState(FL_WC_STATE_PRIMARY_ALT));
+			primToggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_OFF;
+			AddEvent(primToggleEvt);
 			break;
 		case PRIMARY_ALT_FIRE:
-			AddEvent(baseEvent.EnableState(FL_WC_STATE_PRIMARY_ALT));
+			primToggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_ON;
+			AddEvent(primToggleEvt);
 			break;
 		case PRIMARY_TOGGLE:
-			AddEvent(baseEvent.ToggleState(FL_WC_STATE_PRIMARY_ALT));
+			primToggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_TOGGLE;
+			AddEvent(primToggleEvt);
 			break;
 		}
 
 		// model swap
 		if (effect->v_model || effect->p_model || effect->w_model) {
-			WepEvt custom = baseEvent.CustomServerLogic(EVT_CHANGE_MODELS);
+			WepEvt custom = baseEvent.Type(WC_EVT_SERVER);
+			custom.server.type = EVT_CHANGE_MODELS;
 			custom.server.suser1 = effect->v_model;
 			custom.server.suser2 = effect->p_model;
 			custom.server.suser3 = effect->w_model;
@@ -199,21 +237,24 @@ public:
 		
 		// world model body swap
 		if (effect->w_model_body >= 0) {
-			WepEvt custom = baseEvent.CustomServerLogic(EVT_CHANGE_W_BODY);
+			WepEvt custom = baseEvent.Type(WC_EVT_SERVER);
+			custom.server.type = EVT_CHANGE_W_BODY;
 			custom.server.iuser1 = effect->w_model_body;
 			AddEvent(custom);
 		}
 
 		// hud text
 		if (effect->hud_text) {
-			WepEvt custom = baseEvent.CustomServerLogic(EVT_CENTER_PRINT);
+			WepEvt custom = baseEvent.Type(WC_EVT_SERVER);
+			custom.server.type = EVT_CENTER_PRINT;
 			custom.server.suser1 = effect->hud_text;
 			AddEvent(custom);
 		}
 
 		// thirdperson anim
 		if (effect->anim != -1) {
-			WepEvt custom = baseEvent.CustomServerLogic(EVT_PLAYER_ANIM);
+			WepEvt custom = baseEvent.Type(WC_EVT_SERVER);
+			custom.server.type = EVT_PLAYER_ANIM;
 			custom.server.iuser1 = effect->anim;
 			custom.server.fuser1 = effect->anim_frame;
 			custom.server.fuser2 = effect->anim_speed;
@@ -222,7 +263,8 @@ public:
 
 		// screen fade
 		if (effect->fade_mode != -1) {
-			WepEvt custom = baseEvent.CustomServerLogic(EVT_SCREEN_FADE);
+			WepEvt custom = baseEvent.Type(WC_EVT_SERVER);
+			custom.server.type = EVT_SCREEN_FADE;
 			custom.server.cuser1 = effect->fade_color;
 			custom.server.fuser1 = effect->fade_time;
 			custom.server.fuser2 = effect->fade_hold;
@@ -242,7 +284,8 @@ public:
 
 		if (effect->glow_time > 0)
 		{
-			WepEvt custom = baseEvent.CustomServerLogic(EVT_GLOW_SHELL);
+			WepEvt custom = baseEvent.Type(WC_EVT_SERVER);
+			custom.server.type = EVT_GLOW_SHELL;
 			custom.server.iuser1 = effect->glow_amt;
 			(Vector)custom.server.vuser1 = effect->glow_color;
 			custom.server.fuser1 = effect->glow_time;
@@ -257,7 +300,8 @@ public:
 
 		string_t targetStr = effect->pev->target;
 		if (targetStr) {
-			WepEvt custom = baseEvent.CustomServerLogic(EVT_TRIGGER);
+			WepEvt custom = baseEvent.Type(WC_EVT_SERVER);
+			custom.server.type = EVT_TRIGGER;
 			custom.server.suser1 = targetStr;
 			custom.server.iuser1 = effect->triggerstate;
 			custom.server.euser1 = EHANDLE(effect->edict());
@@ -265,6 +309,46 @@ public:
 		}
 
 		return AddEffectChainEvents(baseEvent, effect->next_effect, totalDelay, isLoud);
+	}
+
+	bool AddImpactEffect(WepEvt impactEvt, CWeaponCustomEffect* ef) {
+		if (!ef)
+			return false;
+
+		bool predicted = false;
+
+		if (ef->rico_part_count > 0 && ef->rico_part_spr) {
+			WepEvt spriteTrailEvt = impactEvt.Type(WC_EVT_SPRITETRAIL);
+			spriteTrailEvt.spriteTrail.sprite = MODEL_INDEX(STRING(ef->rico_part_spr));
+			spriteTrailEvt.spriteTrail.count = ef->rico_part_count;
+			spriteTrailEvt.spriteTrail.scale = ef->rico_part_scale;
+			spriteTrailEvt.spriteTrail.speed = ef->rico_part_speed;
+			spriteTrailEvt.spriteTrail.speedNoise = ef->rico_part_speed / 2;
+			AddEvent(spriteTrailEvt);
+
+			predicted = true;
+		}
+		if (ef->rico_decal == -1) {
+			ALERT(at_error, "Player decals not implemented\n");
+		}
+		if (ef->rico_decal >= 0) {
+			const char* decal = getDecal(ef->rico_decal);
+			int decalIdx = DECAL_INDEX(decal);
+
+			if (decalIdx != -1) {
+				WepEvt decalEvt = impactEvt.Type(WC_EVT_DECAL);
+				decalEvt.decal.flags = (ef->pev->spawnflags & FL_EFFECT_GUNSHOT_RICOCHET) ? FL_WC_DECAL_PARTICLES : 0;
+				decalEvt.decal.decalIdx = decalIdx;
+				AddEvent(decalEvt);
+
+				predicted = true;
+			}
+			else {
+				ALERT(at_error, "Unknown decal: %s\n", decal);
+			}
+		}
+
+		return predicted;
 	}
 
 	// 0 = primary, 1 = seconday, 2 = tertiary, 3 = alt primary
@@ -279,54 +363,59 @@ public:
 		WepEvt attackOverchargeEvt = WepEvt();
 		WepEvt attackFinishEvt = WepEvt();
 		int impactAnyArg = 0;
+		int impactMonsterArg = 0;
 		int attackFlag = 0;
 		switch (attackIdx) {
 		default:
 		case 0:
-			attackEvt = attackEvt.Primary();
-			attackStartEvt = attackStartEvt.PrimaryStart();
-			attackEndEvt = attackEndEvt.PrimaryStop();
-			attackFailEvt = attackFailEvt.PrimaryFail();
-			attackChargeEvt = attackChargeEvt.PrimaryCharge();
-			attackOverchargeEvt = attackOverchargeEvt.PrimaryOvercharge();
+			attackEvt = WepEvt(WC_TRIG_PRIMARY);
+			attackStartEvt = WepEvt(WC_TRIG_PRIMARY_START);
+			attackEndEvt = WepEvt(WC_TRIG_PRIMARY_STOP);
+			attackFailEvt = WepEvt(WC_TRIG_PRIMARY_FAIL);
+			attackChargeEvt = WepEvt(WC_TRIG_PRIMARY_CHARGE);
+			attackOverchargeEvt = WepEvt(WC_TRIG_PRIMARY_OVERCHARGE);
 			attackFlag = FL_WC_WEP_HAS_PRIMARY;
 			impactAnyArg = WC_TRIG_IMPACT_PRIMARY_ANY;
+			impactMonsterArg = WC_TRIG_IMPACT_PRIMARY_MONSTER;
 			if (settings->primary_empty_snd.file)
 				opts.emptySound = SOUND_INDEX(STRING(settings->primary_empty_snd.file));
 			break;
 		case 1:
-			attackEvt = attackEvt.Secondary();
-			attackStartEvt = attackStartEvt.SecondaryStart();
-			attackEndEvt = attackEndEvt.SecondaryStop();
-			attackFailEvt = attackFailEvt.SecondaryFail();
-			attackChargeEvt = attackChargeEvt.SecondaryCharge();
-			attackOverchargeEvt = attackOverchargeEvt.SecondaryOvercharge();
+			attackEvt = WepEvt(WC_TRIG_SECONDARY);
+			attackStartEvt = WepEvt(WC_TRIG_SECONDARY_START);
+			attackEndEvt = WepEvt(WC_TRIG_SECONDARY_STOP);
+			attackFailEvt = WepEvt(WC_TRIG_SECONDARY_FAIL);
+			attackChargeEvt = WepEvt(WC_TRIG_SECONDARY_CHARGE);
+			attackOverchargeEvt = WepEvt(WC_TRIG_SECONDARY_OVERCHARGE);
 			attackFlag = FL_WC_WEP_HAS_SECONDARY;
 			impactAnyArg = WC_TRIG_IMPACT_SECONDARY_ANY;
+			impactMonsterArg = WC_TRIG_IMPACT_SECONDARY_MONSTER;
 			if (settings->secondary_empty_snd.file)
 				opts.emptySound = SOUND_INDEX(STRING(settings->secondary_empty_snd.file));
 			break;
 		case 2:
-			attackEvt = attackEvt.Tertiary();
-			attackStartEvt = attackStartEvt.Tertiary();
-			attackEndEvt = attackEndEvt.Tertiary();
-			attackFailEvt = attackFailEvt.Tertiary();
-			attackChargeEvt = attackChargeEvt.Tertiary();
-			attackOverchargeEvt = attackOverchargeEvt.Tertiary();
+			attackEvt = WepEvt(WC_TRIG_TERTIARY);
+			attackStartEvt = WepEvt(WC_TRIG_TERTIARY);
+			attackEndEvt = WepEvt(WC_TRIG_TERTIARY);
+			attackFailEvt = WepEvt(WC_TRIG_TERTIARY);
+			attackChargeEvt = WepEvt(WC_TRIG_TERTIARY);
+			attackOverchargeEvt = WepEvt(WC_TRIG_TERTIARY);
 			attackFlag = FL_WC_WEP_HAS_TERTIARY;
 			impactAnyArg = WC_TRIG_IMPACT_TERTIARY_ANY;
+			impactMonsterArg = WC_TRIG_IMPACT_TERTIARY_MONSTER;
 			if (settings->tertiary_empty_snd.file)
 				opts.emptySound = SOUND_INDEX(STRING(settings->tertiary_empty_snd.file));
 			break;
 		case 3:
-			attackEvt = attackEvt.PrimaryAlt();
-			attackStartEvt = attackStartEvt.PrimaryAlt();
-			attackEndEvt = attackEndEvt.PrimaryAlt();
-			attackFailEvt = attackFailEvt.PrimaryAlt();
-			attackChargeEvt = attackChargeEvt.PrimaryAlt();
-			attackOverchargeEvt = attackOverchargeEvt.PrimaryAlt();
+			attackEvt = WepEvt(WC_TRIG_PRIMARY_ALT);
+			attackStartEvt = WepEvt(WC_TRIG_PRIMARY_ALT);
+			attackEndEvt = WepEvt(WC_TRIG_PRIMARY_ALT);
+			attackFailEvt = WepEvt(WC_TRIG_PRIMARY_ALT);
+			attackChargeEvt = WepEvt(WC_TRIG_PRIMARY_ALT);
+			attackOverchargeEvt = WepEvt(WC_TRIG_PRIMARY_ALT);
 			attackFlag = FL_WC_WEP_HAS_ALT_PRIMARY;
 			impactAnyArg = WC_TRIG_IMPACT_PRIMARY_ALT_ANY;
+			impactMonsterArg = WC_TRIG_IMPACT_PRIMARY_ALT_MONSTER;
 			break;
 		}
 
@@ -346,18 +435,39 @@ public:
 			opts.cooldown = alt_config->toggle_cooldown*1000;
 
 			switch (action) {
-			case FIRE_ACT_LASER:
+			case FIRE_ACT_LASER: {
 				params.flags |= FL_WC_WEP_UNLINK_COOLDOWNS;
-				AddEvent(attackEvt.clone().ToggleState(FL_WC_STATE_LASER | FL_WC_STATE_PRIMARY_ALT));
+
+				WepEvt toggleEvt = attackEvt.clone();
+				toggleEvt.evtType = WC_EVT_TOGGLE_STATE;
+				toggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_TOGGLE;
+				toggleEvt.toggleState.stateBits = FL_WC_STATE_LASER | FL_WC_STATE_PRIMARY_ALT;
+				AddEvent(toggleEvt);
 				return;
-			case FIRE_ACT_ZOOM:
+			}
+			case FIRE_ACT_ZOOM: {
 				params.flags |= FL_WC_WEP_UNLINK_COOLDOWNS;
-				AddEvent(attackEvt.clone().ToggleZoom(settings->zoom_fov));
-				AddEvent(attackEvt.clone().ToggleState(FL_WC_STATE_PRIMARY_ALT));
+
+				WepEvt toggleEvt = attackEvt.clone();
+				toggleEvt.evtType = WC_EVT_TOGGLE_STATE;
+				toggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_TOGGLE;
+				toggleEvt.toggleState.stateBits = FL_WC_STATE_PRIMARY_ALT;
+				AddEvent(toggleEvt);
+
+				WepEvt zoomEvt = attackEvt.clone();
+				zoomEvt.evtType = WC_EVT_TOGGLE_ZOOM;
+				zoomEvt.zoomToggle.zoomFov = settings->zoom_fov;
+				AddEvent(toggleEvt);
 				return;
-			case FIRE_ACT_ALT:
-				AddEvent(attackEvt.clone().ToggleState(FL_WC_STATE_PRIMARY_ALT));
+			}
+			case FIRE_ACT_ALT: {
+				WepEvt toggleEvt = attackEvt.clone();
+				toggleEvt.evtType = WC_EVT_TOGGLE_STATE;
+				toggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_TOGGLE;
+				toggleEvt.toggleState.stateBits = FL_WC_STATE_PRIMARY_ALT;
+				AddEvent(toggleEvt);
 				return;
+			}
 			case FIRE_ACT_WINDUP:
 				if (attackIdx == 2) {
 					EALERT(at_error, "Tertiary chargup action not implemented\n");
@@ -442,8 +552,12 @@ public:
 		// animations
 		if (config->shoot_empty_anim != -1 && !isConstantBeam) {
 			if (opts.ammoPool == WC_AMMOPOOL_PRIMARY_CLIP) {
-				AddEvent(MakeAnimEvt(WepEvt().PrimaryNotEmpty(), config->shoot_anims));
-				AddEvent(WepEvt().PrimaryEmpty().WepAnim(config->shoot_empty_anim));
+				AddEvent(MakeAnimEvt(WepEvt(WC_TRIG_PRIMARY_CLIP_SP, WC_TRIG_CLIP_ARG_NOT_EMPTY), config->shoot_anims));
+				
+				WepEvt animEvt = WepEvt(WC_TRIG_PRIMARY_CLIPSIZE, 0).Type(WC_EVT_WEP_ANIM);
+				animEvt.anim.anims.arr[0] = config->shoot_empty_anim;
+				animEvt.anim.anims.arrSz = 1;
+				AddEvent(animEvt);
 			}
 			else {
 				EALERT(at_error, "Only primary clip attacks can have empty anims\n");
@@ -459,10 +573,10 @@ public:
 		int forceChannel = noSoundOverlap ? CHAN_WEAPON : -1;
 		if (config->shoot_empty_snd.file && !isConstantBeam) {
 			if (opts.ammoPool == WC_AMMOPOOL_PRIMARY_CLIP) {
-				AddSoundChainEvents(WepEvt().PrimaryEmpty(), config->shoot_empty_snd, 0, true, forceChannel);
+				AddSoundChainEvents(WepEvt(WC_TRIG_PRIMARY_CLIPSIZE, 0), config->shoot_empty_snd, 0, true, forceChannel);
 
 				for (int i = 0; i < config->sounds.size; i++) {
-					AddSoundChainEvents(WepEvt().PrimaryNotEmpty(), config->sounds.data[i], 0, true, forceChannel);
+					AddSoundChainEvents(WepEvt(WC_TRIG_PRIMARY_CLIP_SP, WC_TRIG_CLIP_ARG_NOT_EMPTY), config->sounds.data[i], 0, true, forceChannel);
 				}
 			}
 			else {
@@ -503,17 +617,31 @@ public:
 				SoundOpts opts = config->windup_snd.getOpts();
 				int sndIdx = SOUND_INDEX(STRING(opts.file));
 
-				AddEvent(attackChargeEvt.clone().PlaySound(sndIdx, CHAN_WEAPON, opts.volume, opts.attn,
-					config->windup_pitch_start, config->windup_pitch_end,
-					DISTANT_NONE, WC_AIVOL_QUIET, FL_WC_SOUND_CHARGE_PITCH));
+				WepEvt soundEvt = attackChargeEvt.clone().Type(WC_EVT_PLAY_SOUND);
+				soundEvt.playSound.sound = sndIdx;
+				soundEvt.playSound.channel = CHAN_WEAPON;
+				soundEvt.playSound.aiVol = WC_AIVOL_QUIET;
+				soundEvt.playSound.volume = (int)(opts.volume * 255.5f);
+				soundEvt.playSound.attn = clampf(opts.attn * 64, 0, 255.0f);
+				soundEvt.playSound.pitchMin = config->windup_pitch_start;
+				soundEvt.playSound.pitchMax = config->windup_pitch_end;
+				soundEvt.playSound.distantSound = DISTANT_NONE;
+				soundEvt.playSound.flags = FL_WC_SOUND_CHARGE_PITCH;
+				AddEvent(soundEvt);
 			}
 			if (config->windup_loop_snd.file) {
 				AddSoundChainEvents(attackChargeEvt, config->windup_snd, 0, false, forceChannel);
 			}
 
-			AddEvent(attackChargeEvt.clone().WepAnim(config->windup_anim));
-			AddEvent(attackChargeEvt.clone().Delay(config->windup_anim_time*1000)
-				.WepAnim(config->windup_anim_loop));
+			WepEvt animEvt = attackChargeEvt.clone().Type(WC_EVT_WEP_ANIM);
+			animEvt.anim.anims.arr[0] = config->windup_anim;
+			animEvt.anim.anims.arrSz = 1;
+			AddEvent(animEvt);
+
+			WepEvt animEvt2 = animEvt.Delay(config->windup_anim_time * 1000);
+			animEvt2.anim.anims.arr[0] = config->windup_anim_loop;
+			animEvt2.anim.anims.arrSz = 1;
+			AddEvent(animEvt2);
 
 			if (config->windup_overcharge_action == OVERCHARGE_SHOOT) {
 				ALERT(at_error, "Overcharge shoot action not implemented\n");
@@ -529,11 +657,16 @@ public:
 				AddEffectChainEvents(attackOverchargeEvt, config->user_effect2, 0, false);
 			}
 			if (config->windup_overcharge_anim != -1) {
-				AddEvent(attackOverchargeEvt.clone().WepAnim(config->windup_overcharge_anim));
+				WepEvt animEvt = attackOverchargeEvt.clone().Type(WC_EVT_WEP_ANIM);
+				animEvt.anim.anims.arr[0] = config->windup_overcharge_anim;
+				animEvt.anim.anims.arrSz = 1;
+				AddEvent(animEvt);
 			}
 			if (config->windup_overcharge_cooldown) {
-				AddEvent(attackOverchargeEvt.clone().Cooldown(config->windup_overcharge_cooldown*1000,
-					FL_WC_COOLDOWN_PRIMARY | FL_WC_COOLDOWN_SECONDARY | FL_WC_COOLDOWN_TERTIARY));
+				WepEvt cooldownEvt = attackOverchargeEvt.clone().Type(WC_EVT_COOLDOWN);
+				cooldownEvt.cooldown.millis = config->windup_overcharge_cooldown * 1000;
+				cooldownEvt.cooldown.targets = FL_WC_COOLDOWN_PRIMARY | FL_WC_COOLDOWN_SECONDARY | FL_WC_COOLDOWN_TERTIARY;
+				AddEvent(cooldownEvt);
 			}
 
 			if (config->windup_cost) {
@@ -553,24 +686,29 @@ public:
 
 		switch (config->shoot_type) {
 		case SHOOT_BULLETS: {
-			bool showTracers = config->bullet_color != -1;
-			int tracerColor = config->bullet_color != -1 ? config->bullet_color : WC_TRACER_COLOR_DEFAULT;
-			AddEvent(attackEvt.clone()
-				.Bullets(config->bullets, config->bullet_delay * 1000, config->damage*damageScale,
-				spread, spread, showTracers ? 1 : 0, WC_FLASH_NORMAL, 0)
-				.BulletColor(tracerColor)
-			);
+			WepEvt bulletEvt = attackEvt.clone();
+			bulletEvt.evtType = WC_EVT_BULLETS;
+			bulletEvt.bullets.count = config->bullets;
+			bulletEvt.bullets.burstDelay = config->bullet_delay * 1000;
+			bulletEvt.bullets.damage = config->damage * damageScale;
+			bulletEvt.bullets.accuracy[0] = FLOAT_TO_SPREAD(spread);
+			bulletEvt.bullets.accuracy[1] = FLOAT_TO_SPREAD(spread);
+			bulletEvt.bullets.tracerFreq = config->bullet_color != -1 ? 1 : 0;
+			bulletEvt.bullets.tracerColor = config->bullet_color != -1 ? config->bullet_color : WC_TRACER_COLOR_DEFAULT;
+			bulletEvt.bullets.flashSz = WC_FLASH_NORMAL;
+			bulletEvt.bullets.flags = 0;
+			AddEvent(bulletEvt);
 			break;
 		}
 		case SHOOT_MELEE:
 			EALERT(at_error, "Melee attacks not implemented\n");
 			break;
 		case SHOOT_PROJECTILE: {
-			float spread = config->bullet_spread;
 			ProjectileOptions opt = config->projectile;
 			WeaponCustomProjectile ptype = (WeaponCustomProjectile)opt.type;
 
-			WepEvt evt = attackEvt.clone().Projectile(ptype);
+			WepEvt evt = attackEvt.clone().Type(WC_EVT_PROJECTILE);
+			evt.proj.type = ptype;
 			evt.proj.entity_class = ALLOC_STRING("custom_projectile_plugin");
 			evt.proj.speed = opt.speed;
 			evt.proj.accuracy[0] = FLOAT_TO_SPREAD(spread);
@@ -624,7 +762,6 @@ public:
 			break;
 		}
 		case SHOOT_BEAM: {
-			float spread = config->bullet_spread;
 			bool constantMode = false;
 			bool addedImpactSprite = false;
 
@@ -644,33 +781,61 @@ public:
 				int id = opt.time == 0 ? constId : 0;
 				constantMode |= opt.time == 0;
 
-				WepEvt beamEvt = attackEvt.clone()
-					.Beam(id, opt.time * 1000, config->max_range)
-					.BeamDamage(config->damage * damageScale, spread, spread, config->beam_impact_speed * 1000)
-					.BeamStyle(spriteIdx, opt.color, opt.width, opt.noise, opt.scrollRate, 1, flags);
+				WepEvt beamEvt = attackEvt.clone();
+				beamEvt.evtType = WC_EVT_BEAM;
+				beamEvt.beam.id = id;
+				beamEvt.beam.life = opt.time * 1000;
+				beamEvt.beam.distance = config->max_range;
+				beamEvt.beam.sprite = spriteIdx;
+				beamEvt.beam.color = opt.color;
+				beamEvt.beam.width = opt.width;
+				beamEvt.beam.noise = opt.noise;
+				beamEvt.beam.scrollRate = opt.scrollRate;
+				beamEvt.beam.attachment = 1;
+				beamEvt.beam.flags = flags;
+				beamEvt.beam.damage = config->damage * damageScale;
+				beamEvt.beam.accuracy[0] = FLOAT_TO_SPREAD(spread);
+				beamEvt.beam.accuracy[1] = FLOAT_TO_SPREAD(spread);
+				beamEvt.beam.freq = config->beam_impact_speed * 1000;
+
+				float ricoSpread = UTIL_ConeFromDegrees(config->rico_angle).x;
+				beamEvt.beam.ricoBeams = config->beam_ricochet_limit;
+				beamEvt.beam.ricoAngle = FLOAT_TO_SPREAD(ricoSpread);
+				beamEvt.beam.hasRicoBeams = config->beam_ricochet_limit > 0;
 
 				if (opt.alt_mode > BEAM_ALT_DISABLED) {
 					if (opt.alt_mode == BEAM_ALT_RANDOM) {
-						beamEvt = beamEvt.BeamStyleAlt(BEAM_ALT_TOGGLE, 10,
-							opt.alt_color, opt.alt_width, opt.alt_noise, opt.alt_scrollRate);
+						beamEvt.beam.altMode = BEAM_ALT_TOGGLE;
+						beamEvt.beam.altTime = 10;
+						beamEvt.beam.colorAlt = opt.alt_color;
+						beamEvt.beam.widthAlt = opt.alt_width;
+						beamEvt.beam.noiseAlt = opt.alt_noise;
+						beamEvt.beam.scrollRateAlt = opt.alt_scrollRate;
 					}
 					else {
-						beamEvt = beamEvt.BeamStyleAlt(opt.alt_mode, opt.alt_time * 1000,
-							opt.alt_color, opt.alt_width, opt.alt_noise, opt.alt_scrollRate);
+						beamEvt.beam.altMode = opt.alt_mode;
+						beamEvt.beam.altTime = opt.alt_time * 1000;
+						beamEvt.beam.colorAlt = opt.alt_color;
+						beamEvt.beam.widthAlt = opt.alt_width;
+						beamEvt.beam.noiseAlt = opt.alt_noise;
+						beamEvt.beam.scrollRateAlt = opt.alt_scrollRate;
 					}
 				}
 
 				if (config->beam_impact_spr && !addedImpactSprite) {
-					beamEvt = beamEvt.BeamImpactSprite(MODEL_INDEX(STRING(config->beam_impact_spr)),
-						config->beam_impact_spr_fps, config->beam_impact_spr_scale, config->beam_impact_spr_color);
+					beamEvt.beam.hasImpactSprite = 1;
+					beamEvt.beam.impactSprite = MODEL_INDEX(STRING(config->beam_impact_spr));
+					beamEvt.beam.impactSpriteFps = V_min(127, config->beam_impact_spr_fps);
+					beamEvt.beam.impactSpriteScale = config->beam_impact_spr_scale;
+					beamEvt.beam.impactSpriteColor = config->beam_impact_spr_color;
 					addedImpactSprite = true;
 				}
 
 				AddEvent(beamEvt);
 			}
 
-			if (config->beam_ricochet_limit > 0) {
-				EALERT(at_error, "Beam ricochets not implemented\n");
+			if (config->beam_ricochet_limit > 0 && constantMode) {
+				EALERT(at_error, "Beam ricochets not implemented for constant beams\n");
 			}
 
 			// running sound
@@ -686,10 +851,17 @@ public:
 			if (constantMode) {
 				// use normal cooldown for spending ammo, and an event to cooldown attacks
 				opts.cooldown = config->beam_ammo_cooldown * 1000;
-				AddEvent(attackEndEvt.clone().Cooldown(config->cooldown * 1000, 0xff));
+
+				WepEvt cooldownEvt = attackEndEvt.clone().Type(WC_EVT_COOLDOWN);
+				cooldownEvt.cooldown.millis = config->cooldown * 1000;
+				cooldownEvt.cooldown.targets = 0xff;
+				AddEvent(cooldownEvt);
 
 				// finish attack anim
-				AddEvent(attackEndEvt.clone().WepAnim(config->hook_anim));
+				WepEvt animEvt = attackEndEvt.clone().Type(WC_EVT_WEP_ANIM);
+				animEvt.anim.anims.arr[0] = config->hook_anim;
+				animEvt.anim.anims.arrSz = 1;
+				AddEvent(animEvt);
 			}
 
 			break;
@@ -700,15 +872,26 @@ public:
 		float punchRange = fabs(config->recoil[0] - config->recoil[1]);
 		float punchMidPoint = config->recoil[0] + (config->recoil[1] - config->recoil[0]) * 0.5f;
 		if (punchRange > 0) {
-			AddEvent(attackEvt.clone().PunchRandom(punchRange * 0.5f, 0));
-			AddEvent(attackEvt.clone().PunchAdd(-punchMidPoint, 0));
+			WepEvt punchEvt = attackEvt.clone().Type(WC_EVT_PUNCH);
+			punchEvt.recoil.angles[0] = FLOAT_TO_FP_10_6(punchRange * 0.5f);
+			AddEvent(punchEvt);
+
+			punchEvt.recoil.flags = FL_WC_PUNCH_ADD;
+			punchEvt.recoil.angles[0] = FLOAT_TO_FP_10_6(-punchMidPoint);
+			AddEvent(punchEvt);
 		}
 		else {
-			AddEvent(attackEvt.clone().PunchSet(-punchMidPoint, 0));
+			WepEvt punchEvt = attackEvt.clone().Type(WC_EVT_PUNCH);
+			punchEvt.recoil.flags = FL_WC_PUNCH_SET;
+			punchEvt.recoil.angles[0] = FLOAT_TO_FP_10_6(-punchMidPoint);
+			AddEvent(punchEvt);
 		}
 
 		if (config->shoot_type != SHOOT_BULLETS && (config->pev->spawnflags & FL_SHOOT_QUAKE_MUZZLEFLASH)) {
-			AddEvent(attackEvt.clone().MuzzleFlash(WC_FLASH_NORMAL));
+			WepEvt muzzleFlashEvt = attackEvt.clone();
+			muzzleFlashEvt.evtType = WC_EVT_MUZZLEFLASH;
+			muzzleFlashEvt.muzzleFlash.brightness = WC_FLASH_NORMAL;
+			AddEvent(muzzleFlashEvt);
 		}
 
 		if (config->kickback != g_vecZero) {
@@ -718,15 +901,27 @@ public:
 			if (config->windup_time > 0) {
 				force *= config->windup_kick_mult;
 			}
-			AddEvent(attackEvt.clone().Kickback(force, dir.z * -100, dir.x * 100, 0, dir.y * 100));
+
+			WepEvt kickbackEvt = attackEvt.clone().Type(WC_EVT_KICKBACK);
+			kickbackEvt.kickback.pushForce = force;
+			kickbackEvt.kickback.back = clamp(dir.z * -100, -100, 100);
+			kickbackEvt.kickback.right = clamp(dir.x * 100, -100, 100);
+			kickbackEvt.kickback.up = 0;
+			kickbackEvt.kickback.globalUp = clamp(dir.y * 100, -100, 100);
+			AddEvent(kickbackEvt);
 		}
 		
 		if (config->shell_type != SHELL_NONE) {
 			Vector shellOfs = config->shell_offset;
 			int sound = config->shell_type == SHELL_SHOTGUN ? TE_BOUNCE_SHOTSHELL : TE_BOUNCE_SHELL;
 
-			AddEvent(attackEvt.clone().Delay(config->shell_delay)
-				.EjectShell(config->shell_idx, sound, shellOfs.z, shellOfs.y, shellOfs.x));
+			WepEvt ejectEvt = attackEvt.clone().Type(WC_EVT_EJECT_SHELL).Delay(config->shell_delay * 1000);
+			ejectEvt.ejectShell.model = config->shell_idx;
+			ejectEvt.ejectShell.sound = sound;
+			ejectEvt.ejectShell.offset[0] = shellOfs.z;
+			ejectEvt.ejectShell.offset[1] = shellOfs.y;
+			ejectEvt.ejectShell.offset[2] = shellOfs.x;
+			AddEvent(ejectEvt);
 
 			if (config->shell_delay > 0 && config->shell_delay_snd.file) {
 				SoundOpts opts = config->shell_delay_snd.getOpts();
@@ -736,26 +931,21 @@ public:
 
 		// impact effects
 		if (config->effect1) {
-			CWeaponCustomEffect* ef = (CWeaponCustomEffect*)config->effect1.GetEntity();
-			WepEvt impactEvt = WepEvt().Impact(impactAnyArg);
-
-			if (ef->rico_part_count > 0 && ef->rico_part_spr) {
-				AddEvent(impactEvt.clone().SpriteTrail(MODEL_INDEX(STRING(ef->rico_part_spr)),
-					ef->rico_part_count, ef->rico_part_scale, ef->rico_part_speed, ef->rico_part_speed / 2));
+			CWeaponCustomEffect* ef = (CWeaponCustomEffect*)config->effect1.GetEntity();			
+			if (AddImpactEffect(WepEvt(WC_TRIG_IMPACT, impactAnyArg), ef)) {
+				predictedEffects[attackIdx][0] = true;
 			}
-			if (ef->rico_decal == -1) {
-				ALERT(at_error, "Player decals not implemented\n");
-			}
-			if (ef->rico_decal >= 0) {
-				const char* decal = getDecal(ef->rico_decal);
-				int decalIdx = DECAL_INDEX(decal);
+		}
+		if (config->effect2) {
+			CWeaponCustomEffect* ef = (CWeaponCustomEffect*)config->effect2.GetEntity();
 
-				if (decalIdx != -1) {
-					AddEvent(impactEvt.clone().Decal(decalIdx, ef->pev->spawnflags & FL_EFFECT_GUNSHOT_RICOCHET));
-				}
-				else {
-					ALERT(at_error, "Unknown decal: %s\n", decal);
-				}
+			if (config->shoot_type == SHOOT_BULLETS) {
+				AddImpactEffect(WepEvt(WC_TRIG_IMPACT, impactMonsterArg), ef);
+				predictedEffects[attackIdx][1] = true;
+			}
+			else {
+				AddImpactEffect(WepEvt(WC_TRIG_RICOCHET, impactAnyArg), ef);
+				predictedEffects[attackIdx][1] = true;
 			}
 		}
 	}
@@ -767,11 +957,15 @@ public:
 			// delay the next idle if the reload finishes before the animation
 			float animDur = GetSequenceDuration(GET_MODEL_PTR(params.vmodel), settings->reload_anim);
 			if (animDur > settings->reload_time) {
-				AddEvent(WepEvt().Reload().Cooldown(animDur * 1000, FL_WC_COOLDOWN_IDLE));
+				WepEvt cooldownEvt = WepEvt(WC_TRIG_RELOAD).Type(WC_EVT_COOLDOWN);
+				cooldownEvt.cooldown.millis = animDur * 1000;
+				cooldownEvt.cooldown.targets = FL_WC_COOLDOWN_IDLE;
+
+				AddEvent(cooldownEvt);
 			}
 
 			if (settings->reload_snd.file) {
-				AddSoundChainEvents(WepEvt().Reload(), settings->reload_snd, 0, false);
+				AddSoundChainEvents(WepEvt(WC_TRIG_RELOAD), settings->reload_snd, 0, false);
 			}
 			if (settings->reload_empty_anim >= 0) {
 				params.reloadStage[1] = { (uint8_t)settings->reload_empty_anim,  (uint16_t)(settings->reload_time * 1000) };
@@ -789,10 +983,10 @@ public:
 			}
 
 			if (settings->reload_snd.file) {
-				AddSoundChainEvents(WepEvt().Reload(), settings->reload_snd, 0, false);
+				AddSoundChainEvents(WepEvt(WC_TRIG_RELOAD), settings->reload_snd, 0, false);
 			}
 			if (settings->reload_end_snd.file) {
-				AddSoundChainEvents(WepEvt().ReloadFinish(), settings->reload_end_snd, 0, false);
+				AddSoundChainEvents(WepEvt(WC_TRIG_RELOAD_FINISH), settings->reload_end_snd, 0, false);
 			}
 		}
 		else if (settings->reload_mode == RELOAD_STAGED_RESPONSIVE) {
@@ -800,14 +994,14 @@ public:
 		}
 		else if (settings->reload_mode == RELOAD_EFFECT_CHAIN) {
 			if (settings->user_effect1 && settings->user_effect2) {
-				float time1 = AddEffectChainEvents(WepEvt().ReloadNotEmpty(), settings->user_effect1, 0, false);
-				float time2 = AddEffectChainEvents(WepEvt().ReloadEmpty(), settings->user_effect2, 0, false);
+				float time1 = AddEffectChainEvents(WepEvt(WC_TRIG_RELOAD_NOT_EMPTY), settings->user_effect1, 0, false);
+				float time2 = AddEffectChainEvents(WepEvt(WC_TRIG_RELOAD_EMPTY), settings->user_effect2, 0, false);
 
 				params.reloadStage[0] = { 0, (uint16_t)(time1 * 1000) };
 				params.reloadStage[1] = { 0, (uint16_t)(time2 * 1000) };
 			}
 			else {
-				float time = AddEffectChainEvents(WepEvt().Reload(), settings->user_effect1, 0, false);
+				float time = AddEffectChainEvents(WepEvt(WC_TRIG_RELOAD), settings->user_effect1, 0, false);
 				params.reloadStage[0] = { 0, (uint16_t)(time * 1000) };
 			}
 		}
@@ -829,7 +1023,7 @@ public:
 		ConfigureReload(settings);
 
 		if (settings->deploy_snd.file)
-			AddSoundChainEvents(WepEvt().Deploy(), settings->deploy_snd, 0, false);
+			AddSoundChainEvents(WepEvt(WC_TRIG_DEPLOY), settings->deploy_snd, 0, false);
 
 		int idleCount = V_min(4, settings->idle_anims.size);
 		if (settings->idle_anims.size > 4) {
@@ -911,7 +1105,7 @@ public:
 		}
 	}
 
-	void AttackTrace(CBasePlayer* plr, int attackIdx, Vector vecSrc, TraceResult& tr) override {
+	void AttackTrace(CBasePlayer* plr, int attackIdx, Vector vecSrc, TraceResult& tr, bool isRicochet) override {
 		if (tr.flFraction >= 1.0f)
 			return;
 
@@ -925,9 +1119,25 @@ public:
 
 		CBaseEntity* pEntity = CBaseEntity::Instance(tr.pHit);
 
-		EHANDLE effect = pEntity->IsMonster() ? config->effect2 : config->effect1;
-		Vector vecDir = (tr.vecEndPos - vecSrc).Normalize();
-		custom_effect(tr.vecEndPos, effect, NULL, tr.pHit, plr->edict(), vecDir, config->friendly_fire ? 1 : 0);
+		EHANDLE effect = NULL;
+		int effectIdx = 0;
+
+		if (config->shoot_type == SHOOT_BULLETS) {
+			effect = pEntity->IsMonster() ? config->effect2 : config->effect1;
+			effectIdx = pEntity->IsMonster() ? 1 : 0;
+		}
+		else if (config->shoot_type == SHOOT_BEAM) {
+			effect = isRicochet ? config->effect2 : config->effect1;
+			effectIdx = isRicochet ? 1 : 0;
+		}
+
+		if (plr->IsSevenKewpClient() && predictedEffects[attackIdx][effectIdx])
+			return; // client is predicting this effect
+
+		if (effect) {
+			Vector vecDir = (tr.vecEndPos - vecSrc).Normalize();
+			custom_effect(tr.vecEndPos, effect, NULL, tr.pHit, plr->edict(), vecDir, config->friendly_fire ? 1 : 0);
+		}
 	}
 
 	void GetAmmoDropInfo(bool secondary, const char*& ammoEntName, int& dropAmount) {
