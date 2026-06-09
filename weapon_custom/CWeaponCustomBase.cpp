@@ -86,6 +86,10 @@ public:
 		SoundOpts opts = sound.getOpts();
 		int sndIdx = SOUND_INDEX(STRING(opts.file));
 
+		if (!sound.h_options && isLoud) {
+			opts.attn = ATTN_NORM;
+		}
+
 		if (forceChannel != -1)
 			opts.channel = forceChannel; // Hacky but this flag is redundant and should be removed anyway
 
@@ -311,20 +315,29 @@ public:
 		return AddEffectChainEvents(baseEvent, effect->next_effect, totalDelay, isLoud);
 	}
 
-	bool AddImpactEffect(WepEvt impactEvt, CWeaponCustomEffect* ef) {
+	bool AddImpactEffectChainEvents(WepEvt impactEvt, EHANDLE h_effect, float totalDelay) {
+		CWeaponCustomEffect* ef = (CWeaponCustomEffect*)h_effect.GetEntity();
 		if (!ef)
 			return false;
 
+		totalDelay += ef->delay;
+		impactEvt = impactEvt.Delay(totalDelay * 1000);
+
 		bool predicted = false;
 
+		if (ef->sounds.size) {
+			for (int i = 0; i < ef->sounds.size; i++) {
+				AddSoundChainEvents(impactEvt, ef->sounds.data[i], 0, true);
+			}
+		}
 		if (ef->rico_part_count > 0 && ef->rico_part_spr) {
-			WepEvt spriteTrailEvt = impactEvt.Type(WC_EVT_SPRITETRAIL);
-			spriteTrailEvt.spriteTrail.sprite = MODEL_INDEX(STRING(ef->rico_part_spr));
-			spriteTrailEvt.spriteTrail.count = ef->rico_part_count;
-			spriteTrailEvt.spriteTrail.scale = ef->rico_part_scale;
-			spriteTrailEvt.spriteTrail.speed = ef->rico_part_speed;
-			spriteTrailEvt.spriteTrail.speedNoise = ef->rico_part_speed / 2;
-			AddEvent(spriteTrailEvt);
+			WepEvt evt = impactEvt.Type(WC_EVT_SPRITETRAIL);
+			evt.spriteTrail.sprite = MODEL_INDEX(STRING(ef->rico_part_spr));
+			evt.spriteTrail.count = ef->rico_part_count;
+			evt.spriteTrail.scale = ef->rico_part_scale;
+			evt.spriteTrail.speed = ef->rico_part_speed;
+			evt.spriteTrail.speedNoise = ef->rico_part_speed / 2;
+			AddEvent(evt);
 
 			predicted = true;
 		}
@@ -336,16 +349,180 @@ public:
 			int decalIdx = DECAL_INDEX(decal);
 
 			if (decalIdx != -1) {
-				WepEvt decalEvt = impactEvt.Type(WC_EVT_DECAL);
-				decalEvt.decal.flags = (ef->pev->spawnflags & FL_EFFECT_GUNSHOT_RICOCHET) ? FL_WC_DECAL_PARTICLES : 0;
-				decalEvt.decal.decalIdx = decalIdx;
-				AddEvent(decalEvt);
+				WepEvt evt = impactEvt.Type(WC_EVT_DECAL);
+				evt.decal.flags = (ef->pev->spawnflags & FL_EFFECT_GUNSHOT_RICOCHET) ? FL_WC_DECAL_PARTICLES : 0;
+				evt.decal.decalIdx = decalIdx;
+				AddEvent(evt);
 
 				predicted = true;
 			}
 			else {
 				ALERT(at_error, "Unknown decal: %s\n", decal);
 			}
+		}
+		if (ef->pev->spawnflags & FL_EFFECT_SPARKS) {
+			WepEvt evt = impactEvt.Type(WC_EVT_SPARKS);
+			AddEvent(evt);
+		}
+		if (ef->pev->spawnflags & FL_EFFECT_RICOCHET) {
+			WepEvt evt = impactEvt.Type(WC_EVT_ARMOR_RICOCHET);
+			evt.armor_ricochet.scale = ef->rico_scale;
+			AddEvent(evt);
+		}
+		if (ef->pev->spawnflags & FL_EFFECT_TARBABY) {
+			WepEvt evt = impactEvt.Type(WC_EVT_QUAKE_EFFECT);
+			evt.quake_effect.type = WC_QUAKE_EFFECT_EXPLOSION;
+			AddEvent(evt);
+		}
+		if (ef->pev->spawnflags & FL_EFFECT_TARBABY2) {
+			WepEvt evt = impactEvt.Type(WC_EVT_QUAKE_EFFECT);
+			evt.quake_effect.type = WC_QUAKE_EFFECT_EXPLOSION2;
+			AddEvent(evt);
+		}
+		if (ef->pev->spawnflags & FL_EFFECT_BURST) {
+			WepEvt evt = impactEvt.Type(WC_EVT_QUAKE_EFFECT);
+			evt.quake_effect.type = WC_QUAKE_EFFECT_PARTICLE_BURST;
+			evt.quake_effect.color = ef->burst_color;
+			evt.quake_effect.life = ef->burst_life;
+			evt.quake_effect.radius = ef->burst_radius;
+			evt.quake_effect.isParticleBurst = 1;
+			AddEvent(evt);
+		}
+		if (ef->pev->spawnflags & FL_EFFECT_LAVA) {
+			WepEvt evt = impactEvt.Type(WC_EVT_QUAKE_EFFECT);
+			evt.quake_effect.type = WC_QUAKE_EFFECT_LAVASPLASH;
+			AddEvent(evt);
+		}
+		if (ef->pev->spawnflags & FL_EFFECT_TELEPORT) {
+			WepEvt evt = impactEvt.Type(WC_EVT_QUAKE_EFFECT);
+			evt.quake_effect.type = WC_QUAKE_EFFECT_TELEPORT;
+			AddEvent(evt);
+		}
+		if (ef->glow_spr) {
+			WepEvt evt = impactEvt.Type(WC_EVT_GLOW_SPRITE);
+			evt.glow_sprite.sprite = MODEL_INDEX(STRING(ef->glow_spr));
+			evt.glow_sprite.alpha = ef->glow_spr_opacity;
+			evt.glow_sprite.life = ef->glow_spr_life;
+			evt.glow_sprite.scale = ef->glow_spr_scale;
+			AddEvent(evt);
+		}
+		if (ef->explode_radius && ef->explode_damage) {
+			WepEvt evt = impactEvt.Type(WC_EVT_RADIUS_DAMAGE);
+			evt.radiusDamage.damage = ef->explode_damage;
+			evt.radiusDamage.radius = ef->explode_radius;
+			evt.radiusDamage.damageBits = ef->damage_type | ef->damage_type2 | ef->gib_type;
+			evt.offset = ef->explode_offset;
+			AddEvent(evt);
+
+			predicted = true;
+		}
+		if (ef->implode_count > 0) {
+			WepEvt evt = impactEvt.Type(WC_EVT_IMPLOSION);
+			evt.implosion.tracers = ef->implode_count;
+			evt.implosion.life = ef->implode_life;
+			evt.implosion.radius = ef->implode_radius;
+			AddEvent(evt);
+		}
+		if (ef->spray_count > 0 && ef->spray_sprite > 0) {
+			WepEvt evt = impactEvt.Type(WC_EVT_SPRITE_SPRAY);
+			evt.sprite_spray.sprite = MODEL_INDEX(STRING(ef->spray_sprite));
+			evt.sprite_spray.count = ef->spray_count;
+			evt.sprite_spray.randomness = ef->spray_rand;
+			evt.sprite_spray.speed = ef->spray_speed;
+			AddEvent(evt);
+		}
+		if (ef->rico_trace_count > 0) {
+			WepEvt evt = impactEvt.Type(WC_EVT_STREAK_SPLASH);
+			evt.streak_splash.color = ef->rico_trace_color;
+			evt.streak_splash.count = ef->rico_trace_count;
+			evt.streak_splash.randomness = ef->rico_trace_rand;
+			evt.streak_splash.speed = ef->rico_trace_speed;
+			AddEvent(evt);
+		}
+		if (ef->shake_radius > 0) {
+			WepEvt evt = impactEvt.Type(WC_EVT_SHAKE);
+			evt.shake.radius = ef->shake_radius;
+			evt.shake.amplitude = FLOAT_TO_FP_4_12(ef->shake_amp);
+			evt.shake.duration = ef->shake_time * 1000;
+			evt.shake.frequency = FLOAT_TO_FP_8_8(ef->shake_freq);
+			AddEvent(evt);
+		}
+		if (ef->pev->spawnflags & FL_EFFECT_LIGHTS) {
+			int l_size = int(ef->explode_light_adv.x);
+			int l_life = int(ef->explode_light_adv.y);
+			int l_decay = int(ef->explode_light_adv.z);
+			if (l_size > 0 && l_life > 0) {
+				WepEvt evt = impactEvt.Type(WC_EVT_DLIGHT);
+				evt.dlight.radius = l_size;
+				evt.dlight.life = l_life;
+				evt.dlight.decayRate = l_decay;
+				evt.dlight.color = ef->explode_light_color.rgb();
+				AddEvent(evt);
+			}
+
+			int l_size2 = int(ef->explode_light_adv2.x);
+			int l_life2 = int(ef->explode_light_adv2.y);
+			int l_decay2 = int(ef->explode_light_adv2.z);
+			if (l_size2 > 0 && l_life2 > 0) {
+				WepEvt evt = impactEvt.Type(WC_EVT_DLIGHT);
+				evt.dlight.radius = l_size2;
+				evt.dlight.life = l_life2;
+				evt.dlight.decayRate = l_decay2;
+				evt.dlight.color = ef->explode_light_color2.rgb();
+				AddEvent(evt);
+			}
+		}
+		if (ef->explode_spr) {
+			switch (ef->explosion_style) {
+			case EXPLODE_SPRITE:
+			case EXPLODE_SPRITE_PARTICLES: {
+				WepEvt evt = impactEvt.Type(WC_EVT_EXPLOSION);
+				evt.te_explosion.sprite = MODEL_INDEX(STRING(ef->explode_spr));
+				evt.te_explosion.flags = FL_WC_TE_EXPLOSION_NO_DLIGHT | FL_WC_TE_EXPLOSION_NO_SOUND;
+				if (ef->explosion_style != EXPLODE_SPRITE_PARTICLES)
+					evt.te_explosion.flags |= FL_WC_TE_EXPLOSION_NO_PARTICLES;
+				evt.te_explosion.scale = ef->explode_spr_scale;
+				evt.te_explosion.fps = ef->explode_spr_fps;
+				evt.offset = ef->explode_offset;
+				AddEvent(evt);
+
+				break;
+			}
+			case EXPLODE_DISK:
+			case EXPLODE_CYLINDER:
+			case EXPLODE_TORUS: {
+				WepEvt evt = impactEvt.Type(WC_EVT_BEAM_CIRCLE);
+				
+				if (ef->explosion_style == EXPLODE_TORUS)
+					evt.beam_circle.beamType = WC_BEAM_CIRCLE_TYPE_TORUS;
+				else if (ef->explosion_style == EXPLODE_DISK)
+					evt.beam_circle.beamType = WC_BEAM_CIRCLE_TYPE_DISK;
+				else
+					evt.beam_circle.beamType = WC_BEAM_CIRCLE_TYPE_CYLINDER;
+
+				evt.beam_circle.sprite = MODEL_INDEX(STRING(ef->explode_spr));
+				evt.beam_circle.radius = ef->explode_beam_radius;
+				evt.beam_circle.life = ef->explode_beam_life;
+				evt.beam_circle.color = ef->explode_beam_color;
+				evt.beam_circle.height = ef->explode_beam_width;
+				evt.beam_circle.frame = ef->explode_beam_frame;
+				evt.beam_circle.noise = ef->explode_beam_noise;
+				
+				evt.beam_circle.hasFrame = evt.beam_circle.frame != 0;
+				evt.beam_circle.hasHeight = evt.beam_circle.height != 0;
+				evt.beam_circle.hasNoise = evt.beam_circle.noise != 0;
+				
+				AddEvent(evt);
+
+				break;
+			}
+			}
+
+			predicted = true;
+		}
+
+		if (AddImpactEffectChainEvents(impactEvt, ef->next_effect, totalDelay)) {
+			predicted = true;
 		}
 
 		return predicted;
@@ -932,21 +1109,18 @@ public:
 		}
 
 		// impact effects
-		if (config->effect1) {
-			CWeaponCustomEffect* ef = (CWeaponCustomEffect*)config->effect1.GetEntity();			
-			if (AddImpactEffect(WepEvt(WC_TRIG_IMPACT, impactAnyArg), ef)) {
+		if (config->effect1) {		
+			if (AddImpactEffectChainEvents(WepEvt(WC_TRIG_IMPACT, impactAnyArg), config->effect1, 0)) {
 				predictedEffects[attackIdx][0] = true;
 			}
 		}
 		if (config->effect2) {
-			CWeaponCustomEffect* ef = (CWeaponCustomEffect*)config->effect2.GetEntity();
-
 			if (config->shoot_type == SHOOT_BULLETS) {
-				AddImpactEffect(WepEvt(WC_TRIG_IMPACT, impactMonsterArg), ef);
+				AddImpactEffectChainEvents(WepEvt(WC_TRIG_IMPACT, impactMonsterArg), config->effect2, 0);
 				predictedEffects[attackIdx][1] = true;
 			}
 			else if (config->shoot_type == SHOOT_BEAM) {
-				AddImpactEffect(WepEvt(WC_TRIG_RICOCHET, impactAnyArg), ef);
+				AddImpactEffectChainEvents(WepEvt(WC_TRIG_RICOCHET, impactAnyArg), config->effect2, 0);
 				predictedEffects[attackIdx][1] = true;
 			}
 		}
