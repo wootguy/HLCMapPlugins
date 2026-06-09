@@ -76,7 +76,6 @@ entity_class            = cmlwbr_bolt
 speed                   = 2000
 elasticity              = 0.80
 hull_size               = 0.01
-direction               = 0.00 0.00 1.00
 model                   = models/poke646/items/crossbow_bolt.mdl
 
 

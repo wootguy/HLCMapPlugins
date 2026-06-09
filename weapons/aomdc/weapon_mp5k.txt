@@ -91,9 +91,8 @@ sound                   = aomdc/weapons/mp5k_boltforward.wav
 ; --------------------------------
 
 [event.bullet_fired.eject_shell]
-sound                   = shell
 model                   = models/shell.mdl
-offset                  = 26 -8 22
+position                = 26 -8 22
 
 [event.bullet_fired.dynamic_light]
 color                   = 255 255 255

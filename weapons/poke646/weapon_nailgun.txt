@@ -1,7 +1,7 @@
 [general]
 classname               = weapon_nailgun
-flags                   = hl_client_can_use
 kill_feed_icon          = weapon_9mmAR
+flags                   = hl_client_can_use
 v_model                 = models/poke646/weapons/nailgun/v_nailgun.mdl
 p_model                 = models/poke646/weapons/nailgun/p_nailgun.mdl
 w_model                 = models/poke646/weapons/nailgun/w_nailgun.mdl
@@ -64,7 +64,6 @@ speed                   = 4000
 elasticity              = 0.80
 gravity                 = 0.50
 hull_size               = 0.01
-direction               = 0.00 0.00 1.00
 model                   = models/poke646/weapons/nail.mdl
 
 

@@ -52,12 +52,12 @@ anims                   = 1
 [event.primary_attack.eject_shell]
 sound                   = shotshell
 model                   = models/shotgunshell.mdl
-offset                  = 9 -8 4
+position                = 9 -8 4
 
 [event.primary_attack.eject_shell]
 sound                   = shotshell
 model                   = models/shotgunshell.mdl
-offset                  = 9 -8 4
+position                = 9 -8 4
 
 [event.primary_attack.sound]
 delay                   = 600ms

@@ -60,7 +60,7 @@ sound                   = weapons/scock1.wav
 [event.primary_attack.eject_shell]
 sound                   = shotshell
 model                   = models/shotgunshell.mdl
-offset                  = 9 -8 4
+position                = 9 -8 4
 
 
 

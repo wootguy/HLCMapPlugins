@@ -68,7 +68,6 @@ accuracy                = 1.00
 speed                   = 4000
 elasticity              = 0.80
 hull_size               = 0.01
-direction               = 0.00 0.00 1.00
 model                   = models/poke646/weapons/nail.mdl
 
 
@@ -119,7 +118,6 @@ accuracy                = 6.00
 speed                   = 4000
 elasticity              = 0.80
 hull_size               = 0.01
-direction               = 0.00 0.00 1.00
 model                   = models/poke646/weapons/nail.mdl
 
 

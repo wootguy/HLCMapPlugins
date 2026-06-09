@@ -7,6 +7,7 @@ v_model                 = models/aomdc/v_spear.mdl
 p_model                 = models/aomdc/p_spear.mdl
 w_model                 = models/aomdc/w_spear.mdl
 hud_folder              = aomdc
+slot                    = 0
 slot_position           = 0
 deploy_anim             = 4
 deploy_anim_time        = 910ms

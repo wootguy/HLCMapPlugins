@@ -101,6 +101,5 @@ sound                   = rng/kuilu/weapons/colt_draw.wav
 angles                  = 2.00 0.00 0.00
 
 [event.bullet_fired.eject_shell]
-sound                   = shell
 model                   = models/shell.mdl
-offset                  = 26 -8 9
+position                = 26 -8 9

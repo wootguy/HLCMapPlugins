@@ -7,6 +7,7 @@ v_model                 = models/aomdc/v_kitchenknife.mdl
 p_model                 = models/aomdc/p_kitchenknife.mdl
 w_model                 = models/aomdc/w_kitchenknife.mdl
 hud_folder              = aomdc
+slot                    = 0
 slot_position           = 0
 deploy_anim             = 1
 deploy_anim_time        = 640ms

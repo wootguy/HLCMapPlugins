@@ -41,17 +41,15 @@ accuracy                = 6.00
 anims                   = 2
 
 [event.primary_clip_is_even.eject_shell]
-sound                   = shell
 model                   = models/shell.mdl
-offset                  = 26 -8 9
+position                = 26 -8 9
 
 [event.primary_clip_is_odd.weapon_anim]
 anims                   = 8
 
 [event.primary_clip_is_odd.eject_shell]
-sound                   = shell
 model                   = models/shell.mdl
-offset                  = 26 -8 -9
+position                = 26 -8 -9
 
 [event.primary_clip_is_1.weapon_anim]
 anims                   = 7

@@ -25,6 +25,7 @@ anim                    = 6
 time                    = 1000ms
 
 
+
 ; --------------------------------
 ; Primary attack
 ; --------------------------------
@@ -32,13 +33,13 @@ time                    = 1000ms
 [primary_attack]
 ammo_cost               = 1
 cooldown                = 30ms
-discharged_cooldown		= 140ms
 cooldown_fail           = 200ms
 accuracy                = 2.00
 charge_mode             = constant_fire
 charge_time             = 1100ms
 charge_down_time        = 2000ms
-charge_shoot_time		= 100ms
+charge_shoot_time       = 100ms
+discharged_cooldown     = 140ms
 
 [event.primary_attack.weapon_anim]
 anims                   = 2
@@ -50,11 +51,11 @@ accuracy                = 2.00
 tracer_frequency        = 2
 
 [event.primary_attack_charge.sound]
-flags					= chargeup_pitch
+flags                   = chargeup_pitch
+channel                 = item
 sound                   = shl/weapons/hw_spin.wav
-pitch_min				= 20
-pitch_max				= 210
-channel					= item
+pitch_min               = 20
+pitch_max               = 210
 
 [event.primary_attack_charge_above_0.weapon_anim]
 anims                   = 3
@@ -72,8 +73,9 @@ anims                   = 3
 anims                   = 6
 
 [event.primary_attack_charge_below_0.sound]
+channel                 = item
 sound                   = buttons/button8.wav
-channel					= item
+
 
 
 ; --------------------------------
@@ -88,8 +90,10 @@ charge_time             = 1100ms
 charge_down_time        = 2000ms
 
 [event.secondary_attack.weapon_anim]
-flags					= no_reset
+flags                   = no_reset
 anims                   = 4
+
+
 
 ; --------------------------------
 ; Reactionary events
@@ -97,14 +101,13 @@ anims                   = 4
 
 [event.bullet_fired.sound]
 volume_for_ai           = loud
-volume					= 0.70
-channel                 = static
 sound                   = shl/weapons/m16burst.wav
+volume                  = 0.70
 attenuation             = 0.80
+pitch_min               = 95
+pitch_max               = 105
 distant_sound           = distant_9mm
-pitch_min				= 95
-pitch_max				= 105
 
 [event.bullet_fired.recoil]
-flags					= add_angles_rand
-angles                  = 0.8 0.8 0
+flags                   = add_angles_rand
+angles                  = 0.80 0.80 0.00

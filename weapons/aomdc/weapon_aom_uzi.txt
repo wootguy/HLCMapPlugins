@@ -92,9 +92,8 @@ sound                   = aomdc/weapons/uzi_boltpull.wav
 ; --------------------------------
 
 [event.bullet_fired.eject_shell]
-sound                   = shell
 model                   = models/shell.mdl
-offset                  = 26 -8 15
+position                = 26 -8 15
 
 [event.bullet_fired.dynamic_light]
 color                   = 255 255 255

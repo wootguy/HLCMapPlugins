@@ -16,7 +16,7 @@ thirdperson_anims       = mp5
 
 [primary_ammo]
 type                    = 768
-clip_size				= 50
+clip_size               = 50
 default_give            = 100
 drop_entity             = ammo_768mmbox
 drop_amount             = 100
@@ -62,7 +62,7 @@ tracer_frequency        = 2
 [secondary_attack]
 ammo_cost               = 1
 cooldown                = 1000ms
-accuracy				= 1.50
+accuracy                = 1.50
 
 [event.secondary_attack.weapon_anim]
 anims                   = 1
@@ -86,7 +86,6 @@ speed                   = 800
 elasticity              = 0.80
 gravity                 = 0.50
 hull_size               = 0.01
-direction               = 0.00 0.00 1.00
 
 
 
@@ -115,6 +114,7 @@ delay                   = 1330ms
 sound                   = shl/weapons/p904_reload2.wav
 
 
+
 ; --------------------------------
 ; Reactionary events
 ; --------------------------------
@@ -124,14 +124,14 @@ volume_for_ai           = loud
 channel                 = weapon
 sound                   = shl/weapons/m16burst.wav
 attenuation             = 0.80
-pitch_min				= 90
-pitch_max				= 110
+pitch_min               = 90
+pitch_max               = 110
 distant_sound           = distant_9mm
 
 [event.bullet_fired.recoil]
 angles                  = 0.30 0.30 0.00
-max_angles_time			= 800ms
-max_angles				= 1.10 1.10 0.00
+max_angles_time         = 800ms
+max_angles              = 1.10 1.10 0.00
 
 [event.bullet_fired.weapon_anim]
 anims                   = 0

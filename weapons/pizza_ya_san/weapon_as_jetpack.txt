@@ -55,9 +55,8 @@ accuracy                = 6.00
 anims                   = 3
 
 [event.primary_attack.eject_shell]
-sound                   = shell
 model                   = models/shell.mdl
-offset                  = 9 -8 4
+position                = 9 -8 4
 
 
 
