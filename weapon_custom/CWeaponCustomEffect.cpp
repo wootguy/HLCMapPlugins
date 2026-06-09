@@ -196,7 +196,7 @@ void custom_effect(Vector pos, EHANDLE h_effect, EHANDLE creator, EHANDLE target
 	}
 	if (effect->glow_spr) {
 		UTIL_GlowSprite(pos, MODEL_INDEX(STRING(effect->glow_spr)), effect->glow_spr_life,
-			effect->glow_spr_scale*10, effect->glow_spr_opacity);
+			effect->glow_spr_scale, effect->glow_spr_opacity);
 	}
 	if (effect->spray_count > 0 && effect->spray_sprite > 0) {
 		UTIL_SpriteSpray(pos, dir, MODEL_INDEX(STRING(effect->spray_sprite)), effect->spray_count,
@@ -256,7 +256,7 @@ void custom_effect(Vector pos, EHANDLE h_effect, EHANDLE creator, EHANDLE target
 	if (effect->explode_gibs > 0 && effect->explode_gib_mdl)
 	{
 		UTIL_BreakModel(pos, Vector(2, 2, 2), dir * effect->explode_gib_speed, effect->explode_gib_rand,
-			effect->explode_gib_mdl, effect->explode_gibs, 5, effect->explode_gib_mat | effect->explode_gib_effects);
+			MODEL_INDEX(STRING(effect->explode_gib_mdl)), effect->explode_gibs, 5, effect->explode_gib_mat | effect->explode_gib_effects);
 	}
 	if (effect->explode_bubbles > 0 && (inWater || (effect->pev->spawnflags & FL_EFFECT_BUBBLES_IN_AIR) != 0))
 	{

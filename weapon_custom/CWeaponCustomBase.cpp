@@ -734,8 +734,8 @@ public:
 			}
 			*(Vector*)evt.proj.player_vel_inf = opt.player_vel_inf;
 			*(Vector*)evt.proj.angles = opt.angles;
-			evt.proj.trail_spr = opt.trail_spr;
-			evt.proj.trail_life = opt.trail_life;
+			evt.proj.trail_spr = MODEL_INDEX(STRING(opt.trail_spr));
+			evt.proj.trail_life = opt.trail_life*100;
 			evt.proj.trail_width = opt.trail_width;
 			evt.proj.trail_color = opt.trail_color;
 			evt.proj.follow_mode = opt.follow_mode;
@@ -776,6 +776,8 @@ public:
 					flags |= FL_WC_BEAM_SPIRAL;
 				if (opt.type == BEAM_LINEAR_OPAQUE || opt.type == BEAM_SPIRAL_OPAQUE)
 					flags |= FL_WC_BEAM_OPAQUE;
+				if (i > 0)
+					flags |= FL_WC_BEAM_NO_EVTS; // decorative beam
 
 				int constId = attackIdx * 2 + i + 1;
 				int id = opt.time == 0 ? constId : 0;
@@ -822,7 +824,7 @@ public:
 					}
 				}
 
-				if (config->beam_impact_spr && !addedImpactSprite) {
+				if (config->beam_impact_spr && !addedImpactSprite && isConstantBeam) {
 					beamEvt.beam.hasImpactSprite = 1;
 					beamEvt.beam.impactSprite = MODEL_INDEX(STRING(config->beam_impact_spr));
 					beamEvt.beam.impactSpriteFps = V_min(127, config->beam_impact_spr_fps);
@@ -834,7 +836,7 @@ public:
 				AddEvent(beamEvt);
 			}
 
-			if (config->beam_ricochet_limit > 0 && constantMode) {
+			if (config->beam_ricochet_limit > 0 && config->rico_angle > 0 && constantMode) {
 				EALERT(at_error, "Beam ricochets not implemented for constant beams\n");
 			}
 
@@ -943,7 +945,7 @@ public:
 				AddImpactEffect(WepEvt(WC_TRIG_IMPACT, impactMonsterArg), ef);
 				predictedEffects[attackIdx][1] = true;
 			}
-			else {
+			else if (config->shoot_type == SHOOT_BEAM) {
 				AddImpactEffect(WepEvt(WC_TRIG_RICOCHET, impactAnyArg), ef);
 				predictedEffects[attackIdx][1] = true;
 			}
@@ -1017,8 +1019,8 @@ public:
 
 		params.deployAnim = settings->deploy_anim;
 		params.deployTime = settings->deploy_time * 1000;
-		///params.ammoInfo[0].maxClip = settings->clip_size();
-		//params.ammoInfo[0].defaultGive = settings->default_ammo;
+		params.ammoInfo[0].maxClip = settings->clip_size();
+		params.ammoInfo[0].defaultGive = settings->default_ammo;
 
 		ConfigureReload(settings);
 
@@ -1036,6 +1038,10 @@ public:
 		for (int i = 0; i < idleCount; i++) {
 			uint8_t anim = atoi(STRING(settings->idle_anims.data[i]));
 			params.idles[i] = { anim, idleChance, idleTime };
+		}
+
+		if (settings->pev->spawnflags & FL_WEP_EXCLUSIVE_HOLD) {
+			params.flags |= FL_WC_WEP_EXCLUSIVE_HOLD;
 		}
 
 		ConfigureAttack(settings, 0);
@@ -1132,7 +1138,7 @@ public:
 		}
 
 		if (plr->IsSevenKewpClient() && predictedEffects[attackIdx][effectIdx])
-			return; // client is predicting this effect
+			return; // weapon custom will handle this effect
 
 		if (effect) {
 			Vector vecDir = (tr.vecEndPos - vecSrc).Normalize();
