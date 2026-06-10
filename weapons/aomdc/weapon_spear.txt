@@ -9,8 +9,6 @@ w_model                 = models/aomdc/w_spear.mdl
 hud_folder              = aomdc
 slot                    = 0
 slot_position           = 0
-deploy_anim             = 4
-deploy_anim_time        = 910ms
 thirdperson_anims       = gauss
 
 [idle]
@@ -41,3 +39,13 @@ melee_miss_sound        = aomdc/weapons/spear_swing.wav
 
 [event.primary_attack_charge.weapon_anim]
 anims                   = 1
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 4
+cooldown                = 500ms

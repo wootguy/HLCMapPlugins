@@ -11,8 +11,6 @@ hud_folder              = aomdc
 slot                    = 3
 slot_position           = 0
 weight                  = 15
-deploy_anim             = 5
-deploy_anim_time        = 1280ms
 thirdperson_anims       = python
 
 [primary_ammo]
@@ -77,6 +75,10 @@ sound                   = aomdc/weapons/bull_reload.wav
 
 [event.deploy.sound]
 sound                   = aomdc/weapons/bull_draw.wav
+
+[event.deploy.weapon_anim]
+anims                   = 5
+cooldown                = 500ms
 
 
 

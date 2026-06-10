@@ -9,8 +9,6 @@ hud_folder              = poke646
 slot                    = 2
 slot_position           = -1
 weight                  = 15
-deploy_anim             = 5
-deploy_anim_time        = 630ms
 thirdperson_anims       = shotgun
 
 [primary_ammo]
@@ -90,6 +88,16 @@ sound2                  = vendetta/weapons/sawedoff/sawedoff_reload2.wav
 [event.reload_finish.sound]
 delay                   = 380ms
 sound                   = vendetta/weapons/sawedoff/sawedoff_pump.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 5
+cooldown                = 500ms
 
 
 

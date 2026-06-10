@@ -11,8 +11,6 @@ hud_folder              = aomdc
 slot                    = 1
 slot_position           = 2
 weight                  = 10
-deploy_anim             = 7
-deploy_anim_time        = 520ms
 thirdperson_anims       = onehanded
 
 [primary_ammo]
@@ -98,6 +96,16 @@ sound                   = aomdc/weapons/p228_magin.wav
 [event.reload_empty.sound]
 delay                   = 1530ms
 sound                   = aomdc/weapons/p228_slideforward.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 7
+cooldown                = 500ms
 
 
 

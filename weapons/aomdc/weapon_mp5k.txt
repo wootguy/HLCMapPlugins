@@ -11,8 +11,6 @@ hud_folder              = aomdc
 slot                    = 2
 slot_position           = 4
 weight                  = 15
-deploy_anim             = 5
-deploy_anim_time        = 1030ms
 thirdperson_anims       = mp5
 
 [primary_ammo]
@@ -83,6 +81,16 @@ sound                   = aomdc/weapons/mp5k_magin.wav
 [event.reload.sound]
 delay                   = 2300ms
 sound                   = aomdc/weapons/mp5k_boltforward.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 5
+cooldown                = 500ms
 
 
 

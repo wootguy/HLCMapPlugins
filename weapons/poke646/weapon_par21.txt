@@ -9,8 +9,6 @@ hud_folder              = poke646
 slot                    = 1
 slot_position           = -1
 weight                  = 10
-deploy_anim             = 4
-deploy_anim_time        = 1000ms
 thirdperson_anims       = mp5
 
 [primary_ammo]
@@ -111,6 +109,16 @@ time                    = 1570ms
 [event.reload.sound]
 delay                   = 330ms
 sound                   = vendetta/weapons/par21/par21_reload.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 4
+cooldown                = 500ms
 
 
 

@@ -10,8 +10,6 @@ hud_folder              = poke646
 slot                    = 3
 slot_position           = -1
 weight                  = 5
-deploy_anim             = 8
-deploy_anim_time        = 600ms
 thirdperson_anims       = bow
 thirdperson_anims_zoom  = bowscope
 
@@ -116,3 +114,13 @@ sound                   = poke646/weapons/cmlwbr/cmlwbr_reload.wav
 [event.reload_empty.sound]
 delay                   = 150ms
 sound                   = poke646/weapons/cmlwbr/cmlwbr_reload_empty.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 8
+cooldown                = 500ms

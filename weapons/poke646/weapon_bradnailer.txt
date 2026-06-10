@@ -9,8 +9,6 @@ hud_folder              = poke646
 slot                    = 1
 slot_position           = -1
 weight                  = 5
-deploy_anim             = 7
-deploy_anim_time        = 1130ms
 thirdperson_anims       = mp5
 
 [primary_ammo]
@@ -137,3 +135,13 @@ sound                   = items/9mmclip2.wav
 [event.reload.sound]
 delay                   = 1280ms
 sound                   = items/9mmclip1.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 7
+cooldown                = 500ms

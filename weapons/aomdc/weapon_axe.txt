@@ -9,8 +9,6 @@ w_model                 = models/aomdc/w_axe.mdl
 hud_folder              = aomdc
 slot                    = 0
 slot_position           = 0
-deploy_anim             = 2
-deploy_anim_time        = 1400ms
 thirdperson_anims       = crowbar
 
 [idle]
@@ -38,3 +36,13 @@ melee_miss_sound        = aomdc/weapons/axe_swing.wav
 
 [event.primary_attack.weapon_anim]
 anims                   = 1
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 2
+cooldown                = 500ms

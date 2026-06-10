@@ -10,9 +10,6 @@ hud_folder              = kuilu
 slot                    = 1
 slot_position           = -1
 weight                  = 5
-deploy_anim             = 14
-deploy_time             = 1000ms
-deploy_anim_time        = 1040ms
 thirdperson_anims       = onehanded
 
 [primary_ammo]
@@ -110,6 +107,10 @@ sound                   = rng/kuilu/weapons/p228_draw.wav
 [event.deploy.sound]
 delay                   = 540ms
 sound                   = rng/kuilu/weapons/p228_slidepull.wav
+
+[event.deploy.weapon_anim]
+anims                   = 14
+cooldown                = 1000ms
 
 
 

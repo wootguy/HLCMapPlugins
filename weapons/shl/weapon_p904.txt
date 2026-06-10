@@ -11,7 +11,6 @@ hud_folder              = shl/weapons
 slot                    = 2
 slot_position           = -1
 weight                  = 15
-deploy_anim             = 2
 thirdperson_anims       = mp5
 
 [primary_ammo]
@@ -112,6 +111,16 @@ sound                   = items/clipinsert1.wav
 [event.reload.sound]
 delay                   = 1330ms
 sound                   = shl/weapons/p904_reload2.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 2
+cooldown                = 500ms
 
 
 

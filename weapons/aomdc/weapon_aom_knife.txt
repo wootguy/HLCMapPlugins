@@ -9,8 +9,6 @@ w_model                 = models/aomdc/w_kitchenknife.mdl
 hud_folder              = aomdc
 slot                    = 0
 slot_position           = 0
-deploy_anim             = 1
-deploy_anim_time        = 640ms
 thirdperson_anims       = crowbar
 
 [idle]
@@ -41,3 +39,13 @@ melee_miss_sound        = aomdc/weapons/knife_swing1.wav
 [event.primary_attack.weapon_anim]
 flags                   = play_in_order
 anims                   = 3 4
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 1
+cooldown                = 500ms

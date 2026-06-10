@@ -8,8 +8,6 @@ w_model                 = models/vendetta/weapons/leadpipe/w_leadpipe.mdl
 hud_folder              = vendetta
 slot                    = 0
 slot_position           = 0
-deploy_anim             = 1
-deploy_anim_time        = 630ms
 thirdperson_anims       = crowbar
 
 [idle]
@@ -38,3 +36,13 @@ sound                   = poke646/weapons/heaterpipe/heaterpipe_miss.wav
 attenuation             = 0.80
 pitch_min               = 94
 pitch_max               = 109
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 1
+cooldown                = 500ms

@@ -1200,8 +1200,12 @@ public:
 			EALERT(at_warning, "HL Client weapon not set\n");
 		}
 
-		params.deploy[0].anim = settings->deploy_anim;
-		params.deploy[0].time = settings->deploy_time * 1000;
+		WepEvt deployEvt = WepEvt(WC_TRIG_DEPLOY, 0, WC_EVT_WEP_ANIM);
+		deployEvt.anim.anims.add(settings->deploy_anim);
+		deployEvt.anim.cooldown = settings->deploy_time * 1000;
+		deployEvt.anim.hasCooldown = 1;
+		AddEvent(deployEvt);
+
 		params.ammoInfo[0].maxClip = settings->clip_size();
 		params.ammoInfo[0].defaultGive = settings->default_ammo;
 
@@ -1248,11 +1252,6 @@ public:
 		ConfigureWeapon(settings);
 
 		PrecacheEvents();
-
-		studiohdr_t* hdr = GET_MODEL_PTR(MODEL_INDEX(GetModelV()));
-		if (hdr) {
-			params.deploy[0].animTime = GetSequenceDuration(hdr, params.deploy[0].anim) * 1000;
-		}
 	}
 
 	void CustomServerEvent(WepEvt& evt, CBasePlayer* m_pPlayer) override {

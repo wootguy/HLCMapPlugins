@@ -10,9 +10,6 @@ hud_folder              = kuilu
 slot                    = 2
 slot_position           = -1
 weight                  = 35
-deploy_anim             = 1
-deploy_time             = 1150ms
-deploy_anim_time        = 1150ms
 thirdperson_anims       = shotgun
 
 [primary_ammo]
@@ -160,3 +157,7 @@ sound                   = rng/kuilu/weapons/shotgun_draw.wav
 [event.deploy.sound]
 delay                   = 350ms
 sound                   = rng/kuilu/weapons/shotgun_close.wav
+
+[event.deploy.weapon_anim]
+anims                   = 1
+cooldown                = 1150ms

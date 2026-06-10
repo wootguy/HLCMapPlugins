@@ -10,9 +10,6 @@ hud_folder              = kuilu
 slot                    = 1
 slot_position           = -1
 weight                  = 7
-deploy_anim             = 5
-deploy_time             = 1000ms
-deploy_anim_time        = 1030ms
 thirdperson_anims       = onehanded
 
 [primary_ammo]
@@ -90,6 +87,10 @@ sound                   = rng/kuilu/weapons/colt_slideforward.wav
 
 [event.deploy.sound]
 sound                   = rng/kuilu/weapons/colt_draw.wav
+
+[event.deploy.weapon_anim]
+anims                   = 5
+cooldown                = 1000ms
 
 
 

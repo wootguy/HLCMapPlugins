@@ -11,7 +11,6 @@ hud_folder              = shl/weapons
 slot                    = 3
 slot_position           = -1
 weight                  = 15
-deploy_anim             = 2
 thirdperson_anims       = mp5
 
 [primary_ammo]
@@ -129,3 +128,13 @@ time                    = 2000ms
 [event.reload.sound]
 delay                   = 600ms
 sound                   = shl/weapons/plasma_re.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 2
+cooldown                = 500ms

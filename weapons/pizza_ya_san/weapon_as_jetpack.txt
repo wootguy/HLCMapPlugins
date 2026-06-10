@@ -9,8 +9,6 @@ hud_folder              = pizza_ya_san
 slot                    = 1
 slot_position           = -1
 weight                  = 5
-deploy_anim             = 7
-deploy_anim_time        = 840ms
 thirdperson_anims       = onehanded
 
 [primary_ammo]
@@ -73,6 +71,16 @@ accuracy                = 6.00
 [event.secondary_attack.kickback]
 push_force              = 30
 percent_global_up       = 100
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 7
+cooldown                = 500ms
 
 
 

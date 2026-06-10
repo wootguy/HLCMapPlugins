@@ -11,8 +11,6 @@ hud_folder              = aomdc
 slot                    = 3
 slot_position           = 0
 weight                  = 15
-deploy_anim             = 7
-deploy_anim_time        = 620ms
 thirdperson_anims       = python
 
 [primary_ammo]
@@ -77,6 +75,16 @@ sound                   = aomdc/weapons/deagle_cout.wav
 [event.reload.sound]
 delay                   = 1560ms
 sound                   = aomdc/weapons/deagle_cin2.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 7
+cooldown                = 500ms
 
 
 

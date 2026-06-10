@@ -11,8 +11,6 @@ hud_folder              = aomdc
 slot                    = 2
 slot_position           = 4
 weight                  = 15
-deploy_anim             = 6
-deploy_anim_time        = 520ms
 thirdperson_anims       = shotgun
 
 [primary_ammo]
@@ -82,6 +80,16 @@ time                    = 800ms
 delay                   = 16ms
 channel                 = weapon
 sound                   = aomdc/weapons/shotgun_insert.wav
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.weapon_anim]
+anims                   = 6
+cooldown                = 500ms
 
 
 

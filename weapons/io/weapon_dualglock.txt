@@ -10,9 +10,6 @@ hud_folder              = kuilu
 slot                    = 4
 slot_position           = -1
 weight                  = 5
-deploy_anim             = 15
-deploy_time             = 1100ms
-deploy_anim_time        = 1110ms
 thirdperson_anims       = uzis
 
 [primary_ammo]
@@ -112,6 +109,10 @@ sound                   = rng/kuilu/weapons/glock_slide.wav
 
 [event.deploy.sound]
 sound                   = rng/kuilu/weapons/glock_draw.wav
+
+[event.deploy.weapon_anim]
+anims                   = 15
+cooldown                = 1100ms
 
 
 
