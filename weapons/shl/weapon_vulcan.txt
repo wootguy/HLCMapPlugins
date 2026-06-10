@@ -19,10 +19,6 @@ default_give            = 100
 drop_entity             = ammo_768mmbox
 drop_amount             = 100
 
-[idle]
-anim                    = 6
-time                    = 1000ms
-
 
 
 ; --------------------------------
@@ -101,6 +97,15 @@ anims                   = 4
 [event.deploy.weapon_anim]
 anims                   = 0
 cooldown                = 500ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 6
 
 
 

@@ -19,11 +19,6 @@ clip_size               = 20
 drop_entity             = ammo_glock
 drop_amount             = 20
 
-[idle]
-anim                    = 0
-weight                  = 99
-time                    = 1030ms
-
 
 
 ; --------------------------------
@@ -106,6 +101,16 @@ sound                   = aomdc/weapons/p228_slideforward.wav
 [event.deploy.weapon_anim]
 anims                   = 7
 cooldown                = 500ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0
+weights                 = 99
 
 
 

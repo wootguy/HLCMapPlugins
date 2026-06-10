@@ -19,26 +19,6 @@ clip_size               = 5
 drop_entity             = ammo_crossbow
 drop_amount             = 5
 
-[idle]
-anim                    = 0
-weight                  = 80
-time                    = 3100ms
-
-[idle]
-anim                    = 2
-weight                  = 20
-time                    = 2770ms
-
-[idle]
-anim                    = 1
-weight                  = 80
-time                    = 3100ms
-
-[idle]
-anim                    = 3
-weight                  = 20
-time                    = 2770ms
-
 
 
 ; --------------------------------
@@ -124,3 +104,17 @@ sound                   = poke646/weapons/cmlwbr/cmlwbr_reload_empty.wav
 [event.deploy.weapon_anim]
 anims                   = 8
 cooldown                = 500ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0 2
+weights                 = 80 20
+
+[event.idle_empty.weapon_anim]
+anims                   = 1 3
+weights                 = 80 20

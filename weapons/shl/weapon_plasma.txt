@@ -19,16 +19,6 @@ clip_size               = 60
 drop_entity             = ammo_plasma_cell
 drop_amount             = 60
 
-[idle]
-anim                    = 5
-weight                  = 80
-time                    = 3750ms
-
-[idle]
-anim                    = 6
-weight                  = 20
-time                    = 2300ms
-
 
 
 ; --------------------------------
@@ -138,3 +128,13 @@ sound                   = shl/weapons/plasma_re.wav
 [event.deploy.weapon_anim]
 anims                   = 2
 cooldown                = 500ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 5 6
+weights                 = 80 20

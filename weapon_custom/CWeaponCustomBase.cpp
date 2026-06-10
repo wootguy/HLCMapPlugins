@@ -1219,13 +1219,16 @@ public:
 			EALERT(at_error, "Too many idle animations\n");
 		}
 
-		uint8_t idleChance = 100 / idleCount; // evenly distribute idle chances
-		uint16_t idleTime = settings->idle_time * 1000;
+		{
+			WepEvt idleEvent = WepEvt(WC_TRIG_IDLE, WC_TRIG_IDLE_ARG_DEFAULT, WC_EVT_WEP_ANIM);
 
-		for (int i = 0; i < idleCount; i++) {
-			uint8_t anim = atoi(STRING(settings->idle_anims.data[i]));
-			params.idles[i] = { anim, idleChance, idleTime };
-		}
+			for (int i = 0; i < idleCount; i++) {
+				uint8_t anim = atoi(STRING(settings->idle_anims.data[i]));
+				idleEvent.anim.anims.add(anim);
+			}
+
+			AddEvent(idleEvent);
+		}		
 
 		if (settings->pev->spawnflags & FL_WEP_EXCLUSIVE_HOLD) {
 			params.flags |= FL_WC_WEP_EXCLUSIVE_HOLD;

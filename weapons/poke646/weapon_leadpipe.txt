@@ -10,11 +10,6 @@ slot                    = 0
 slot_position           = 0
 thirdperson_anims       = crowbar
 
-[idle]
-anim                    = 0
-weight                  = 100
-time                    = 1000ms
-
 
 
 ; --------------------------------
@@ -46,3 +41,13 @@ pitch_max               = 109
 [event.deploy.weapon_anim]
 anims                   = 1
 cooldown                = 500ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0
+weights                 = 100

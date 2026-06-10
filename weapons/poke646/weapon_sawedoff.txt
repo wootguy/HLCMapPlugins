@@ -17,16 +17,6 @@ clip_size               = 12
 drop_entity             = ammo_buckshot
 drop_amount             = 12
 
-[idle]
-anim                    = 0
-weight                  = 70
-time                    = 5670ms
-
-[idle]
-anim                    = 7
-weight                  = 30
-time                    = 4250ms
-
 
 
 ; --------------------------------
@@ -98,6 +88,16 @@ sound                   = vendetta/weapons/sawedoff/sawedoff_pump.wav
 [event.deploy.weapon_anim]
 anims                   = 5
 cooldown                = 500ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0 7
+weights                 = 70 30
 
 
 

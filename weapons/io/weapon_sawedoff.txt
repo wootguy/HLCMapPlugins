@@ -18,11 +18,6 @@ clip_size               = 2
 drop_entity             = ammo_buckshot
 drop_amount             = 12
 
-[idle]
-anim                    = 0
-weight                  = 100
-time                    = 2000ms
-
 
 
 ; --------------------------------
@@ -161,3 +156,13 @@ sound                   = rng/kuilu/weapons/shotgun_close.wav
 [event.deploy.weapon_anim]
 anims                   = 1
 cooldown                = 1150ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0
+weights                 = 100

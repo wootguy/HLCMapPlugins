@@ -19,11 +19,6 @@ clip_size               = 6
 drop_entity             = ammo_revolver
 drop_amount             = 6
 
-[idle]
-anim                    = 0
-weight                  = 99
-time                    = 1030ms
-
 
 
 ; --------------------------------
@@ -79,6 +74,16 @@ sound                   = aomdc/weapons/bull_draw.wav
 [event.deploy.weapon_anim]
 anims                   = 5
 cooldown                = 500ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0
+weights                 = 99
 
 
 

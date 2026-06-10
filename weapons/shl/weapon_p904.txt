@@ -25,16 +25,6 @@ type                    = ARgrenades
 drop_entity             = ammo_ARgrenades
 drop_amount             = 2
 
-[idle]
-anim                    = 5
-weight                  = 80
-time                    = 8000ms
-
-[idle]
-anim                    = 4
-weight                  = 20
-time                    = 8000ms
-
 
 
 ; --------------------------------
@@ -121,6 +111,16 @@ sound                   = shl/weapons/p904_reload2.wav
 [event.deploy.weapon_anim]
 anims                   = 2
 cooldown                = 500ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 5 4
+weights                 = 80 20
 
 
 

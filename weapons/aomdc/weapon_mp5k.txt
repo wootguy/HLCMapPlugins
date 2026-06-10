@@ -19,16 +19,6 @@ clip_size               = 30
 drop_entity             = ammo_mp5k
 drop_amount             = 30
 
-[idle]
-anim                    = 0
-weight                  = 90
-time                    = 1030ms
-
-[idle]
-anim                    = 1
-weight                  = 10
-time                    = 2700ms
-
 
 
 ; --------------------------------
@@ -91,6 +81,16 @@ sound                   = aomdc/weapons/mp5k_boltforward.wav
 [event.deploy.weapon_anim]
 anims                   = 5
 cooldown                = 500ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0 1
+weights                 = 90 10
 
 
 

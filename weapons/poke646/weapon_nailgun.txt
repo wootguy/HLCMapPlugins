@@ -17,16 +17,6 @@ clip_size               = 50
 drop_entity             = ammo_nailround
 drop_amount             = 50
 
-[idle]
-anim                    = 0
-weight                  = 80
-time                    = 5380ms
-
-[idle]
-anim                    = 1
-weight                  = 20
-time                    = 3230ms
-
 
 
 ; --------------------------------
@@ -91,3 +81,13 @@ sound                   = items/clipinsert1.wav
 [event.deploy.weapon_anim]
 anims                   = 4
 cooldown                = 500ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0 1
+weights                 = 80 20

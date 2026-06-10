@@ -22,16 +22,6 @@ type                    = uranium
 drop_entity             = ammo_gaussclip
 drop_amount             = 20
 
-[idle]
-anim                    = 0
-weight                  = 50
-time                    = 3100ms
-
-[idle]
-anim                    = 1
-weight                  = 50
-time                    = 1440ms
-
 
 
 ; --------------------------------
@@ -81,6 +71,16 @@ percent_global_up       = 100
 [event.deploy.weapon_anim]
 anims                   = 7
 cooldown                = 500ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0 1
+weights                 = 50 50
 
 
 

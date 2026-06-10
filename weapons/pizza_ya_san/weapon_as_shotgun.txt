@@ -17,21 +17,6 @@ clip_size               = 4
 drop_entity             = ammo_buckshot
 drop_amount             = 12
 
-[idle]
-anim                    = 0
-weight                  = 15
-time                    = 2330ms
-
-[idle]
-anim                    = 8
-weight                  = 5
-time                    = 2330ms
-
-[idle]
-anim                    = 9
-weight                  = 80
-time                    = 4670ms
-
 
 
 ; --------------------------------
@@ -95,6 +80,16 @@ sound                   = weapons/scock1.wav
 [event.deploy.weapon_anim]
 anims                   = 6
 cooldown                = 500ms
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0 8 9
+weights                 = 15 5 80
 
 
 
