@@ -329,6 +329,7 @@ public:
 			for (int i = 0; i < ef->sounds.size; i++) {
 				AddSoundChainEvents(impactEvt, ef->sounds.data[i], 0, true);
 			}
+			predicted = true;
 		}
 		if (ef->rico_part_count > 0 && ef->rico_part_spr) {
 			WepEvt evt = impactEvt.Type(WC_EVT_SPRITETRAIL);
@@ -338,7 +339,6 @@ public:
 			evt.spriteTrail.speed = ef->rico_part_speed;
 			evt.spriteTrail.speedNoise = ef->rico_part_speed / 2;
 			AddEvent(evt);
-
 			predicted = true;
 		}
 		if (ef->rico_decal == -1) {
@@ -353,7 +353,6 @@ public:
 				evt.decal.flags = (ef->pev->spawnflags & FL_EFFECT_GUNSHOT_RICOCHET) ? FL_WC_DECAL_PARTICLES : 0;
 				evt.decal.decalIdx = decalIdx;
 				AddEvent(evt);
-
 				predicted = true;
 			}
 			else {
@@ -363,21 +362,25 @@ public:
 		if (ef->pev->spawnflags & FL_EFFECT_SPARKS) {
 			WepEvt evt = impactEvt.Type(WC_EVT_SPARKS);
 			AddEvent(evt);
+			predicted = true;
 		}
 		if (ef->pev->spawnflags & FL_EFFECT_RICOCHET) {
 			WepEvt evt = impactEvt.Type(WC_EVT_ARMOR_RICOCHET);
 			evt.armor_ricochet.scale = ef->rico_scale;
 			AddEvent(evt);
+			predicted = true;
 		}
 		if (ef->pev->spawnflags & FL_EFFECT_TARBABY) {
 			WepEvt evt = impactEvt.Type(WC_EVT_QUAKE_EFFECT);
 			evt.quake_effect.type = WC_QUAKE_EFFECT_EXPLOSION;
 			AddEvent(evt);
+			predicted = true;
 		}
 		if (ef->pev->spawnflags & FL_EFFECT_TARBABY2) {
 			WepEvt evt = impactEvt.Type(WC_EVT_QUAKE_EFFECT);
 			evt.quake_effect.type = WC_QUAKE_EFFECT_EXPLOSION2;
 			AddEvent(evt);
+			predicted = true;
 		}
 		if (ef->pev->spawnflags & FL_EFFECT_BURST) {
 			WepEvt evt = impactEvt.Type(WC_EVT_QUAKE_EFFECT);
@@ -387,16 +390,19 @@ public:
 			evt.quake_effect.radius = ef->burst_radius;
 			evt.quake_effect.isParticleBurst = 1;
 			AddEvent(evt);
+			predicted = true;
 		}
 		if (ef->pev->spawnflags & FL_EFFECT_LAVA) {
 			WepEvt evt = impactEvt.Type(WC_EVT_QUAKE_EFFECT);
 			evt.quake_effect.type = WC_QUAKE_EFFECT_LAVASPLASH;
 			AddEvent(evt);
+			predicted = true;
 		}
 		if (ef->pev->spawnflags & FL_EFFECT_TELEPORT) {
 			WepEvt evt = impactEvt.Type(WC_EVT_QUAKE_EFFECT);
 			evt.quake_effect.type = WC_QUAKE_EFFECT_TELEPORT;
 			AddEvent(evt);
+			predicted = true;
 		}
 		if (ef->glow_spr) {
 			WepEvt evt = impactEvt.Type(WC_EVT_GLOW_SPRITE);
@@ -405,6 +411,7 @@ public:
 			evt.glow_sprite.life = ef->glow_spr_life;
 			evt.glow_sprite.scale = ef->glow_spr_scale;
 			AddEvent(evt);
+			predicted = true;
 		}
 		if (ef->explode_radius && ef->explode_damage) {
 			WepEvt evt = impactEvt.Type(WC_EVT_RADIUS_DAMAGE);
@@ -413,7 +420,6 @@ public:
 			evt.radiusDamage.damageBits = ef->damage_type | ef->damage_type2 | ef->gib_type;
 			evt.offset = ef->explode_offset;
 			AddEvent(evt);
-
 			predicted = true;
 		}
 		if (ef->implode_count > 0) {
@@ -422,6 +428,7 @@ public:
 			evt.implosion.life = ef->implode_life;
 			evt.implosion.radius = ef->implode_radius;
 			AddEvent(evt);
+			predicted = true;
 		}
 		if (ef->spray_count > 0 && ef->spray_sprite > 0) {
 			WepEvt evt = impactEvt.Type(WC_EVT_SPRITE_SPRAY);
@@ -430,6 +437,7 @@ public:
 			evt.sprite_spray.randomness = ef->spray_rand;
 			evt.sprite_spray.speed = ef->spray_speed;
 			AddEvent(evt);
+			predicted = true;
 		}
 		if (ef->rico_trace_count > 0) {
 			WepEvt evt = impactEvt.Type(WC_EVT_STREAK_SPLASH);
@@ -438,6 +446,7 @@ public:
 			evt.streak_splash.randomness = ef->rico_trace_rand;
 			evt.streak_splash.speed = ef->rico_trace_speed;
 			AddEvent(evt);
+			predicted = true;
 		}
 		if (ef->shake_radius > 0) {
 			WepEvt evt = impactEvt.Type(WC_EVT_SHAKE);
@@ -446,6 +455,7 @@ public:
 			evt.shake.duration = ef->shake_time * 1000;
 			evt.shake.frequency = FLOAT_TO_FP_8_8(ef->shake_freq);
 			AddEvent(evt);
+			predicted = true;
 		}
 		if (ef->pev->spawnflags & FL_EFFECT_LIGHTS) {
 			int l_size = int(ef->explode_light_adv.x);
@@ -471,6 +481,7 @@ public:
 				evt.dlight.color = ef->explode_light_color2.rgb();
 				AddEvent(evt);
 			}
+			predicted = true;
 		}
 		if (ef->explode_spr) {
 			switch (ef->explosion_style) {
@@ -485,7 +496,6 @@ public:
 				evt.te_explosion.fps = ef->explode_spr_fps;
 				evt.offset = ef->explode_offset;
 				AddEvent(evt);
-
 				break;
 			}
 			case EXPLODE_DISK:
@@ -513,7 +523,6 @@ public:
 				evt.beam_circle.hasNoise = evt.beam_circle.noise != 0;
 				
 				AddEvent(evt);
-
 				break;
 			}
 			}
@@ -890,7 +899,7 @@ public:
 			evt.proj.speed = opt.speed;
 			evt.proj.accuracy[0] = FLOAT_TO_SPREAD(spread);
 			evt.proj.accuracy[1] = FLOAT_TO_SPREAD(spread);
-			*(Vector*)evt.proj.offset = opt.offset;
+			*(Vector*)evt.proj.position = opt.offset;
 			*(Vector*)evt.proj.dir = opt.dir;
 			evt.proj.gravity = opt.gravity;
 			evt.proj.elasticity = opt.elasticity;
@@ -1097,9 +1106,9 @@ public:
 			WepEvt ejectEvt = attackEvt.clone().Type(WC_EVT_EJECT_SHELL).Delay(config->shell_delay * 1000);
 			ejectEvt.ejectShell.model = config->shell_idx;
 			ejectEvt.ejectShell.sound = sound;
-			ejectEvt.ejectShell.offset[0] = shellOfs.z;
-			ejectEvt.ejectShell.offset[1] = shellOfs.y;
-			ejectEvt.ejectShell.offset[2] = shellOfs.x;
+			ejectEvt.ejectShell.position[0] = shellOfs.z;
+			ejectEvt.ejectShell.position[1] = shellOfs.y;
+			ejectEvt.ejectShell.position[2] = shellOfs.x;
 			AddEvent(ejectEvt);
 
 			if (config->shell_delay > 0 && config->shell_delay_snd.file) {
@@ -1191,8 +1200,8 @@ public:
 			EALERT(at_warning, "HL Client weapon not set\n");
 		}
 
-		params.deployAnim = settings->deploy_anim;
-		params.deployTime = settings->deploy_time * 1000;
+		params.deploy[0].anim = settings->deploy_anim;
+		params.deploy[0].time = settings->deploy_time * 1000;
 		params.ammoInfo[0].maxClip = settings->clip_size();
 		params.ammoInfo[0].defaultGive = settings->default_ammo;
 
@@ -1242,7 +1251,7 @@ public:
 
 		studiohdr_t* hdr = GET_MODEL_PTR(MODEL_INDEX(GetModelV()));
 		if (hdr) {
-			params.deployAnimTime = GetSequenceDuration(hdr, params.deployAnim) * 1000;
+			params.deploy[0].animTime = GetSequenceDuration(hdr, params.deploy[0].anim) * 1000;
 		}
 	}
 

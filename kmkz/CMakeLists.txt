@@ -5,7 +5,9 @@ project(kmkz)
 
 add_library(${PROJECT_NAME} SHARED
 	main.cpp
+	env_model_coop.cpp
 	env_warpball.cpp
+	func_global.cpp
 )
 
 hlcoop_setup_plugin("plugins/maps/")
