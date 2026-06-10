@@ -7,7 +7,7 @@
 #include "WeaponSound.h"
 #include "util_wc.h"
 #include "weapons.h"
-#include "custom_weapon.h"
+#include "wc_params.h"
 
 using namespace std;
 

@@ -308,7 +308,7 @@ public:
 			custom.server.type = EVT_TRIGGER;
 			custom.server.suser1 = targetStr;
 			custom.server.iuser1 = effect->triggerstate;
-			custom.server.euser1 = EHANDLE(effect->edict());
+			//custom.server.euser1 = EHANDLE(effect->edict());
 			AddEvent(custom);
 		}
 
@@ -1289,7 +1289,7 @@ public:
 			break;
 		}
 		case EVT_TRIGGER:
-			FireTargets(STRING(evt.server.suser1), m_pPlayer, evt.server.euser1, (USE_TYPE)evt.server.iuser1);
+			FireTargets(STRING(evt.server.suser1), m_pPlayer, this, (USE_TYPE)evt.server.iuser1);
 			break;
 		}
 	}
