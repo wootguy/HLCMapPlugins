@@ -123,5 +123,6 @@ pitch_max               = 105
 distant_sound           = distant_9mm
 
 [event.bullet_fired.recoil]
-flags                   = add_angles_rand
+angle_mode              = random
+view_mode               = punch_stack
 angles                  = 0.80 0.80 0.00

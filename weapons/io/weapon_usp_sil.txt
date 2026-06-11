@@ -123,7 +123,8 @@ weights                 = 99
 ; --------------------------------
 
 [event.bullet_fired.recoil]
-flags                   = add_angles
+angle_mode              = random
+view_mode               = punch_stack
 angles                  = -0.80 0.00 0.00
 
 [event.bullet_fired.eject_shell]

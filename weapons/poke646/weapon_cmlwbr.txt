@@ -2,7 +2,7 @@
 classname               = weapon_cmlwbr
 hl_client_classname     = weapon_crossbow
 kill_feed_icon          = weapon_crossbow
-flags                   = unlink_cooldowns + strech_zoom_sprite + keep_zoom_sprite_aspect + empty_idles + force_zoom_sprite
+flags                   = unlink_cooldowns + strech_zoom_sprite + keep_zoom_sprite_aspect + force_zoom_sprite
 v_model                 = models/poke646/weapons/cmlwbr/v_cmlwbr.mdl
 p_model                 = models/poke646/weapons/cmlwbr/p_cmlwbr.mdl
 w_model                 = models/poke646/weapons/cmlwbr/w_cmlwbr.mdl

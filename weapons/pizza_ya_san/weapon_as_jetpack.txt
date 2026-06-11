@@ -98,4 +98,5 @@ pitch_max               = 109
 distant_sound           = distant_9mm
 
 [event.bullet_fired.recoil]
+angle_mode              = random
 angles                  = 2.00 0.00 0.00

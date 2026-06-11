@@ -57,7 +57,6 @@ accuracy                = 1.50
 anims                   = 1
 
 [event.secondary_attack.recoil]
-flags                   = set_angles
 angles                  = -10.00 0.00 0.00
 
 [event.secondary_attack.sound]
@@ -138,6 +137,7 @@ pitch_max               = 110
 distant_sound           = distant_9mm
 
 [event.bullet_fired.recoil]
+angle_mode              = random_linear_ramp
 angles                  = 0.30 0.30 0.00
 max_angles_time         = 800ms
 max_angles              = 1.10 1.10 0.00

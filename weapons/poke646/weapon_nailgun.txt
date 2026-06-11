@@ -41,7 +41,6 @@ pitch_min               = 94
 pitch_max               = 109
 
 [event.primary_attack.recoil]
-flags                   = set_angles
 angles                  = -1.50 0.00 0.00
 
 [event.primary_attack.projectile]

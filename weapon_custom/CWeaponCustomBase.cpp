@@ -157,11 +157,11 @@ public:
 		// punch angle
 		Vector punch = effect->punch_angle;
 		if (punch != g_vecZero) {
-			WepEvt punchEvt = baseEvent.Type(WC_EVT_PUNCH);
-			punchEvt.recoil.flags = FL_WC_PUNCH_ADD;
-			punchEvt.recoil.angles[0] = FLOAT_TO_FP_10_6(punch.x);
-			punchEvt.recoil.angles[1] = FLOAT_TO_FP_10_6(punch.y);
-			punchEvt.recoil.angles[2] = FLOAT_TO_FP_10_6(punch.z);
+			WepEvt punchEvt = baseEvent.Type(WC_EVT_RECOIL);
+			punchEvt.recoil.viewOp = WC_RECOIL_APPLY_PUNCH_ADD;
+			punchEvt.recoil.angles[0] = FLOAT_TO_SFP_10_6(punch.x);
+			punchEvt.recoil.angles[1] = FLOAT_TO_SFP_10_6(punch.y);
+			punchEvt.recoil.angles[2] = FLOAT_TO_SFP_10_6(punch.z);
 			AddEvent(punchEvt);
 		}
 
@@ -1060,18 +1060,17 @@ public:
 		float punchRange = fabs(config->recoil[0] - config->recoil[1]);
 		float punchMidPoint = config->recoil[0] + (config->recoil[1] - config->recoil[0]) * 0.5f;
 		if (punchRange > 0) {
-			WepEvt punchEvt = attackEvt.clone().Type(WC_EVT_PUNCH);
-			punchEvt.recoil.angles[0] = FLOAT_TO_FP_10_6(punchRange * 0.5f);
+			WepEvt punchEvt = attackEvt.clone().Type(WC_EVT_RECOIL);
+			punchEvt.recoil.angles[0] = FLOAT_TO_SFP_10_6(punchRange * 0.5f);
 			AddEvent(punchEvt);
 
-			punchEvt.recoil.flags = FL_WC_PUNCH_ADD;
-			punchEvt.recoil.angles[0] = FLOAT_TO_FP_10_6(-punchMidPoint);
+			punchEvt.recoil.viewOp = WC_RECOIL_APPLY_PUNCH_ADD;
+			punchEvt.recoil.angles[0] = FLOAT_TO_SFP_10_6(-punchMidPoint);
 			AddEvent(punchEvt);
 		}
 		else {
-			WepEvt punchEvt = attackEvt.clone().Type(WC_EVT_PUNCH);
-			punchEvt.recoil.flags = FL_WC_PUNCH_SET;
-			punchEvt.recoil.angles[0] = FLOAT_TO_FP_10_6(-punchMidPoint);
+			WepEvt punchEvt = attackEvt.clone().Type(WC_EVT_RECOIL);
+			punchEvt.recoil.angles[0] = FLOAT_TO_SFP_10_6(-punchMidPoint);
 			AddEvent(punchEvt);
 		}
 

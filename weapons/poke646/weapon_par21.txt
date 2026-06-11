@@ -66,7 +66,6 @@ accuracy                = 3.00
 anims                   = 2
 
 [event.secondary_attack.recoil]
-flags                   = set_angles
 angles                  = -10.00 0.00 0.00
 
 [event.secondary_attack.sound]
@@ -127,6 +126,7 @@ weights                 = 20 80
 ; --------------------------------
 
 [event.bullet_fired.recoil]
+angle_mode              = random
 angles                  = 1.50 0.00 0.00
 
 [event.bullet_fired.eject_shell]

@@ -49,10 +49,12 @@ accuracy                = 12.30 14.20
 flash_size              = bright
 
 [event.primary_attack.recoil]
+angle_mode              = random
 angles                  = 1.00 0.00 0.00
 
 [event.primary_attack.recoil]
-flags                   = add_angles
+angle_mode              = random
+view_mode               = punch_stack
 angles                  = -4.00 0.00 0.00
 
 
@@ -87,7 +89,8 @@ accuracy                = 12.30 14.20
 flash_size              = bright
 
 [event.secondary_attack.recoil]
-flags                   = add_angles
+angle_mode              = random
+view_mode               = punch_stack
 angles                  = -10.00 0.00 0.00
 
 

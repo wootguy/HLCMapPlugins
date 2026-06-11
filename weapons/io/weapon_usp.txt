@@ -124,6 +124,7 @@ weights                 = 99
 ; --------------------------------
 
 [event.bullet_fired.recoil]
+angle_mode              = random
 angles                  = 2.00 0.00 0.00
 
 [event.bullet_fired.eject_shell]
