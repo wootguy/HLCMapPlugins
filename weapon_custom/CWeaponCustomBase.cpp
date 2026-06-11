@@ -206,27 +206,33 @@ public:
 			AddEvent(animEvt);
 		}
 
-		// primary fire mode toggle
-		WepEvt primToggleEvt = baseEvent.clone();
-		primToggleEvt.evtType = WC_EVT_TOGGLE_STATE;
-		primToggleEvt.toggleState.stateBits = FL_WC_STATE_PRIMARY_ALT;
+		if (effect->primary_mode) {
+			ALERT(at_error, "Primary toggle effects not implemented\n");
 
-		switch (effect->primary_mode) {
-		default:
-		case PRIMARY_NO_CHANGE:
-			break;
-		case PRIMARY_FIRE:
-			primToggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_OFF;
-			AddEvent(primToggleEvt);
-			break;
-		case PRIMARY_ALT_FIRE:
-			primToggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_ON;
-			AddEvent(primToggleEvt);
-			break;
-		case PRIMARY_TOGGLE:
-			primToggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_TOGGLE;
-			AddEvent(primToggleEvt);
-			break;
+			/*
+			// primary fire mode toggle
+			WepEvt primToggleEvt = baseEvent.clone();
+			primToggleEvt.evtType = WC_EVT_TOGGLE_STATE;
+			primToggleEvt.toggleState.stateBits = FL_WC_STATE_PRIMARY_ALT;
+
+			switch (effect->primary_mode) {
+			default:
+			case PRIMARY_NO_CHANGE:
+				break;
+			case PRIMARY_FIRE:
+				primToggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_OFF;
+				AddEvent(primToggleEvt);
+				break;
+			case PRIMARY_ALT_FIRE:
+				primToggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_ON;
+				AddEvent(primToggleEvt);
+				break;
+			case PRIMARY_TOGGLE:
+				primToggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_TOGGLE;
+				AddEvent(primToggleEvt);
+				break;
+			}
+			*/
 		}
 
 		// model swap
@@ -624,34 +630,21 @@ public:
 			case FIRE_ACT_LASER: {
 				params.flags |= FL_WC_WEP_UNLINK_COOLDOWNS;
 
-				WepEvt toggleEvt = attackEvt.clone();
-				toggleEvt.evtType = WC_EVT_TOGGLE_STATE;
-				toggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_TOGGLE;
-				toggleEvt.toggleState.stateBits = FL_WC_STATE_LASER | FL_WC_STATE_PRIMARY_ALT;
-				AddEvent(toggleEvt);
+				opts.toggleStateBits = FL_WC_STATE_LASER | FL_WC_STATE_PRIMARY_ALT;
+				opts.toggleStateMode = WC_TOGGLE_STATE_TOGGLE;
 				return;
 			}
 			case FIRE_ACT_ZOOM: {
 				params.flags |= FL_WC_WEP_UNLINK_COOLDOWNS;
-
-				WepEvt toggleEvt = attackEvt.clone();
-				toggleEvt.evtType = WC_EVT_TOGGLE_STATE;
-				toggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_TOGGLE;
-				toggleEvt.toggleState.stateBits = FL_WC_STATE_PRIMARY_ALT;
-				AddEvent(toggleEvt);
-
-				WepEvt zoomEvt = attackEvt.clone();
-				zoomEvt.evtType = WC_EVT_TOGGLE_ZOOM;
-				zoomEvt.zoomToggle.zoomFov = settings->zoom_fov;
-				AddEvent(toggleEvt);
+				opts.toggleStateBits = FL_WC_STATE_ZOOM | FL_WC_STATE_PRIMARY_ALT;
+				opts.toggleStateMode = WC_TOGGLE_STATE_TOGGLE;
+				opts.zoomLevels = 1;
+				opts.zoomFov[0] = settings->zoom_fov;
 				return;
 			}
 			case FIRE_ACT_ALT: {
-				WepEvt toggleEvt = attackEvt.clone();
-				toggleEvt.evtType = WC_EVT_TOGGLE_STATE;
-				toggleEvt.toggleState.toggleMode = WC_TOGGLE_STATE_TOGGLE;
-				toggleEvt.toggleState.stateBits = FL_WC_STATE_PRIMARY_ALT;
-				AddEvent(toggleEvt);
+				opts.toggleStateBits = FL_WC_STATE_ZOOM | FL_WC_STATE_PRIMARY_ALT;
+				opts.toggleStateMode = WC_TOGGLE_STATE_TOGGLE;
 				return;
 			}
 			case FIRE_ACT_WINDUP:

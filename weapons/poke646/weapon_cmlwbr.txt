@@ -65,13 +65,13 @@ model                   = models/poke646/items/crossbow_bolt.mdl
 [secondary_attack]
 flags                   = not_an_attack
 cooldown                = 500ms
+toggled_states          = zoom
+zoom_levels             = 2
+zoom_fov                = 40
+zoom_fov2               = 20
 
 [event.secondary_attack.sound]
 sound                   = poke646/weapons/cmlwbr/cmlwbr_zoom.wav
-
-[event.secondary_attack.toggle_zoom]
-zoom_fov                = 40
-zoom_fov2               = 20
 
 
 
