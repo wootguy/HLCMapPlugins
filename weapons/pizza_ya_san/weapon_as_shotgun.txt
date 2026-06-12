@@ -30,8 +30,8 @@ accuracy                = 15.00
 
 [event.primary_attack.bullets]
 count                   = 9
-damage                  = sk_12mm_bullet
 accuracy                = 15.00
+damage                  = sk_12mm_bullet
 
 [event.primary_attack.weapon_anim]
 anims                   = 1

@@ -1,6 +1,7 @@
 [general]
 classname    = ammo_ins2beretta
 model        = models/arctic_incident/ins2/ammo/mags.mdl
+model_body   = 1
 pickup_sound = arctic_incident/ins2/wpn/ammo.wav
 ammo_type    = ins2_9x19mm
 ammo_type_hl = 9mm

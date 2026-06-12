@@ -32,8 +32,8 @@ accuracy                = 8.00
 
 [event.primary_attack.bullets]
 count                   = 8
-damage                  = 20
 accuracy                = 8.00
+damage                  = 20
 
 [event.primary_attack.weapon_anim]
 anims                   = 2

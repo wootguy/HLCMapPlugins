@@ -44,10 +44,10 @@ distant_sound           = distant_9mm
 
 [event.primary_attack.bullets]
 count                   = 1
-damage                  = 30
 accuracy                = 1.00
-tracer_frequency        = 2
+damage                  = 30
 flash_size              = none
+tracer_frequency        = 2
 
 
 

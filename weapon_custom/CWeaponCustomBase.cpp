@@ -602,7 +602,7 @@ public:
 			attackEvt = WepEvt(WC_TRIG_PRIMARY_ALT);
 			attackStartEvt = WepEvt(WC_TRIG_PRIMARY_ALT);
 			attackEndEvt = WepEvt(WC_TRIG_PRIMARY_ALT);
-			attackFailEvt = WepEvt(WC_TRIG_PRIMARY_ALT);
+			attackFailEvt = WepEvt(WC_TRIG_PRIMARY_ALT_FAIL);
 			attackChargeEvt = WepEvt(WC_TRIG_PRIMARY_ALT);
 			attackOverchargeEvt = WepEvt(WC_TRIG_PRIMARY_ALT);
 			attackFlag = FL_WC_WEP_HAS_ALT_PRIMARY;
@@ -685,7 +685,8 @@ public:
 		opts.ammoCost = config->ammo_cost;
 		opts.ammoFreq = 0;
 		opts.cooldown = config->cooldown * 1000;
-		opts.cooldownFail = config->cooldown_fail * 1000;
+		opts.cooldownOverride[WC_COOLDOWN_FAIL] = config->cooldown_fail * 1000;
+		opts.hasCooldownOverride[WC_COOLDOWN_FAIL] = opts.cooldownOverride[WC_COOLDOWN_FAIL] != 0;
 		opts.chargeTime = 0;
 		opts.chargeCancelTime = 0;
 		opts.chargeMoveSpeedMult = 0;

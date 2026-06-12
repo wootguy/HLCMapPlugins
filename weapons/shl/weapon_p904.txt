@@ -38,8 +38,8 @@ accuracy                = 1.50
 
 [event.primary_attack.bullets]
 count                   = 1
-damage                  = sk_plr_9mm_bullet
 accuracy                = 1.50
+damage                  = sk_plr_9mm_bullet
 tracer_frequency        = 2
 
 

@@ -29,20 +29,20 @@ drop_amount             = 100
 ammo_cost               = 1
 cooldown                = 30ms
 cooldown_fail           = 200ms
-accuracy                = 2.00
 charge_mode             = constant_fire
 charge_time             = 1100ms
 charge_down_time        = 2000ms
 charge_shoot_time       = 100ms
 discharged_cooldown     = 140ms
+accuracy                = 2.00
 
 [event.primary_attack.weapon_anim]
 anims                   = 2
 
 [event.primary_attack.bullets]
 count                   = 1
-damage                  = sk_plr_9mm_bullet
 accuracy                = 2.00
+damage                  = sk_plr_9mm_bullet
 tracer_frequency        = 2
 
 [event.primary_attack_charge.sound]

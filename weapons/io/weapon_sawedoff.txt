@@ -44,8 +44,8 @@ distant_sound           = distant_9mm
 
 [event.primary_attack.bullets]
 count                   = 24
-damage                  = 7
 accuracy                = 12.30 14.20
+damage                  = 7
 flash_size              = bright
 
 [event.primary_attack.recoil]
@@ -84,8 +84,8 @@ distant_sound           = distant_9mm
 
 [event.secondary_attack.bullets]
 count                   = 48
-damage                  = 7
 accuracy                = 12.30 14.20
+damage                  = 7
 flash_size              = bright
 
 [event.secondary_attack.recoil]

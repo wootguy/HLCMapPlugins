@@ -36,8 +36,8 @@ accuracy                = 6.00
 
 [event.primary_attack.bullets]
 count                   = 1
-damage                  = sk_9mm_bullet
 accuracy                = 6.00
+damage                  = sk_9mm_bullet
 
 [event.primary_attack.weapon_anim]
 anims                   = 3
