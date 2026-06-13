@@ -1,0 +1,9 @@
+[general]
+classname    = ammo_ins2fnfal
+model        = models/arctic_incident/ins2/ammo/mags.mdl
+model_body   = 3
+pickup_sound = arctic_incident/ins2/wpn/ammo.wav
+ammo_type    = ins2_7.62x51mm
+ammo_type_hl = 9mm
+ammo_given   = 20
+max_ammo     = 1000
