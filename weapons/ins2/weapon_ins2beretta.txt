@@ -220,8 +220,8 @@ weights                 = 100
 angle_mode_x            = random_range
 angle_mode_y            = random_range_simple
 angle_mode_z            = random_range
-min                     = -1.80 -0.43 -0.25
-max                     = -1.27 0.55 0.25
+min                     = -3.59 -0.84 -0.50
+max                     = -2.55 1.15 0.50
 
 [event.bullet_fired.sound]
 volume_for_ai           = normal
@@ -244,8 +244,8 @@ life                    = 1
 angle_mode_x            = random_range
 angle_mode_y            = random_range_simple
 angle_mode_z            = random_range
-min                     = -0.90 -0.30 -0.05
-max                     = -0.62 0.41 0.05
+min                     = -1.80 -0.63 -0.12
+max                     = -1.27 0.86 0.12
 
 [event.bullet_fired_zoomed.sound]
 volume_for_ai           = normal
