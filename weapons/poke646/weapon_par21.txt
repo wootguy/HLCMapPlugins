@@ -12,12 +12,14 @@ weight                  = 10
 thirdperson_anims       = mp5
 
 [primary_ammo]
+config                  = poke646/ammo_par21_clip
 type                    = 9mm
 clip_size               = 30
 drop_entity             = ammo_nailround
 drop_amount             = 30
 
 [secondary_ammo]
+config                  = poke646/ammo_par21_grenade
 type                    = ARgrenades
 drop_entity             = ammo_ARgrenades
 drop_amount             = 2

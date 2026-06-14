@@ -14,6 +14,7 @@ weight                  = 15
 thirdperson_anims       = onehanded
 
 [primary_ammo]
+config                  = aomdc/ammo_uzi
 type                    = 9mm
 clip_size               = 25
 drop_entity             = ammo_uzi

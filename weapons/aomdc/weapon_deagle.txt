@@ -14,6 +14,7 @@ weight                  = 15
 thirdperson_anims       = python
 
 [primary_ammo]
+config                  = aomdc/ammo_deagle
 type                    = 357
 clip_size               = 7
 drop_entity             = ammo_deagle

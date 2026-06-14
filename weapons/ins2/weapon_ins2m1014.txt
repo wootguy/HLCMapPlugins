@@ -15,6 +15,7 @@ thirdperson_anims       = shotgun
 zoom_move_speed         = 0.65
 
 [primary_ammo]
+config                  = ins2/ammo_ins2m1014
 type                    = ins2_12x70buckshot
 clip_size               = 7
 drop_entity             = ammo_ins2m1014
@@ -108,7 +109,7 @@ cooldown                = 200ms
 cooldown_primary        = 130ms
 toggled_states          = primary_alt + zoom
 zoom_levels             = 1
-zoom_fov                = 49
+zoom_fov                = 45
 
 
 
@@ -128,6 +129,7 @@ load_time               = 1770ms
 [reload_shell]
 anim                    = 9
 time                    = 770ms
+load_time               = 400ms
 
 [reload_pump]
 anim                    = 10

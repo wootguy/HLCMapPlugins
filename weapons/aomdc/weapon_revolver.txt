@@ -14,6 +14,7 @@ weight                  = 15
 thirdperson_anims       = python
 
 [primary_ammo]
+config                  = aomdc/ammo_revolver
 type                    = 357
 clip_size               = 6
 drop_entity             = ammo_revolver

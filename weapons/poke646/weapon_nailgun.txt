@@ -12,6 +12,7 @@ weight                  = 10
 thirdperson_anims       = mp5
 
 [primary_ammo]
+config                  = poke646/ammo_nailround
 type                    = 9mm
 clip_size               = 50
 drop_entity             = ammo_nailround

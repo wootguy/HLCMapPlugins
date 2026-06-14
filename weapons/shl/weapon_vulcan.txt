@@ -14,6 +14,7 @@ weight                  = 20
 thirdperson_anims       = saw
 
 [primary_ammo]
+config                  = shl/ammo_768mmbox
 type                    = 768
 default_give            = 100
 drop_entity             = ammo_768mmbox

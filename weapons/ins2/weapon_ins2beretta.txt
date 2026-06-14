@@ -2,7 +2,7 @@
 classname               = weapon_ins2beretta
 hl_client_classname     = weapon_9mmhandgun
 kill_feed_icon          = weapon_9mmhandgun
-display_name            = Insurgency 2 Beretta
+display_name            = Insurgency Beretta
 flags                   = dynamic_accuracy + no_autoswitch_empty + no_autoreload + iron_sights
 v_model                 = models/arctic_incident/white_hevarms/v_m92fs_ai.mdl
 p_model                 = models/arctic_incident/p_m92fs_ai.mdl
@@ -15,6 +15,7 @@ thirdperson_anims       = onehanded
 zoom_move_speed         = 0.65
 
 [primary_ammo]
+config                  = ins2/ammo_ins2beretta
 type                    = ins2_9x19mm
 clip_size               = 15
 drop_entity             = ammo_ins2beretta

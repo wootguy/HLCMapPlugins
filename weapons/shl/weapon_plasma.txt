@@ -14,6 +14,7 @@ weight                  = 15
 thirdperson_anims       = mp5
 
 [primary_ammo]
+config                  = shl/ammo_plasma_cell
 type                    = plasma
 clip_size               = 60
 drop_entity             = ammo_plasma_cell

@@ -14,6 +14,7 @@ weight                  = 10
 thirdperson_anims       = onehanded
 
 [primary_ammo]
+config                  = aomdc/ammo_p228
 type                    = 9mm
 clip_size               = 13
 drop_entity             = ammo_p228
