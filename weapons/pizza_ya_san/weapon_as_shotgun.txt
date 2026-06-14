@@ -63,7 +63,7 @@ time                    = 250ms
 anim                    = 4
 time                    = 850ms
 
-[event.reload.sound]
+[event.reload_shell.sound]
 delay                   = 16ms
 sound                   = weapons/reload1.wav
 

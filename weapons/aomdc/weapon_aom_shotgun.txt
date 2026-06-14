@@ -66,7 +66,7 @@ time                    = 530ms
 anim                    = 5
 time                    = 800ms
 
-[event.reload.sound]
+[event.reload_shell.sound]
 delay                   = 16ms
 channel                 = weapon
 sound                   = aomdc/weapons/shotgun_insert.wav

@@ -1,0 +1,9 @@
+[general]
+classname    = ammo_ins2m1014
+model        = models/ins2/ammo/12gbox.mdl
+model_body   = 2
+pickup_sound = ins2/wpn/ammo.wav
+ammo_type    = ins2_12x70buckshot
+ammo_type_hl = buckshot
+ammo_given   = 7
+max_ammo     = 1000
