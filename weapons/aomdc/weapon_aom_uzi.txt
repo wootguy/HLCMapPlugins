@@ -55,6 +55,7 @@ tracer_frequency        = 2
 [reload]
 anim                    = 1
 time                    = 2600ms
+load_time               = 1400ms
 
 [event.reload.sound]
 delay                   = 510ms

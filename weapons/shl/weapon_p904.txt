@@ -84,6 +84,7 @@ hull_size               = 0.01
 [reload]
 anim                    = 3
 time                    = 1830ms
+load_time               = 1100ms
 
 [event.reload.sound]
 delay                   = 170ms

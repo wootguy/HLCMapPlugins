@@ -114,6 +114,7 @@ trail_color             = 250 200 160 255
 [reload]
 anim                    = 4
 time                    = 2000ms
+load_time               = 1300ms
 
 [event.reload.sound]
 delay                   = 600ms

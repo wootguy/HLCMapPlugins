@@ -76,6 +76,7 @@ tracer_frequency        = 2
 [reload]
 anim                    = 14
 time                    = 4600ms
+load_time               = 3300ms
 
 [event.reload.sound]
 sound                   = rng/kuilu/weapons/glock_reloadstart.wav

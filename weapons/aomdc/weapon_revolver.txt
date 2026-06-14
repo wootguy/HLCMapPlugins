@@ -58,6 +58,7 @@ tracer_frequency        = 2
 [reload]
 anim                    = 4
 time                    = 2760ms
+load_time               = 2000ms
 
 [event.reload.sound]
 sound                   = aomdc/weapons/bull_reload.wav

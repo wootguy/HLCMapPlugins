@@ -64,12 +64,13 @@ time                    = 550ms
 [reload_shell]
 anim                    = 2
 time                    = 340ms
+load_time               = 100ms
 
 [reload_pump]
 anim                    = 3
 time                    = 1000ms
 
-[event.reload.sound]
+[event.reload_shell.sound]
 delay                   = 16ms
 channel                 = weapon
 sound                   = vendetta/weapons/sawedoff/sawedoff_reload1.wav

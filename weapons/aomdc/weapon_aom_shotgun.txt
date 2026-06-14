@@ -61,6 +61,7 @@ time                    = 470ms
 [reload_shell]
 anim                    = 4
 time                    = 530ms
+load_time               = 150ms
 
 [reload_pump]
 anim                    = 5

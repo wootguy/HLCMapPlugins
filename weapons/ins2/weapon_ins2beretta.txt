@@ -123,10 +123,12 @@ zoom_fov                = 49
 [reload]
 anim                    = 9
 time                    = 2600ms
+load_time               = 2000ms
 
 [reload_empty]
 anim                    = 10
 time                    = 2870ms
+load_time               = 2000ms
 
 [event.reload_not_empty.sound]
 sound                   = arctic_incident/ins2/wpn/m92fs/magrel.wav

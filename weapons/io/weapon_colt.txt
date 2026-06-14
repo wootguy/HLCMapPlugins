@@ -58,6 +58,7 @@ tracer_frequency        = 2
 [reload]
 anim                    = 4
 time                    = 2200ms
+load_time               = 1600ms
 
 [event.reload.sound]
 sound                   = rng/kuilu/weapons/colt_slideback.wav

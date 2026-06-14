@@ -137,10 +137,13 @@ toggled_states          = semi_auto
 [reload]
 anim                    = 7
 time                    = 3300ms
+load_time               = 2500ms
 
 [reload_empty]
 anim                    = 8
 time                    = 4330ms
+flags                   = chambered
+load_time               = 2800ms
 
 [event.reload_not_empty.sound]
 delay                   = 566ms
@@ -201,6 +204,18 @@ delay                   = 700ms
 sound                   = arctic_incident/ins2/wpn/fnfal/bltbk.wav
 
 [event.deploy_first.sound]
+delay                   = 1066ms
+sound                   = arctic_incident/ins2/wpn/fnfal/bltrel.wav
+
+[event.deploy_chamber.weapon_anim]
+anims                   = 1
+cooldown                = 1800ms
+
+[event.deploy_chamber.sound]
+delay                   = 700ms
+sound                   = arctic_incident/ins2/wpn/fnfal/bltbk.wav
+
+[event.deploy_chamber.sound]
 delay                   = 1066ms
 sound                   = arctic_incident/ins2/wpn/fnfal/bltrel.wav
 

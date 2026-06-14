@@ -58,6 +58,7 @@ tracer_frequency        = 2
 [reload]
 anim                    = 5
 time                    = 2400ms
+load_time               = 1800ms
 
 [reload_empty]
 anim                    = 6

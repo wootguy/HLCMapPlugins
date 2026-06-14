@@ -82,10 +82,12 @@ sound                   = poke646/weapons/cmlwbr/cmlwbr_zoom.wav
 [reload]
 anim                    = 6
 time                    = 7530ms
+load_time               = 6030ms
 
 [reload_empty]
 anim                    = 7
 time                    = 6100ms
+load_time               = 4600ms
 
 [event.reload_not_empty.sound]
 delay                   = 150ms

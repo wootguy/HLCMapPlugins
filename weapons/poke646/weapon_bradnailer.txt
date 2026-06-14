@@ -110,6 +110,7 @@ model                   = models/poke646/weapons/nail.mdl
 [reload]
 anim                    = 5
 time                    = 2390ms
+load_time               = 1500ms
 
 [event.reload.sound]
 delay                   = 220ms

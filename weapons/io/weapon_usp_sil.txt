@@ -76,6 +76,7 @@ sound                   = rng/kuilu/weapons/p228_silencer_on.wav
 [reload]
 anim                    = 5
 time                    = 2730ms
+load_time               = 1700ms
 
 [event.reload.sound]
 delay                   = 460ms

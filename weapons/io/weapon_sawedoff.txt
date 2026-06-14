@@ -102,10 +102,12 @@ angles                  = -10.00 0.00 0.00
 [reload]
 anim                    = 2
 time                    = 3620ms
+load_time               = 2300ms
 
 [reload_empty]
 anim                    = 3
 time                    = 3020ms
+load_time               = 1800ms
 
 [event.reload_not_empty.sound]
 delay                   = 360ms
