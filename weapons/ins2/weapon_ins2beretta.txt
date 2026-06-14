@@ -34,13 +34,13 @@ empty_sound             = arctic_incident/ins2/wpn/m92fs/empty.wav
 cooldown_fail           = 400ms
 cooldown_water          = 250ms
 accuracy                = 1.00
-accuracy_mult_fly       = 3.1
-accuracy_mult_swim      = 3.1
-accuracy_mult_float     = 1.6
-accuracy_mult_run       = 1.6
-accuracy_mult_walk      = 1.6
-accuracy_mult_crawl     = 0.9
-accuracy_mult_duck      = 0.9
+accuracy_mult_fly       = 3.10
+accuracy_mult_swim      = 3.10
+accuracy_mult_float     = 1.60
+accuracy_mult_run       = 1.60
+accuracy_mult_walk      = 1.60
+accuracy_mult_crawl     = 0.90
+accuracy_mult_duck      = 0.90
 accuracy_mult_zoom      = 0.85
 
 [event.primary_clip_is_not_empty.weapon_anim]
@@ -74,13 +74,13 @@ empty_sound             = arctic_incident/ins2/wpn/m92fs/empty.wav
 cooldown_fail           = 400ms
 cooldown_water          = 250ms
 accuracy                = 1.00
-accuracy_mult_fly       = 3.1
-accuracy_mult_swim      = 3.1
-accuracy_mult_float     = 1.6
-accuracy_mult_run       = 1.6
-accuracy_mult_walk      = 1.6
-accuracy_mult_crawl     = 0.9
-accuracy_mult_duck      = 0.9
+accuracy_mult_fly       = 3.10
+accuracy_mult_swim      = 3.10
+accuracy_mult_float     = 1.60
+accuracy_mult_run       = 1.60
+accuracy_mult_walk      = 1.60
+accuracy_mult_crawl     = 0.90
+accuracy_mult_duck      = 0.90
 accuracy_mult_zoom      = 0.85
 
 [event.primary_alt_clip_is_not_empty.weapon_anim]
@@ -244,7 +244,7 @@ life                    = 1
 angle_mode_x            = random_range
 angle_mode_y            = random_range_simple
 angle_mode_z            = random_range
-min                     = -1.80 -0.63 -0.12
+min                     = -1.80 -0.62 -0.12
 max                     = -1.27 0.86 0.12
 
 [event.bullet_fired_zoomed.sound]
