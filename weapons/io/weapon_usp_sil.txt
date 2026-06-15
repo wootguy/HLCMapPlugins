@@ -58,14 +58,7 @@ tracer_frequency        = 2
 [secondary_attack]
 flags                   = not_an_attack + always_cooldown_idle
 cooldown                = 3135ms
-accuracy                = 1.20
-
-[event.secondary_attack.weapon_anim]
-anims                   = 15
-
-[event.secondary_attack.sound]
-delay                   = 780ms
-sound                   = rng/kuilu/weapons/p228_silencer_on.wav
+toggled_states          = weapon_alt
 
 
 
@@ -131,3 +124,16 @@ angles                  = -0.80 0.00 0.00
 [event.bullet_fired.eject_shell]
 model                   = models/shell.mdl
 position                = 26 -8 9
+
+
+
+; --------------------------------
+; State change events
+; --------------------------------
+
+[event.weapon_alt_off.weapon_anim]
+anims                   = 15
+
+[event.weapon_alt_off.sound]
+delay                   = 780ms
+sound                   = rng/kuilu/weapons/p228_silencer_off.wav

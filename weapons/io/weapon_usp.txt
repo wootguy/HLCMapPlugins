@@ -7,6 +7,7 @@ v_model                 = models/rngstuff/kuilu/weapons/v_p228.mdl
 p_model                 = models/rngstuff/kuilu/weapons/p_p228.mdl
 w_model                 = models/rngstuff/kuilu/weapons/w_p228.mdl
 hud_folder              = kuilu
+alternate_config        = io/weapon_usp_sil
 slot                    = 1
 slot_position           = -1
 weight                  = 5
@@ -59,14 +60,7 @@ tracer_frequency        = 2
 [secondary_attack]
 flags                   = not_an_attack + always_cooldown_idle
 cooldown                = 3135ms
-accuracy                = 2.00
-
-[event.secondary_attack.weapon_anim]
-anims                   = 7
-
-[event.secondary_attack.sound]
-delay                   = 1020ms
-sound                   = rng/kuilu/weapons/p228_silencer_off.wav
+toggled_states          = weapon_alt
 
 
 
@@ -131,3 +125,16 @@ angles                  = 2.00 0.00 0.00
 [event.bullet_fired.eject_shell]
 model                   = models/shell.mdl
 position                = 26 -8 9
+
+
+
+; --------------------------------
+; State change events
+; --------------------------------
+
+[event.weapon_alt_on.weapon_anim]
+anims                   = 7
+
+[event.weapon_alt_on.sound]
+delay                   = 1020ms
+sound                   = rng/kuilu/weapons/p228_silencer_on.wav

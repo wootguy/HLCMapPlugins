@@ -188,8 +188,8 @@ class CJetpack : public CWeaponCustom {
 			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
 
 			// update prediction data for boost force
-			for (int i = 0; i < params.numEvents; i++) {
-				WepEvt& evt = params.events[i];
+			for (int i = 0; i < defaultParams.numEvents; i++) {
+				WepEvt& evt = defaultParams.events[i];
 				if (evt.evtType == WC_EVT_KICKBACK) {
 					evt.kickback.pushForce = getBoostForce();
 				}

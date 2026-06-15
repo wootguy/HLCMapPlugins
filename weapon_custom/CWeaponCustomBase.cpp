@@ -64,7 +64,7 @@ public:
 	}
 
 	virtual const char* GetDeathNoticeWeapon() override {
-		return params.wrongClientWeapon ? STRING(params.wrongClientWeapon) : "weapon_9mmhandgun";
+		return defaultParams.wrongClientWeapon ? STRING(defaultParams.wrongClientWeapon) : "weapon_9mmhandgun";
 	}
 
 	const char* DisplayName() override { return displayName ? STRING(displayName) : STRING(pev->classname); }
@@ -545,6 +545,7 @@ public:
 
 	// 0 = primary, 1 = seconday, 2 = tertiary, 3 = alt primary
 	void ConfigureAttack(CWeaponCustomConfig* settings, int attackIdx) {
+		CustomWeaponParams& params = defaultParams;
 		CustomWeaponShootOpts& opts = params.shootOpts[attackIdx];
 		
 		WepEvt attackEvt = WepEvt();
@@ -712,7 +713,7 @@ public:
 				}					
 			}
 			else {
-				EALERT(at_error, "Secondary clip not implemented\n");
+				opts.ammoPool = WC_AMMOPOOL_SECONDARY_CLIP;
 			}
 		}
 		else if (attackIdx == 2) {
@@ -1129,6 +1130,8 @@ public:
 	}
 
 	void ConfigureReload(CWeaponCustomConfig* settings) {
+		CustomWeaponParams& params = defaultParams;
+
 		if (settings->reload_mode == RELOAD_SIMPLE) {
 			params.reloadStage[0] = { (uint8_t)settings->reload_anim, (uint16_t)(settings->reload_time * 1000) };
 
@@ -1186,6 +1189,7 @@ public:
 	}
 
 	void ConfigureWeapon(CWeaponCustomConfig* settings) {
+		CustomWeaponParams& params = defaultParams;
 		params.animExt = ALLOC_STRING(settings->getPlayerAnimExt());
 		params.wrongClientWeapon = settings->hl_client_weapon ? settings->hl_client_weapon : 0;
 
@@ -1234,6 +1238,7 @@ public:
 	}
 
 	void Precache() override {
+		CustomWeaponParams& params = defaultParams;
 		CWeaponCustomConfig* settings = getSettings();
 		if (!settings)
 			return;
