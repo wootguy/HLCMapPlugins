@@ -1,0 +1,8 @@
+[general]
+classname    = ammo_ins2l85a2gl
+model        = models/ins2/wpn/m16a4/m203.mdl
+pickup_sound = ins2/wpn/ammo.wav
+ammo_type    = ins2_40x46mm
+ammo_type_hl = ARgrenades
+ammo_given   = 1
+max_ammo     = 1000

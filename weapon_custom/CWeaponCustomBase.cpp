@@ -631,21 +631,21 @@ public:
 			case FIRE_ACT_LASER: {
 				params.flags |= FL_WC_WEP_UNLINK_COOLDOWNS;
 
-				opts.toggleStateBits = FL_WC_STATE_LASER | FL_WC_STATE_PRIMARY_ALT;
-				opts.toggleStateMode = WC_TOGGLE_STATE_TOGGLE;
+				opts.toggle.stateBits = FL_WC_STATE_LASER | FL_WC_STATE_PRIMARY_ALT;
+				opts.toggle.mode = WC_TOGGLE_STATE_TOGGLE;
 				return;
 			}
 			case FIRE_ACT_ZOOM: {
 				params.flags |= FL_WC_WEP_UNLINK_COOLDOWNS;
-				opts.toggleStateBits = FL_WC_STATE_ZOOM | FL_WC_STATE_PRIMARY_ALT;
-				opts.toggleStateMode = WC_TOGGLE_STATE_TOGGLE;
-				opts.zoomLevels = 1;
-				opts.zoomFov[0] = settings->zoom_fov;
+				opts.toggle.stateBits = FL_WC_STATE_ZOOM | FL_WC_STATE_PRIMARY_ALT;
+				opts.toggle.mode = WC_TOGGLE_STATE_TOGGLE;
+				opts.toggle.zoomLevels = 1;
+				opts.toggle.zoomFov[0] = settings->zoom_fov;
 				return;
 			}
 			case FIRE_ACT_ALT: {
-				opts.toggleStateBits = FL_WC_STATE_ZOOM | FL_WC_STATE_PRIMARY_ALT;
-				opts.toggleStateMode = WC_TOGGLE_STATE_TOGGLE;
+				opts.toggle.stateBits = FL_WC_STATE_ZOOM | FL_WC_STATE_PRIMARY_ALT;
+				opts.toggle.mode = WC_TOGGLE_STATE_TOGGLE;
 				return;
 			}
 			case FIRE_ACT_WINDUP:
