@@ -87,6 +87,9 @@ pitch_min               = 95
 pitch_max               = 104
 distant_sound           = distant_9mm
 
+[event.primary_attack.player_anim]
+action                  = attack_gl
+
 
 
 ; --------------------------------

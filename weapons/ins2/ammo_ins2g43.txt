@@ -1,0 +1,9 @@
+[general]
+classname    = ammo_ins2g43
+model        = models/ins2/ammo/mags.mdl
+model_body   = 39
+pickup_sound = ins2/wpn/ammo.wav
+ammo_type    = ins2_7.92x57mm
+ammo_type_hl = bolts
+ammo_given   = 10
+max_ammo     = 1000
