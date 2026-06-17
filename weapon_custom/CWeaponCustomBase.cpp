@@ -149,7 +149,7 @@ public:
 		if (effect->self_damage != 0) {
 			WepEvt custom = baseEvent.Type(WC_EVT_SERVER);
 			custom.server.type = EVT_SELF_DAMAGE;
-			custom.server.fuser1 = effect->self_damage;
+			custom.server.fuser1 = FLOAT_TO_SD1000_32BIT(effect->self_damage);
 			custom.server.iuser1 = effect->damageType();
 			AddEvent(custom);
 		}
@@ -159,9 +159,9 @@ public:
 		if (punch != g_vecZero) {
 			WepEvt punchEvt = baseEvent.Type(WC_EVT_RECOIL);
 			punchEvt.recoil.viewOp = WC_RECOIL_APPLY_PUNCH_ADD;
-			punchEvt.recoil.angles[0] = FLOAT_TO_SFP_10_6(punch.x);
-			punchEvt.recoil.angles[1] = FLOAT_TO_SFP_10_6(punch.y);
-			punchEvt.recoil.angles[2] = FLOAT_TO_SFP_10_6(punch.z);
+			punchEvt.recoil.angles[0] = FLOAT_TO_SD100(punch.x);
+			punchEvt.recoil.angles[1] = FLOAT_TO_SD100(punch.y);
+			punchEvt.recoil.angles[2] = FLOAT_TO_SD100(punch.z);
 			AddEvent(punchEvt);
 		}
 
@@ -266,8 +266,8 @@ public:
 			WepEvt custom = baseEvent.Type(WC_EVT_SERVER);
 			custom.server.type = EVT_PLAYER_ANIM;
 			custom.server.iuser1 = effect->anim;
-			custom.server.fuser1 = effect->anim_frame;
-			custom.server.fuser2 = effect->anim_speed;
+			custom.server.fuser1 = FLOAT_TO_SD1000_32BIT(effect->anim_frame);
+			custom.server.fuser2 = FLOAT_TO_SD1000_32BIT(effect->anim_speed);
 			AddEvent(custom);
 		}
 
@@ -276,8 +276,8 @@ public:
 			WepEvt custom = baseEvent.Type(WC_EVT_SERVER);
 			custom.server.type = EVT_SCREEN_FADE;
 			custom.server.cuser1 = effect->fade_color;
-			custom.server.fuser1 = effect->fade_time;
-			custom.server.fuser2 = effect->fade_hold;
+			custom.server.fuser1 = FLOAT_TO_SD1000_32BIT(effect->fade_time);
+			custom.server.fuser2 = FLOAT_TO_SD1000_32BIT(effect->fade_hold);
 			custom.server.iuser1 = effect->fade_mode;
 			AddEvent(custom);
 		}
@@ -297,8 +297,10 @@ public:
 			WepEvt custom = baseEvent.Type(WC_EVT_SERVER);
 			custom.server.type = EVT_GLOW_SHELL;
 			custom.server.iuser1 = effect->glow_amt;
-			(Vector)custom.server.vuser1 = effect->glow_color;
-			custom.server.fuser1 = effect->glow_time;
+			custom.server.vuser1[0] = FLOAT_TO_SD1000_32BIT(effect->glow_color.x);
+			custom.server.vuser1[1] = FLOAT_TO_SD1000_32BIT(effect->glow_color.y);
+			custom.server.vuser1[2] = FLOAT_TO_SD1000_32BIT(effect->glow_color.z);
+			custom.server.fuser1 = FLOAT_TO_SD1000_32BIT(effect->glow_time);
 			AddEvent(custom);
 		}
 
@@ -457,9 +459,9 @@ public:
 		if (ef->shake_radius > 0) {
 			WepEvt evt = impactEvt.Type(WC_EVT_SHAKE);
 			evt.shake.radius = ef->shake_radius;
-			evt.shake.amplitude = FLOAT_TO_FP_4_12(ef->shake_amp);
+			evt.shake.amplitude = FLOAT_TO_D1000(ef->shake_amp);
 			evt.shake.duration = ef->shake_time * 1000;
-			evt.shake.frequency = FLOAT_TO_FP_8_8(ef->shake_freq);
+			evt.shake.frequency = FLOAT_TO_D100(ef->shake_freq);
 			AddEvent(evt);
 			predicted = true;
 		}
@@ -872,8 +874,8 @@ public:
 			bulletEvt.bullets.count = config->bullets;
 			bulletEvt.bullets.burstDelay = config->bullet_delay * 1000;
 			bulletEvt.bullets.damage = config->damage * damageScale;
-			bulletEvt.bullets.accuracy[0] = FLOAT_TO_SPREAD(spread);
-			bulletEvt.bullets.accuracy[1] = FLOAT_TO_SPREAD(spread);
+			bulletEvt.bullets.accuracy[0] = FLOAT_TO_SD100(spread);
+			bulletEvt.bullets.accuracy[1] = FLOAT_TO_SD100(spread);
 			bulletEvt.bullets.tracerFreq = config->bullet_color != -1 ? 1 : 0;
 			bulletEvt.bullets.tracerColor = config->bullet_color != -1 ? config->bullet_color : WC_TRACER_COLOR_DEFAULT;
 			bulletEvt.bullets.flashSz = WC_FLASH_NORMAL;
@@ -892,8 +894,8 @@ public:
 			evt.proj.type = ptype;
 			evt.proj.entity_class = ALLOC_STRING("custom_projectile_plugin");
 			evt.proj.speed = opt.speed;
-			evt.proj.accuracy[0] = FLOAT_TO_SPREAD(spread);
-			evt.proj.accuracy[1] = FLOAT_TO_SPREAD(spread);
+			evt.proj.accuracy[0] = FLOAT_TO_SD100(spread);
+			evt.proj.accuracy[1] = FLOAT_TO_SD100(spread);
 			*(Vector*)evt.proj.position = opt.offset;
 			*(Vector*)evt.proj.dir = opt.dir;
 			evt.proj.gravity = opt.gravity;
@@ -977,13 +979,13 @@ public:
 				beamEvt.beam.attachment = 1;
 				beamEvt.beam.flags = flags;
 				beamEvt.beam.damage = config->damage * damageScale;
-				beamEvt.beam.accuracy[0] = FLOAT_TO_SPREAD(spread);
-				beamEvt.beam.accuracy[1] = FLOAT_TO_SPREAD(spread);
+				beamEvt.beam.accuracy[0] = FLOAT_TO_SD100(spread);
+				beamEvt.beam.accuracy[1] = FLOAT_TO_SD100(spread);
 				beamEvt.beam.freq = config->beam_impact_speed * 1000;
 
 				float ricoSpread = UTIL_ConeFromDegrees(config->rico_angle).x;
 				beamEvt.beam.ricoBeams = config->beam_ricochet_limit;
-				beamEvt.beam.ricoAngle = FLOAT_TO_SPREAD(ricoSpread);
+				beamEvt.beam.ricoAngle = FLOAT_TO_SD100(ricoSpread);
 				beamEvt.beam.hasRicoBeams = config->beam_ricochet_limit > 0;
 
 				if (opt.alt_mode > BEAM_ALT_DISABLED) {
@@ -1056,16 +1058,16 @@ public:
 		float punchMidPoint = config->recoil[0] + (config->recoil[1] - config->recoil[0]) * 0.5f;
 		if (punchRange > 0) {
 			WepEvt punchEvt = attackEvt.clone().Type(WC_EVT_RECOIL);
-			punchEvt.recoil.angles[0] = FLOAT_TO_SFP_10_6(punchRange * 0.5f);
+			punchEvt.recoil.angles[0] = FLOAT_TO_SD100(punchRange * 0.5f);
 			AddEvent(punchEvt);
 
 			punchEvt.recoil.viewOp = WC_RECOIL_APPLY_PUNCH_ADD;
-			punchEvt.recoil.angles[0] = FLOAT_TO_SFP_10_6(-punchMidPoint);
+			punchEvt.recoil.angles[0] = FLOAT_TO_SD100(-punchMidPoint);
 			AddEvent(punchEvt);
 		}
 		else {
 			WepEvt punchEvt = attackEvt.clone().Type(WC_EVT_RECOIL);
-			punchEvt.recoil.angles[0] = FLOAT_TO_SFP_10_6(-punchMidPoint);
+			punchEvt.recoil.angles[0] = FLOAT_TO_SD100(-punchMidPoint);
 			AddEvent(punchEvt);
 		}
 
@@ -1272,7 +1274,7 @@ public:
 		case EVT_PLAYER_ANIM:
 			m_pPlayer->m_Activity = ACT_RELOAD;
 			m_pPlayer->pev->sequence = evt.server.iuser1;
-			m_pPlayer->pev->frame = evt.server.fuser1;
+			m_pPlayer->pev->frame = D1000_TO_FLOAT(evt.server.fuser1);
 			m_pPlayer->ResetSequenceInfo();
 			m_pPlayer->pev->framerate = evt.server.fuser2;
 			break;
@@ -1280,12 +1282,12 @@ public:
 			UTIL_ClientPrint(m_pPlayer, print_center, STRING(evt.server.suser1));
 			break;
 		case EVT_SCREEN_FADE:
-			UTIL_ScreenFade(m_pPlayer, evt.server.cuser1.ToVector(), evt.server.fuser1,
+			UTIL_ScreenFade(m_pPlayer, evt.server.cuser1.ToVector(), D1000_TO_FLOAT(evt.server.fuser1),
 				evt.server.fuser2, evt.server.cuser1.a, evt.server.iuser1);
 			break;
 		case EVT_GLOW_SHELL: {
-			Vector c = evt.server.vuser1;
-			m_pPlayer->AddShockEffect(c.x, c.y, c.z, evt.server.iuser1, evt.server.fuser1);
+			Vector c = INT32_VEC3_TO_VECTOR(evt.server.vuser1);
+			m_pPlayer->AddShockEffect(c.x, c.y, c.z, evt.server.iuser1, D1000_TO_FLOAT(evt.server.fuser1));
 			break;
 		}
 		case EVT_TRIGGER:
