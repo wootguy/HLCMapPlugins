@@ -233,12 +233,11 @@ weights                 = 100
 ; Reactionary events
 ; --------------------------------
 
-[event.bullet_fired.recoil_advanced]
-angle_mode_x            = random_range
-angle_mode_y            = random_range_simple
-angle_mode_z            = random_range
-min                     = -3.59 -0.30 -0.50
-max                     = -3.23 0.59 0.50
+[event.bullet_fired.recoil_cstrike]
+recoil_flying           = 2.25 1.00 0.50 0.35 9.00 6.00 5
+recoil_moving           = 1.75 0.45 0.23 0.05 6.50 2.50 7
+recoil_standing         = 1.25 0.38 0.18 0.04 5.75 1.75 8
+recoil_ducking          = 1.15 0.35 0.15 0.03 5.50 1.50 9 
 
 [event.bullet_fired.sound]
 volume_for_ai           = normal
