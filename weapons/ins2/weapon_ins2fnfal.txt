@@ -136,8 +136,8 @@ load_time               = 2500ms
 [reload_empty]
 anim                    = 8
 time                    = 4330ms
-flags                   = chambered
 load_time               = 2800ms
+chamber_time            = 3766ms
 
 [event.reload_not_empty.sound]
 delay                   = 566ms
@@ -234,10 +234,10 @@ weights                 = 100
 ; --------------------------------
 
 [event.bullet_fired.recoil_cstrike]
-recoil_flying           = 2.25 1.00 0.50 0.35 9.00 6.00 5
-recoil_moving           = 1.75 0.45 0.23 0.05 6.50 2.50 7
-recoil_standing         = 1.25 0.38 0.18 0.04 5.75 1.75 8
-recoil_ducking          = 1.15 0.35 0.15 0.03 5.50 1.50 9 
+recoil_flying           = 2.25 1.00 0.50 0.35 9.00 6.00 5.00
+recoil_moving           = 1.75 0.45 0.23 0.05 6.50 2.50 7.00
+recoil_standing         = 1.25 0.38 0.18 0.04 5.75 1.75 8.00
+recoil_ducking          = 1.15 0.35 0.15 0.03 5.50 1.50 9.00
 
 [event.bullet_fired.sound]
 volume_for_ai           = normal

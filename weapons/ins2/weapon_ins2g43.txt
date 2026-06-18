@@ -148,8 +148,8 @@ load_time               = 2380ms
 [reload_empty]
 anim                    = 8
 time                    = 4790ms
-flags                   = chambered
 load_time               = 2380ms
+chamber_time            = 3588ms
 
 [event.reload_not_empty.sound]
 delay                   = 411ms
