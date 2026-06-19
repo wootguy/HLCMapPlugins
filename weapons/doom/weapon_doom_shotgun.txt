@@ -2,6 +2,7 @@
 classname               = weapon_doom_shotgun
 hl_client_classname     = weapon_shotgun
 kill_feed_icon          = weapon_shotgun
+v_model                 = models/v_shotgun.mdl
 v_sprite                = sprites/doom/shotgun.spr
 v_sprite_scale          = 5.00
 p_model                 = models/p_shotgun.mdl
@@ -46,6 +47,9 @@ anims                   = 1
 frames                  = 2 1 3 4 5 4 3
 offset_x                = 0 0 -78 -91 -92 -91 -78
 fps                     = 7.20
+
+[event.primary_attack.muzzle_flash]
+v_sprite_brighten       = 11
 
 [event.primary_attack.sound]
 volume_for_ai           = normal
