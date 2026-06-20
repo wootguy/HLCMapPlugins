@@ -38,7 +38,7 @@ flags                   = no_sound + no_particles
 anims                   = 1
 
 [event.primary_attack.weapon_sprite_anim]
-frames                  = 2 3 2
+frames                  = 2 3 2 0
 fps                     = 20.00
 
 
@@ -59,7 +59,6 @@ sound                   = doom/dssawup.wav
 
 [event.idle.weapon_anim]
 anims                   = 0
-cooldown                = 210ms
 
 [event.idle.weapon_sprite_anim]
 frames                  = 0 1

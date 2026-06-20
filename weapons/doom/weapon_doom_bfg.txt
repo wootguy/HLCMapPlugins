@@ -46,7 +46,7 @@ position                = 0.00 22.00 0.00
 anims                   = 1
 
 [event.primary_attack.weapon_sprite_anim]
-frames                  = 0 0 1 1 2 3 3 3
+frames                  = 0 0 1 1 2 3 3 3 0
 fps                     = 5.00
 
 [event.primary_attack.muzzle_flash]

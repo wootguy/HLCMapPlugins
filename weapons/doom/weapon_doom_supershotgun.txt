@@ -32,6 +32,7 @@ drop_amount             = 5
 ; --------------------------------
 
 [primary_attack]
+flags                   = need_full_cost
 ammo_cost               = 2
 cooldown                = 1400ms
 cooldown_idle           = 1400ms
@@ -48,8 +49,8 @@ flags                   = no_sound + no_particles
 anims                   = 1
 
 [event.primary_attack.weapon_sprite_anim]
-frames                  = 1 2 3 4 5 6 7 5 8
-offset_x                = 0 0 -34 -109 -16 -134 -29 -16 -16
+frames                  = 1 2 3 4 5 6 7 5 8 0
+offset_x                = 0 0 -34 -109 -16 -134 -29 -16 -16 0
 fps                     = 6.66
 
 [event.primary_attack.muzzle_flash]

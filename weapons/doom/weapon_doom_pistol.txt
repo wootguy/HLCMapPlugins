@@ -49,8 +49,8 @@ flags                   = first_shot_accuracy + no_sound + no_particles
 anims                   = 1
 
 [event.primary_attack.weapon_sprite_anim]
-frames                  = 1 2 3
-offset_x                = -11 -2 -11
+frames                  = 1 2 3 0
+offset_x                = -11 -2 -11 0
 fps                     = 7.20
 
 [event.primary_attack.muzzle_flash]

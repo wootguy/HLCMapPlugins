@@ -48,11 +48,11 @@ flags                   = no_sound + no_particles
 anims                   = 1
 
 [event.primary_clip_is_even.weapon_sprite_anim]
-frames                  = 1
+frames                  = 1 0
 fps                     = 8.33
 
 [event.primary_clip_is_odd.weapon_sprite_anim]
-frames                  = 2
+frames                  = 2 0
 fps                     = 8.33
 
 [event.primary_attack.muzzle_flash]

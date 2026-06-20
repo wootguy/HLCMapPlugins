@@ -44,8 +44,8 @@ speed                   = 1
 anims                   = 1
 
 [event.primary_attack.weapon_sprite_anim]
-frames                  = 1 2 3 4 5
-offset_x                = 0 0 0 1 0
+frames                  = 1 2 3 4 5 0
+offset_x                = 0 0 0 1 0 0
 fps                     = 10.00
 
 [event.primary_attack.muzzle_flash]

@@ -38,8 +38,8 @@ flags                   = no_sound + no_particles
 anims                   = 1
 
 [event.primary_attack.weapon_sprite_anim]
-frames                  = 1 2 3 2 1
-offset_x                = 0 -84 -99 -115 -99 -84
+frames                  = 1 2 3 2 1 0
+offset_x                = -84 -99 -115 -99 -84 0
 fps                     = 10.00
 
 

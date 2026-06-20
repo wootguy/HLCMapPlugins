@@ -4,8 +4,8 @@
 class CDoomProjectile : public CDoomSprite
 {
 public:
-	const char* spawnSound = "doom/dsfirsht.wav";
-	const char* deathSound = "doom/dsfirxpl.wav";
+	const char* spawnSound;
+	const char* deathSound;
 	const char* trailSprite;
 	bool dead;
 	int moveFrameStart;
