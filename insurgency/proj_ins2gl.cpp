@@ -81,7 +81,7 @@ class CIns2GL : public ExplosiveBase
 		//Kill the beam following the grenade
 		UTIL_KillBeam(entindex(), MSG_BROADCAST);
 		
-		CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 1.5);
+		CSoundEnt::InsertSound(bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 1.5, this);
 
 		UTIL_DecalTrace(&tr, RANDOM_LONG(0, 1) ? DECAL_SCORCH1 : DECAL_SCORCH2);
 
