@@ -1,0 +1,10 @@
+[general]
+classname    = ammo_doom_bulletbox
+model        = sprites/doom/objects.spr
+hull_min     = -8.00 -8.00 -4.00
+hull_max     = 8.00 8.00 8.00
+pickup_sound = doom/dsitemup.wav
+ammo_type    = bullets
+ammo_type_hl = 9mm
+ammo_given   = 50
+max_ammo     = 200

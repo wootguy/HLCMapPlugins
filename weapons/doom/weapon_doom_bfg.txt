@@ -1,0 +1,73 @@
+[general]
+classname               = weapon_doom_bfg
+hl_client_classname     = weapon_displacer
+kill_feed_icon          = weapon_egon
+display_name            = Doom BFG
+v_model                 = models/v_displacer.mdl
+v_sprite                = sprites/doom/bfg.spr
+v_sprite_scale          = 5.00
+p_model                 = models/p_displacer.mdl
+w_model                 = sprites/doom/objects.spr
+w_sprite_frame          = 14
+hull_min                = -8.00 -8.00 -4.00
+hull_max                = 8.00 8.00 8.00
+hud_folder              = doom
+slot                    = 5
+slot_position           = -1
+weight                  = 8
+thirdperson_anims       = python
+
+[primary_ammo]
+config                  = doom/ammo_doom_cells
+type                    = cells
+default_give            = 40
+drop_entity             = ammo_doom_cells
+drop_amount             = 20
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+ammo_cost               = 40
+cooldown                = 1100ms
+cooldown_idle           = 1100ms
+
+[event.primary_attack.projectile]
+delay                   = 600ms
+type                    = other
+entity_class            = doom_bfgball
+speed                   = 1
+position                = 0.00 22.00 0.00
+
+[event.primary_attack.weapon_anim]
+anims                   = 1
+
+[event.primary_attack.weapon_sprite_anim]
+frames                  = 0 0 1 1 2 3 3 3
+fps                     = 5.00
+
+[event.primary_attack.muzzle_flash]
+delay                   = 400ms
+v_sprite_brighten       = 28
+
+[event.primary_attack.sound]
+volume_for_ai           = normal
+channel                 = weapon
+sound                   = doom/dsbfg.wav
+attenuation             = 0.80
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0
+
+[event.idle.weapon_sprite_anim]
+frames                  = 0
+fps                     = 1.00

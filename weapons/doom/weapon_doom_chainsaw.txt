@@ -1,0 +1,91 @@
+[general]
+classname               = weapon_doom_chainsaw
+hl_client_classname     = weapon_crowbar
+kill_feed_icon          = weapon_crowbar
+display_name            = Doom Chainsaw
+v_model                 = models/v_crowbar.mdl
+v_sprite                = sprites/doom/chainsaw.spr
+v_sprite_scale          = 5.00
+v_sprite_offset_x       = -5
+w_model                 = sprites/doom/objects.spr
+w_sprite_frame          = 46
+hull_min                = -8.00 -8.00 -4.00
+hull_max                = 8.00 8.00 8.00
+hud_folder              = doom
+slot                    = 0
+slot_position           = -1
+weight                  = 2
+thirdperson_anims       = minigun
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+cooldown                = 100ms
+cooldown_idle           = 100ms
+
+[event.primary_attack.bullets]
+count                   = 1
+damage                  = 11
+damage_randomness       = 9
+max_range               = 80
+flags                   = no_sound + no_particles
+
+[event.primary_attack.weapon_anim]
+anims                   = 1
+
+[event.primary_attack.weapon_sprite_anim]
+frames                  = 2 3 2
+fps                     = 20.00
+
+
+
+; --------------------------------
+; Deploy events
+; --------------------------------
+
+[event.deploy.sound]
+channel                 = weapon
+sound                   = doom/dssawup.wav
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0
+cooldown                = 210ms
+
+[event.idle.weapon_sprite_anim]
+frames                  = 0 1
+offset_x                = 0 -2
+fps                     = 10.00
+
+[event.idle.sound]
+channel                 = weapon
+sound                   = doom/dssawidl.wav
+
+
+
+; --------------------------------
+; Reactionary events
+; --------------------------------
+
+[event.bullet_fired.sound]
+channel                 = weapon
+sound                   = doom/dssawful.wav
+
+[event.impact_primary_monster.sound]
+flags                   = user_origin
+channel                 = weapon
+sound                   = doom/dssawhit.wav
+
+[event.impact_primary_world.te_explosion]
+offset                  = 4
+sprite                  = sprites/doom/puff.spr
+flags                   = opaque + no_dlight + no_sound + no_particles

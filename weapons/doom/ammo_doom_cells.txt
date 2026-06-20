@@ -1,0 +1,11 @@
+[general]
+classname    = ammo_doom_cells
+model        = sprites/doom/objects.spr
+model_body   = 32
+hull_min     = -8.00 -8.00 -4.00
+hull_max     = 8.00 8.00 8.00
+pickup_sound = doom/dsitemup.wav
+ammo_type    = cells
+ammo_type_hl = uranium
+ammo_given   = 20
+max_ammo     = 600

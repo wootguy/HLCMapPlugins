@@ -1,0 +1,11 @@
+[general]
+classname    = ammo_doom_rocket
+model        = sprites/doom/objects.spr
+model_body   = 115
+hull_min     = -8.00 -8.00 -4.00
+hull_max     = 8.00 8.00 8.00
+pickup_sound = doom/dsitemup.wav
+ammo_type    = rockets
+ammo_type_hl = rockets
+ammo_given   = 1
+max_ammo     = 100

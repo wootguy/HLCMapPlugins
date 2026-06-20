@@ -1,0 +1,71 @@
+[general]
+classname               = weapon_doom_fist
+hl_client_classname     = weapon_crowbar
+kill_feed_icon          = weapon_crowbar
+display_name            = Doom Fist
+v_model                 = models/v_crowbar.mdl
+v_sprite                = sprites/doom/fist.spr
+v_sprite_scale          = 5.00
+v_sprite_offset_x       = 60
+w_model                 = sprites/doom/objects.spr
+w_sprite_frame          = 25
+hull_min                = -8.00 -8.00 -4.00
+hull_max                = 8.00 8.00 8.00
+hud_folder              = doom
+slot                    = 0
+slot_position           = -1
+weight                  = 1
+thirdperson_anims       = crowbar
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+cooldown                = 480ms
+cooldown_idle           = 480ms
+
+[event.primary_attack.bullets]
+count                   = 1
+damage                  = 11
+damage_randomness       = 9
+max_range               = 80
+flags                   = no_sound + no_particles
+
+[event.primary_attack.weapon_anim]
+anims                   = 1
+
+[event.primary_attack.weapon_sprite_anim]
+frames                  = 1 2 3 2 1
+offset_x                = 0 -84 -99 -115 -99 -84
+fps                     = 10.00
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0
+
+[event.idle.weapon_sprite_anim]
+frames                  = 0
+fps                     = 1.00
+
+
+
+; --------------------------------
+; Reactionary events
+; --------------------------------
+
+[event.impact_primary_any.sound]
+flags                   = user_origin
+sound                   = doom/dspunch.wav
+
+[event.impact_primary_world.te_explosion]
+offset                  = 4
+sprite                  = sprites/doom/puff.spr
+flags                   = opaque + no_dlight + no_sound + no_particles

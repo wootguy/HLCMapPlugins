@@ -1,0 +1,72 @@
+[general]
+classname               = weapon_doom_plasmagun
+hl_client_classname     = weapon_egon
+kill_feed_icon          = weapon_egon
+display_name            = Doom Plasma Gun
+v_model                 = models/v_egon.mdl
+v_sprite                = sprites/doom/plasmagun.spr
+v_sprite_scale          = 5.00
+p_model                 = models/p_egon.mdl
+w_model                 = sprites/doom/objects.spr
+w_sprite_frame          = 95
+hull_min                = -8.00 -8.00 -4.00
+hull_max                = 8.00 8.00 8.00
+hud_folder              = doom
+slot                    = 5
+slot_position           = -1
+weight                  = 9
+thirdperson_anims       = python
+
+[primary_ammo]
+config                  = doom/ammo_doom_cells
+type                    = cells
+default_give            = 40
+drop_entity             = ammo_doom_cells
+drop_amount             = 20
+
+
+
+; --------------------------------
+; Primary attack
+; --------------------------------
+
+[primary_attack]
+ammo_cost               = 1
+cooldown                = 75ms
+cooldown_idle           = 600ms
+
+[event.primary_attack.projectile]
+type                    = other
+entity_class            = doom_plasmaball
+speed                   = 1
+position                = 0.00 0.00 -12.00
+
+[event.primary_attack.weapon_anim]
+anims                   = 1
+
+[event.primary_attack.weapon_sprite_anim]
+frames                  = 1 2 3
+offset_x                = 0 0 -40
+fps                     = 20.00
+
+[event.primary_attack.muzzle_flash]
+v_sprite_brighten       = 8
+
+[event.primary_attack.sound]
+volume_for_ai           = normal
+channel                 = weapon
+sound                   = doom/dsplasma.wav
+attenuation             = 0.80
+
+
+
+; --------------------------------
+; Idle events
+; --------------------------------
+
+[event.idle.weapon_anim]
+anims                   = 0
+
+[event.idle.weapon_sprite_anim]
+frames                  = 0
+fps                     = 1.00
