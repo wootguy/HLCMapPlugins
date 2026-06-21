@@ -6,8 +6,6 @@
 
 using namespace std;
 
-string getSteamID(CBasePlayer* plr);
-
 // Will create a new state if the requested one does not exit
 PlayerState& getPlayerState(CBasePlayer* plr);
 
@@ -31,12 +29,6 @@ enum spread_func
 };
 
 void HitScan(CBaseEntity* attacker, Vector vecSrc, Vector dir, float spread, float damage);
-
-float DamageForce(CBaseEntity* ent, float damage);
-int doomTakeDamage(CBaseEntity* ent, entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType);
-
-void DoomTraceAttack(CBaseEntity* victim, entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult tr, int bitsDamageType);
-void DoomRadiusDamage(Vector vecSrc, entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
 
 // Randomize the direction of a vector by some amount
 // Max degrees = 360, which makes a full sphere

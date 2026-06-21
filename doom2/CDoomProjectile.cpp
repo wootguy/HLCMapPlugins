@@ -3,17 +3,16 @@
 #include "CDoomProjectile.h"
 #include "doom_utils.h"
 #include "te_effects.h"
+#include "CDoomMonster.h"
+#include "weapons.h"
 
-float g_monster_scale = 1.42857f; // 1 / 0.7
-uint32_t g_monster_idx = 0;
-	
 void CDoomProjectile::Spawn()
 {
 	CDoomSprite::Spawn();
 	Precache();
 
 	if (!size)
-		size = 14; // prevent huge bbox
+		size = 4; // too big and projectiles hit walls behind you that you're touching
 
 	pev->movetype = MOVETYPE_FLY;
 	pev->solid = SOLID_BBOX;
@@ -92,12 +91,12 @@ void CDoomProjectile::Touch( CBaseEntity* pOther )
 		
 	int damage = RANDOM_LONG(damageMin, damageMax);
 	Vector oldVel = pOther->pev->velocity;
-	doomTakeDamage(pOther, pev, owner ? owner->pev : pev, damage, DMG_GENERIC);
+	pOther->TakeDamage(pev, owner ? owner->pev : pev, damage, DMG_GENERIC);
 	pOther->pev->velocity = oldVel; // prevent vertical launching
 	knockBack(pOther, pev->velocity.Normalize()*(100 + damage*2));
 		
 	if (radiusDamage > 0)
-		DoomRadiusDamage(pev->origin, pev, owner ? owner->pev : pev, radiusDamage, radiusDamage*g_monster_scale, 0, DMG_BLAST);
+		RadiusDamage(pev->origin, pev, owner ? owner->pev : pev, radiusDamage, radiusDamage*g_monster_scale, 0, DMG_BLAST);
 		
 	if (is_bfg && owner )
 	{
@@ -127,7 +126,7 @@ void CDoomProjectile::Touch( CBaseEntity* pOther )
 				{
 					float rayDamage = RANDOM_LONG(47, 87);
 					Vector oldRayVel = pHit->pev->velocity;	
-					doomTakeDamage(pHit, owner->pev, owner->pev, rayDamage, DMG_SHOCK);
+					pHit->TakeDamage(owner->pev, owner->pev, rayDamage, DMG_SHOCK);
 					pHit->pev->velocity = oldRayVel; // prevent high damage from launching unless we ask for it (unless DMG_LAUNCH)
 						
 					if (!targets.count(pHit->entindex()))
@@ -188,7 +187,7 @@ void CDoomProjectile::Think()
 		return;
 	}
 	frameCounter++;
-		
+	
 	UTIL_SetOrigin(pev, pev->origin);
 		
 	if (dead)
@@ -264,4 +263,8 @@ void CDoomProjectile::Think()
 		Touch(CBaseEntity::Instance(0));
 	}
 	lastVelocity = pev->velocity;
+
+	UTIL_MakeVectors(pev->angles);
+	forwardDir = gpGlobals->v_forward;
+	rightDir = gpGlobals->v_right;
 }

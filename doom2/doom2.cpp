@@ -4,12 +4,12 @@
 #include "PluginHooks.h"
 #include "CBasePlayer.h"
 #include "Scheduler.h"
-
-
-
+#include "shake.h"
+#include "te_effects.h"
 
 #include "doom2.h"
 #include "doom_utils.h"
+#include "CDoomMonster.h"
 
 using namespace std;
 
@@ -99,6 +99,9 @@ const char* g_ep_music = "doom/episode.mp3";
 
 Vector g_spawn_room_pos;
 
+// list of ents that need brightness updated manually
+vector<EHANDLE> g_illuminate_ents;
+
 enum key_types
 {
 	KEY_BLUE = 1,
@@ -129,6 +132,8 @@ vector<string> sprite_angles = {
 	"1", "2?8", "3?7", "4?6", "5", "6?4", "7?3", "8?2"
 };
 
+int g_blud_sprite;
+
 string base36(int num)
 {
 	string b36;
@@ -147,89 +152,6 @@ HOOK_RETURN_DATA MapInit()
 {
 	g_wait_for_noobs = strstr(STRING(gpGlobals->mapname), "doom2_ep1") == 0;
 	/*
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_imp", "monster_imp");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_zombieman", "monster_zombieman");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_shotgunguy", "monster_shotgunguy");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_hwdude", "monster_hwdude");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_demon", "monster_demon");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_cacodemon", "monster_cacodemon");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_lostsoul", "monster_lostsoul");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_baron", "monster_baron");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_hellknight", "monster_hellknight");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_cyberdemon", "monster_cyberdemon");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_spiderdemon", "monster_spiderdemon");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_revenant", "monster_revenant");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_mancubus", "monster_mancubus");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_arachnotron", "monster_arachnotron");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_painelemental", "monster_painelemental");
-	g_CustomEntityFuncs.RegisterCustomEntity("monster_archvile", "monster_archvile");
-
-	g_CustomEntityFuncs.RegisterCustomEntity("func_doom_door", "func_doom_door");
-	g_CustomEntityFuncs.RegisterCustomEntity("func_doom_water", "func_doom_water");
-	g_CustomEntityFuncs.RegisterCustomEntity("trigger_doom_teleport", "trigger_doom_teleport");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_barrel", "item_barrel");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_prop", "item_prop");
-	g_CustomEntityFuncs.RegisterCustomEntity("info_node_sound", "info_node_sound");
-
-	g_CustomEntityFuncs.RegisterCustomEntity("weapon_doom_fist", "weapon_doom_fist");
-	g_CustomEntityFuncs.RegisterCustomEntity("weapon_doom_chainsaw", "weapon_doom_chainsaw");
-	g_CustomEntityFuncs.RegisterCustomEntity("weapon_doom_pistol", "weapon_doom_pistol");
-	g_CustomEntityFuncs.RegisterCustomEntity("weapon_doom_chaingun", "weapon_doom_chaingun");
-	g_CustomEntityFuncs.RegisterCustomEntity("weapon_doom_shotgun", "weapon_doom_shotgun");
-	g_CustomEntityFuncs.RegisterCustomEntity("weapon_doom_supershot", "weapon_doom_supershot");
-	g_CustomEntityFuncs.RegisterCustomEntity("weapon_doom_rpg", "weapon_doom_rpg");
-	g_CustomEntityFuncs.RegisterCustomEntity("weapon_doom_plasmagun", "weapon_doom_plasmagun");
-	g_CustomEntityFuncs.RegisterCustomEntity("weapon_doom_bfg", "weapon_doom_bfg");
-	UTIL_RegisterWeapon("weapon_doom_fist", "doom" + beta_dir2, "");
-	UTIL_RegisterWeapon("weapon_doom_chainsaw", "doom" + beta_dir2, "");
-	UTIL_RegisterWeapon("weapon_doom_pistol", "doom" + beta_dir2, "bullets", "", "ammo_doom_bullets");
-	UTIL_RegisterWeapon("weapon_doom_chaingun", "doom" + beta_dir2, "bullets", "", "ammo_doom_bulletbox");
-	UTIL_RegisterWeapon("weapon_doom_shotgun", "doom" + beta_dir2, "shells", "", "ammo_doom_shells");
-	UTIL_RegisterWeapon("weapon_doom_supershot", "doom" + beta_dir2, "shells", "", "ammo_doom_shells");
-	UTIL_RegisterWeapon("weapon_doom_rpg", "doom" + beta_dir2, "rockets", "", "ammo_doom_rocket");
-	UTIL_RegisterWeapon("weapon_doom_plasmagun", "doom" + beta_dir2, "cells", "", "ammo_doom_cells");
-	UTIL_RegisterWeapon("weapon_doom_bfg", "doom" + beta_dir2, "cells", "", "ammo_doom_cells");
-
-	g_CustomEntityFuncs.RegisterCustomEntity("ammo_doom_bullets", "ammo_doom_bullets");
-	g_CustomEntityFuncs.RegisterCustomEntity("ammo_doom_bulletbox", "ammo_doom_bulletbox");
-	g_CustomEntityFuncs.RegisterCustomEntity("ammo_doom_shells", "ammo_doom_shells");
-	g_CustomEntityFuncs.RegisterCustomEntity("ammo_doom_shellbox", "ammo_doom_shellbox");
-	g_CustomEntityFuncs.RegisterCustomEntity("ammo_doom_rocket", "ammo_doom_rocket");
-	g_CustomEntityFuncs.RegisterCustomEntity("ammo_doom_rocketbox", "ammo_doom_rocketbox");
-	g_CustomEntityFuncs.RegisterCustomEntity("ammo_doom_cells", "ammo_doom_cells");
-	g_CustomEntityFuncs.RegisterCustomEntity("ammo_doom_cellbox", "ammo_doom_cellbox");
-	g_CustomEntityFuncs.RegisterCustomEntity("ammo_doom_shotgun", "ammo_doom_shotgun");
-	g_CustomEntityFuncs.RegisterCustomEntity("ammo_doom_chaingun", "ammo_doom_chaingun");
-
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_stimpak", "item_doom_stimpak");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_medkit", "item_doom_medkit");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_potion", "item_doom_potion");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_armor_bonus", "item_doom_armor_bonus");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_armor", "item_doom_armor");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_megaarmor", "item_doom_megaarmor");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_megasphere", "item_doom_megasphere");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_soulsphere", "item_doom_soulsphere");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_god", "item_doom_god");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_berserk", "item_doom_berserk");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_invis", "item_doom_invis");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_suit", "item_doom_suit");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_goggles", "item_doom_goggles");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_backpack", "item_doom_backpack");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_key_red", "item_doom_key_red");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_key_blue", "item_doom_key_blue");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_key_yellow", "item_doom_key_yellow");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_skull_red", "item_doom_skull_red");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_skull_blue", "item_doom_skull_blue");
-	g_CustomEntityFuncs.RegisterCustomEntity("item_doom_skull_yellow", "item_doom_skull_yellow");
-
-	g_CustomEntityFuncs.RegisterCustomEntity("fireball", "fireball");
-	
-	g_Hooks.RegisterHook(Hooks::Player::ClientSay, *ClientSay);
-	g_Hooks.RegisterHook(Hooks::Player::PlayerUse, *PlayerUse);
-	g_Hooks.RegisterHook(Hooks::Player::PlayerPostThink, *PlayerPostThink);
-	g_Hooks.RegisterHook(Hooks::Player::ClientPutInServer, *ClientJoin);
-	
-
 	PrecacheModel("models/hlclassic/p_9mmhandgun.mdl");
 	PrecacheModel("models/hlclassic/p_egon.mdl");
 	PrecacheModel("models/hlclassic/p_gauss.mdl");
@@ -239,59 +161,6 @@ HOOK_RETURN_DATA MapInit()
 	PrecacheModel("models/custom_weapons/cs16/p_chainsaw.mdl");
 	PrecacheModel("models/custom_weapons/cs16/p_m1887.mdl");
 
-	PrecacheModel("sprites/doom/objects.spr");
-	PrecacheModel("sprites/doom/keys.spr");
-	PrecacheModel("sprites/doom/bal.spr");
-	PrecacheModel("sprites/doom/bal7.spr");
-	PrecacheModel("sprites/doom/misl.spr");
-	PrecacheModel("sprites/doom/bfe2.spr");
-	PrecacheModel("sprites/doom/puff.spr");
-	PrecacheModel("sprites/doom/blud.spr");
-	PrecacheModel("sprites/doom/tfog.spr");
-	PrecacheModel("sprites/doom/fatb.spr");
-	PrecacheModel("sprites/doom/manf.spr");
-	PrecacheModel("sprites/doom/fire.spr");
-	PrecacheModel("models/doom/null.mdl");
-	PrecacheModel("sprites/null.spr");
-
-	PrecacheModel("sprites/doom/fist.spr");
-	PrecacheModel("sprites/doom/chainsaw.spr");
-	PrecacheModel("sprites/doom/pistol.spr");
-	PrecacheModel("sprites/doom/chaingun.spr");
-	PrecacheModel("sprites/doom/shotgun.spr");
-	PrecacheModel("sprites/doom/supershot.spr");
-	PrecacheModel("sprites/doom/rpg.spr");
-	PrecacheModel("sprites/doom/plasmagun.spr");
-	PrecacheModel("sprites/doom/bfg.spr");
-	PrecacheModel("sprites/doom/text.spr");
-
-	PrecacheGeneric("sprites/doom/weapon_doom_fist.txt");
-	PrecacheGeneric("sprites/doom/weapon_doom_chainsaw.txt");
-	PrecacheGeneric("sprites/doom/weapon_doom_pistol.txt");
-	PrecacheGeneric("sprites/doom/weapon_doom_chaingun.txt");
-	PrecacheGeneric("sprites/doom/weapon_doom_shotgun.txt");
-	PrecacheGeneric("sprites/doom/weapon_doom_supershot.txt");
-	PrecacheGeneric("sprites/doom/weapon_doom_rpg.txt");
-	PrecacheGeneric("sprites/doom/weapon_doom_bfg.txt");
-
-	PrecacheSound("doom/dsfirsht.wav");
-	PrecacheSound("doom/dsfirxpl.wav");
-	PrecacheSound("doom/dsrlaunc.wav");
-	PrecacheSound("doom/dsbarexp.wav");
-	PrecacheSound("doom/supershot.wav");
-	PrecacheSound("doom/dspunch.wav");
-	PrecacheSound("doom/dssawup.wav");
-	PrecacheSound("doom/dssawidl.wav");
-	PrecacheSound("doom/dssawful.wav");
-	PrecacheSound("doom/dssawhit.wav");
-	PrecacheSound("doom/dsplasma.wav");
-	PrecacheSound("doom/dsskeatk.wav");
-	PrecacheSound("doom/dsrxplod.wav");
-	PrecacheSound("doom/dsbfg.wav");
-	PrecacheSound("doom/dsgetpow.wav");
-	PrecacheSound("doom/dstelept.wav");
-	PrecacheSound("doom/dswpnup.wav");
-	PrecacheSound("doom/dsflame.wav");
 	PrecacheSound("doom/dsskldth.wav"); // player use
 	PrecacheSound("doom/dsplpain.wav"); // player pain
 	PrecacheSound("doom/dspldeth.wav"); // player death
@@ -305,6 +174,10 @@ HOOK_RETURN_DATA MapInit()
 
 	PRECACHE_SOUND_NULLENT(g_inter_music);
 	PRECACHE_SOUND_NULLENT(g_ep_music);
+	PRECACHE_SOUND_NULLENT("doom/dsplpain.wav");
+	PRECACHE_SOUND_NULLENT("doom/dsfirsht.wav");
+
+	g_blud_sprite = PRECACHE_MODEL_NULLENT("sprites/doom/blud.spr");
 
 	return HOOK_CONTINUE;
 }
@@ -608,20 +481,20 @@ void level_started(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useTy
 				if (cname == "trigger_once" && targ == "secret_revealed")
 					g_total_secrets += 1;
 
-				ALERT(at_error, "TODO: monster radius damage\n");
-				/*
 				if (cname.find("monster_") == 0)
 				{
-					monster_doom* mon = cast<monster_doom*>(CastToScriptClass(ent));
-					CBaseMonster* bmon = cast<CBaseMonster*>(ent);
+					CBaseMonster* bmon = ent->MyMonsterPointer();
+					CDoomMonster* mon = (CDoomMonster*)bmon;
 					if (bmon)
-						bmon.m_iszTriggerTarget = prefix + bmon.m_iszTriggerTarget;
+						bmon->m_iszTriggerTarget = ALLOC_STRING((prefix + STRING(bmon->m_iszTriggerTarget)).c_str());
 					if (mon)
-						mon.Setup();
+						mon->Setup();
 					g_total_monsters += 1;
 				}
 
-				if (string(ent->pev->classname).Find("item_doom_") == 0)
+				ALERT(at_error, "TODO: Item init\n");
+				/*
+				if (string(STRING(ent->pev->classname)).find("item_doom_") == 0)
 				{
 					item_doom* item = cast<item_doom*>(CastToScriptClass(ent));
 					if (item.intermission)
@@ -1213,12 +1086,65 @@ bool CmdCheckScore(CBasePlayer* plr, const CommandArgs& args) {
 	return true;
 }
 
+HOOK_RETURN_DATA PlayerTakeDamage(CBasePlayer* plr, entvars_t* pevInflictor, entvars_t* pevAttacker, float& flDamage, int& bitsDamageType) {
+	if (plr->pev->deadflag == DEAD_NO)
+	{
+		// no pain sound during death animation.
+		EMIT_SOUND_DYN(plr->edict(), CHAN_STATIC, "doom/dsplpain.wav", 1.0f, 1.0f, 0, 100);
+		UTIL_ScreenFade(plr, Vector(255, 0, 0), 0.2f, 0, 32, FFADE_IN);
+	}
+
+	return HOOK_CONTINUE;
+}
+
+HOOK_RETURN_DATA DoomBlood(Vector& vecSpot, int& bloodColor, float& flDamage) {
+	UTIL_SpriteSpray(vecSpot, Vector(0, 0, 1), g_blud_sprite, 1, 10, 0);
+
+	//int spr1 = MODEL_INDEX("sprites/doom/blud.spr");
+	//int spr2 = MODEL_INDEX("sprites/blood.spr");
+	//UTIL_BloodSprite(vecOrigin, spr1, spr2, 70, 50);
+
+	return HOOK_CONTINUE_OVERRIDE(0);
+}
+
+HOOK_RETURN_DATA DoomSetModel(edict_t* edict, const char* model) {
+	static StringSet watched_ents = {
+		"weaponbox"
+	};
+
+	if (watched_ents.hasKey(STRING(edict->v.classname))) {
+		if (UTIL_ModelIsSprite(edict->v.modelindex)) {
+			g_illuminate_ents.push_back(EHANDLE(edict));
+		}
+	}
+
+	return HOOK_CONTINUE;
+}
+
+void update_sprite_brightness() {
+	for (int i = 0; i < g_illuminate_ents.size(); i++) {
+		CBaseEntity* ent = g_illuminate_ents[i];
+		if (!ent) {
+			g_illuminate_ents.erase(g_illuminate_ents.begin() + i);
+			i--;
+			continue;
+		}
+
+		ent->pev->rendercolor = g_bsp.get_lighting(ent->pev->origin).ApplyGamma().ToVector();
+	}
+}
+
 extern "C" int DLLEXPORT PluginInit() {
 	static HLCOOP_PLUGIN_HOOKS g_hooks;
 
 	g_hooks.pfnPlayerUse = PlayerUse;
 	g_hooks.pfnClientJoin = ClientJoin;
 	g_hooks.pfnPlayerPostThink = PlayerPostThink;
+	g_hooks.pfnPlayerTakeDamage = PlayerTakeDamage;
+	g_hooks.pfnSpawnBlood = DoomBlood;
+	g_hooks.pfnMapInit = MapInit;
+	g_hooks.pfnMapStart = MapActivate;
+	g_hooks.pfnSetModelPost = DoomSetModel;
 
 	g_dmgScale = RegisterPluginCVar("dmg_scale", "1", 1, 0);
 
@@ -1231,6 +1157,8 @@ extern "C" int DLLEXPORT PluginInit() {
 	RegisterPluginEntCallback(level_started);
 	RegisterPluginEntCallback(secret_revealed);
 	RegisterPluginEntCallback(player_killed);
+
+	g_Scheduler.SetInterval(update_sprite_brightness, 0.05f , -1);
 
 	return RegisterPlugin(&g_hooks);
 }
@@ -1262,17 +1190,6 @@ LINK_ENTITY_TO_CLASS(item_doom_potion, CNullEntity)
 LINK_ENTITY_TO_CLASS(item_doom_soulsphere, CNullEntity)
 LINK_ENTITY_TO_CLASS(item_doom_stimpak, CNullEntity)
 LINK_ENTITY_TO_CLASS(item_prop, CNullEntity)
-
-LINK_ENTITY_TO_CLASS(monster_imp, CNullEntity)
-LINK_ENTITY_TO_CLASS(monster_zombieman, CNullEntity)
-LINK_ENTITY_TO_CLASS(monster_cacodemon, CNullEntity)
-LINK_ENTITY_TO_CLASS(monster_demon, CNullEntity)
-LINK_ENTITY_TO_CLASS(monster_hellknight, CNullEntity)
-LINK_ENTITY_TO_CLASS(monster_hwdude, CNullEntity)
-LINK_ENTITY_TO_CLASS(monster_lostsoul, CNullEntity)
-LINK_ENTITY_TO_CLASS(monster_revenant, CNullEntity)
-LINK_ENTITY_TO_CLASS(monster_shotgunguy, CNullEntity)
-LINK_ENTITY_TO_CLASS(monster_spiderdemon, CNullEntity)
 
 LINK_ENTITY_TO_CLASS(ammo_doom_bulletbox, CNullEntity)
 LINK_ENTITY_TO_CLASS(ammo_doom_bullets, CNullEntity)

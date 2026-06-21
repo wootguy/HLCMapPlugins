@@ -5,7 +5,10 @@ add_library(${PROJECT_NAME} SHARED
 	doom_utils.h		doom_utils.cpp
 	CDoomSprite.h		CDoomSprite.cpp
 	CDoomProjectile.h	CDoomProjectile.cpp
+	CDoomMonster.h		CDoomMonster.cpp
+	sound_nodes.h		sound_nodes.cpp
 	projectiles.cpp
+	monsters.cpp
 )
 
 hlcoop_setup_plugin("plugins/maps/")

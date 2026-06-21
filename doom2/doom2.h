@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include "sound_nodes.h"
 
 struct PlayerState
 {
@@ -11,7 +12,7 @@ struct PlayerState
 	float lastHudKeys = 0; // last time key hud was updated
 	int hudKeys = 0; // last key set displayed
 	//PlayerViewMode viewMode = ViewMode_FirstPerson;
-	//SoundNode* soundNode = NULL;
+	SoundNode* soundNode = NULL;
 	bool acceptedStrafeBug = false;
 
 	float suitTimeLeft() { return lastSuit > 0 ? 60.0f - (gpGlobals->time - lastSuit) : 0; }
@@ -22,3 +23,6 @@ struct PlayerState
 
 extern cvar_t* g_dmgScale;
 extern std::unordered_map<uint64_t, PlayerState> g_player_states;
+
+extern int g_kills;
+extern bool debug_mode;

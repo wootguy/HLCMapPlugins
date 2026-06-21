@@ -4,20 +4,7 @@
 #include "CDoomSprite.h"
 #include "doom_utils.h"
 
-void CDoomSprite::Spawn() {
-	pev->solid = SOLID_NOT;
-	pev->movetype = MOVETYPE_NONE;
-
-	Precache();
-	SET_MODEL(ENT(pev), STRING(pev->model));
-	UTIL_SetSize(pev, g_vecZero, g_vecZero);
-}
-
-void CDoomSprite::Precache() {
-	PRECACHE_MODEL((char*)STRING(pev->model));
-}
-
-int CDoomSprite::GetSpriteAngle(Vector spritePos, Vector spriteForward, Vector spriteRight, Vector lookPos)
+int GetSpriteAngle(Vector spritePos, Vector spriteForward, Vector spriteRight, Vector lookPos)
 {
 	Vector delta = spritePos - lookPos;
 	delta.z = 0;
@@ -40,17 +27,28 @@ int CDoomSprite::GetSpriteAngle(Vector spritePos, Vector spriteForward, Vector s
 	return 4;
 }
 
+void CDoomSprite::Spawn() {
+	pev->solid = SOLID_NOT;
+	pev->movetype = MOVETYPE_NONE;
+
+	Precache();
+	SET_MODEL(ENT(pev), STRING(pev->model));
+	UTIL_SetSize(pev, g_vecZero, g_vecZero);
+}
+
+void CDoomSprite::Precache() {
+	PRECACHE_MODEL((char*)STRING(pev->model));
+}
+
 int CDoomSprite::AddToFullPack(struct entity_state_s* state, CBasePlayer* player) {
 	state->movetype = MOVETYPE_NOCLIP; // interpolate without running movement code
 
 	if (oriented) {
-		g_engfuncs.pfnMakeVectors(pev->angles);
-		Vector forward = gpGlobals->v_forward;
-		Vector right = gpGlobals->v_right;
-		int angleIdx = GetSpriteAngle(pev->origin, forward, right, player->pev->origin);
-
+		int angleIdx = GetSpriteAngle(pev->origin, forwardDir, rightDir, player->pev->origin);
 		state->frame = pev->frame * 8 + angleIdx;
 	}
-	
+
 	return 1;
 }
+
+LINK_ENTITY_TO_CLASS(doom_sprite, CDoomSprite)
