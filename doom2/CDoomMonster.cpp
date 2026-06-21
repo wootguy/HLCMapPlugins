@@ -60,7 +60,7 @@ void CDoomMonster::KeyValue(KeyValueData* pkvd)
 {
 	if (FStrEq(pkvd->szKeyName, "spectre"))
 	{
-		isSpectre = atoi(pkvd->szValue) != 9;
+		isSpectre = atoi(pkvd->szValue) != 0;
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "doom_flags"))

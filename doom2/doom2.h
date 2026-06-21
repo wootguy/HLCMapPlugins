@@ -2,6 +2,16 @@
 #include <unordered_map>
 #include "sound_nodes.h"
 
+enum key_types
+{
+	KEY_BLUE = 1,
+	KEY_YELLOW = 2,
+	KEY_RED = 4,
+	SKULL_BLUE = 8,
+	SKULL_YELLOW = 16,
+	SKULL_RED = 32,
+};
+
 struct PlayerState
 {
 	float lastAttack; // time this player last attacked with a weapon (used to temporarily disable invisibility)
@@ -25,4 +35,6 @@ extern cvar_t* g_dmgScale;
 extern std::unordered_map<uint64_t, PlayerState> g_player_states;
 
 extern int g_kills;
+extern int g_keys;
 extern bool debug_mode;
+extern int g_item_gets;

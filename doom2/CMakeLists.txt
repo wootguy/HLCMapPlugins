@@ -9,6 +9,7 @@ add_library(${PROJECT_NAME} SHARED
 	sound_nodes.h		sound_nodes.cpp
 	projectiles.cpp
 	monsters.cpp
+	items.cpp
 )
 
 hlcoop_setup_plugin("plugins/maps/")

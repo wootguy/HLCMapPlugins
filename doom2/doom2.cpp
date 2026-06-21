@@ -102,16 +102,6 @@ Vector g_spawn_room_pos;
 // list of ents that need brightness updated manually
 vector<EHANDLE> g_illuminate_ents;
 
-enum key_types
-{
-	KEY_BLUE = 1,
-	KEY_YELLOW = 2,
-	KEY_RED = 4,
-	SKULL_BLUE = 8,
-	SKULL_YELLOW = 16,
-	SKULL_RED = 32,
-};
-
 class VisEnt
 {
 	bool visible;
@@ -175,6 +165,7 @@ HOOK_RETURN_DATA MapInit()
 	PRECACHE_SOUND_NULLENT(g_inter_music);
 	PRECACHE_SOUND_NULLENT(g_ep_music);
 	PRECACHE_SOUND_NULLENT("doom/dsplpain.wav");
+	PRECACHE_SOUND_NULLENT("doom/dspldeth.wav");
 	PRECACHE_SOUND_NULLENT("doom/dsfirsht.wav");
 
 	g_blud_sprite = PRECACHE_MODEL_NULLENT("sprites/doom/blud.spr");
@@ -1173,30 +1164,6 @@ public:
 	virtual int	GetEntindexPriority() { return ENTIDX_PRIORITY_LOW; }
 	void Spawn(void) { UTIL_Remove(this); }
 };
-
-LINK_ENTITY_TO_CLASS(item_barrel, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_armor, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_armor_bonus, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_backpack, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_berserk, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_invis, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_key_blue, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_key_red, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_key_yellow, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_medkit, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_megaarmor, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_megasphere, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_potion, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_soulsphere, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_doom_stimpak, CNullEntity)
-LINK_ENTITY_TO_CLASS(item_prop, CNullEntity)
-
-LINK_ENTITY_TO_CLASS(ammo_doom_bulletbox, CNullEntity)
-LINK_ENTITY_TO_CLASS(ammo_doom_bullets, CNullEntity)
-LINK_ENTITY_TO_CLASS(ammo_doom_cellbox, CNullEntity)
-LINK_ENTITY_TO_CLASS(ammo_doom_rocketbox, CNullEntity)
-LINK_ENTITY_TO_CLASS(ammo_doom_shellbox, CNullEntity)
-LINK_ENTITY_TO_CLASS(ammo_doom_shells, CNullEntity)
 
 LINK_ENTITY_TO_CLASS(func_doom_door, CNullEntity)
 LINK_ENTITY_TO_CLASS(func_doom_water, CNullEntity)
