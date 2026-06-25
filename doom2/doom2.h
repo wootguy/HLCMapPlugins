@@ -38,3 +38,6 @@ extern int g_kills;
 extern int g_keys;
 extern bool debug_mode;
 extern int g_item_gets;
+extern bool g_strict_keys;
+
+void DoomBlood(Vector vecSpot);

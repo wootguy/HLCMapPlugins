@@ -10,20 +10,46 @@
 #include "doom2.h"
 #include "doom_utils.h"
 #include "CDoomMonster.h"
+#include "CDoomDoor.h"
+#include "CDoomItem.h"
 
 using namespace std;
 
-// TODO:
-// delay moving platforms
+// HL Port todo:
+// crazy hl weaponm bob
+// crazy drop items launch speed
+// anim textures for water
+// monsters / corpses are usable
+// door sound not playing if outside world
+// barrel dlight, also too dark ?
+// floating barrels map 2
+// too much ammo given with ammo_doom_Shotgun/chaingun
+// 2nd shot accuracy for chaingun
+// spectre mode not working pinkies map 3
+// shotungs not shooting thru window map 4
+// light toggles not working map 4
+// lamp in final room not lit map 4
+// intermission music not working
+// tp sound not working on low prio edict
+// no special effect for sol spherE?
+// dont remove corpses?
+// blood too bright and not animated
+// note precached: hell knight ball, revanent ball
+// bfg doesnt work
+// tp cooldown not working map 6 maybe at the green slime room
+// too many edicts map 2. delay spawn monsters and things
+// plasma gun has cooldown after stop firing
+// bullets shoot thru monsters
+// cyberdemon on circle of doom?
+// chaingun minimum burst fire of 2 (also perfect accuracy)
+// too much ammo given with weapon drops
+// backpack increases ammo capacity
+// projectiles dont collide in og
 
 // TODO (bugs I'm ignoring cuz 2 lazy):
-// oriented fireballs aren't always visible (seems related to amount of active monsters)
 // pain elemental gets stuck when shooting shulls sometimes 
-// revived monsters sometimes invisible until your view angle changes
 // map11 souls trying to kill each other but hitting ceiling
 // monsters aim too high
-// somehow exceeding ammo limits (dropped weapons?)
-// weapon sprites skip frames with high ping (need to redo everything with models :'<)
 // fall through level in dead simple next to teleport at start
 // cacdemon gets stuck at tiny lips when it could easily float around them
 // player models should be doom guy sprite (colored?)
@@ -37,9 +63,7 @@ using namespace std;
 // items sometimes sink into ground && u cant pickup
 // solid fireballs bounce off each other (tried SOLID_TOUCH already, projectiles kinda have to be solid)
 // crushers should go past monsters || go up after a while
-// use MOVETYPE_FOLLOW to reduce net usage (tried it but monsters flicker because sprite stops following when nodraw applied)
 // (doom door breaks regular doors): 10:11 AM - Streamfaux: Yeah better be waiting. Also you should investigate this just in case. Putting a door with a targetname && a button targgeting it should be enough to test. And I meanfunc_door && func_button.
-// being revived breaks weapons with mp_weapon_droprules 1
 // teleport on exit logic (tricks && traps imp room)
 
 // NOTE: ep2 needs Normalized clip type || else you fall through level in tricks && traps near end-tele
@@ -118,10 +142,6 @@ class VisEnt
 
 unordered_map<uint64_t, PlayerState> g_player_states;
 
-vector<string> sprite_angles = {
-	"1", "2?8", "3?7", "4?6", "5", "6?4", "7?3", "8?2"
-};
-
 int g_blud_sprite;
 
 string base36(int num)
@@ -167,15 +187,16 @@ HOOK_RETURN_DATA MapInit()
 	PRECACHE_SOUND_NULLENT("doom/dsplpain.wav");
 	PRECACHE_SOUND_NULLENT("doom/dspldeth.wav");
 	PRECACHE_SOUND_NULLENT("doom/dsfirsht.wav");
+	PRECACHE_SOUND_NULLENT("doom/dssecret.wav");
 
 	g_blud_sprite = PRECACHE_MODEL_NULLENT("sprites/doom/blud.spr");
+	PRECACHE_MODEL_NULLENT("sprites/doom/text.spr");
 
 	return HOOK_CONTINUE;
 }
 
 HOOK_RETURN_DATA MapActivate()
 {
-	/*
 	vector<CBaseEntity*> doors;
 	vector<CBaseEntity*> buttons;
 
@@ -184,39 +205,39 @@ HOOK_RETURN_DATA MapActivate()
 		ent = UTIL_FindEntityByClassname(ent, "func_doom_door");
 		if (ent)
 		{
-			func_doom_door* door = cast<func_doom_door*>(CastToScriptClass(ent));
-			if (door.isButton)
+			CDoomDoor* door = (CDoomDoor*)ent;
+			if (door->isButton)
 				buttons.push_back(ent);
 			else
 				doors.push_back(ent);
 		}
 	} while (ent);
 
-	*ent = NULL;
+	ent = NULL;
 	do {
-		*ent = UTIL_FindEntityByClassname(ent, "env_sprite");
+		ent = UTIL_FindEntityByClassname(ent, "env_sprite");
 		if (ent)
 		{
-			SET_MODEL(ent, fixPath("sprites/doom/text.spr"));
+			SET_MODEL(ent->edict(), "sprites/doom/text.spr");
 		}
 	} while (ent);
 
-	for (uint i = 0; i < buttons.length(); i++)
+	for (int i = 0; i < buttons.size(); i++)
 	{
-		for (uint k = 0; k < doors.length(); k++)
+		for (int k = 0; k < doors.size(); k++)
 		{
-			if (buttons[i]->pev->spawnflags & FL_DOOR_BUTTON_DONT_MOVE == 0 && buttons[i].Intersects(doors[k]))
+			if (!(buttons[i]->pev->spawnflags & FL_DOOR_BUTTON_DONT_MOVE) && buttons[i]->Intersects(doors[k]))
 			{
 				//println("GOT INTERSECT " + buttons[i]->pev->targetname + " " + doors[k]->pev->targetname);
-				func_doom_door* button = cast<func_doom_door*>(CastToScriptClass(buttons[i]));
-				func_doom_door* door = cast<func_doom_door*>(CastToScriptClass(doors[k]));
-				button.dir = door.dir;
-				button.m_flLip = door.m_flLip;
+				CDoomDoor* button = (CDoomDoor*)buttons[i];
+				CDoomDoor* door = (CDoomDoor*)doors[k];
+				button->dir = door->dir;
+				button->m_flLip = door->m_flLip;
 				button->pev->speed = door->pev->speed;
-				button.m_vecPosition2 = button->pev->origin + Vector(0, 0, (button.dir * (door->pev->size.z - 2)) - button.dir * button.m_flLip);
+				button->m_vecPosition2 = button->pev->origin + Vector(0, 0, (button->dir * (door->pev->size.z - 2)) - button->dir * button->m_flLip);
 
-				door.sync_buttons.push_back(EHANDLE(buttons[i]));
-				button.parent = ent;
+				door->sync_buttons.push_back(EHANDLE(buttons[i]->edict()));
+				button->parent = ent;
 			}
 		}
 	}
@@ -231,30 +252,29 @@ HOOK_RETURN_DATA MapActivate()
 	CBaseEntity* spawn_room = UTIL_FindEntityByTargetname(NULL, "map_start");
 	g_spawn_room_pos = spawn_room ? spawn_room->pev->origin : Vector(0, 0, 0);
 
-	dictionary keys;
-	keys["origin"] = g_spawn_room_pos.ToString();
-	keys["targetname"] = "secret_revealed";
-	keys["m_iszScriptFile"] = "doom/doom.as";
-	keys["m_iszScriptFunctionName"] = "secret_revealed";
-	keys["m_iMode"] = "1";
-	keys["delay"] = "0";
-	CreateEntity("trigger_script", keys, true);
+	CBaseEntity::Create("trigger_script", g_spawn_room_pos, g_vecZero, true, NULL, {
+		{"targetname", "secret_revealed"},
+		{"m_iszScriptFile", "doom/doom.as"},
+		{"m_iszScriptFunctionName", "secret_revealed"},
+		{"m_iMode", "1"},
+		{"delay", "0"},
+	});
 
+	CBaseEntity::Create("ambient_music", g_vecZero, g_vecZero, true, NULL, {
+		{"targetname", "inter_music"},
+		{"volume", "10"},
+		{"message", g_inter_music},
+		{"spawnflags", "3"}, 
+	});
 
-	keys["targetname"] = "inter_music";
-	keys["volume"] = "10";
-	keys["message"] = g_inter_music;
-	keys["spawnflags"] = "3";
-	CreateEntity("ambient_music", keys, true);
-
-	keys["targetname"] = "ep_music";
-	keys["volume"] = "10";
-	keys["message"] = g_ep_music;
-	keys["spawnflags"] = "3";
-	CreateEntity("ambient_music", keys, true);
+	CBaseEntity::Create("ambient_music", g_vecZero, g_vecZero, true, NULL, {
+		{"targetname", "ep_music"},
+		{"volume", "10"},
+		{"message", g_ep_music},
+		{"spawnflags", "3"}, 
+	});
 
 	createSoundGraph();
-	*/
 
 	return HOOK_CONTINUE;
 }
@@ -330,63 +350,50 @@ void resetTimer()
 
 HOOK_RETURN_DATA PlayerPostThink(CBasePlayer* plr)
 {
-	/*
-	PlayerState* state = getPlayerState(plr);
+	PlayerState& state = getPlayerState(plr);
 
 	HUDSpriteParams params;
-	string hud_sprite = fixPath("sprites/doom/keys.spr");
-	params.spritename = hud_sprite.SubString("sprites/".Length()); // so resguy doesn't get confused
-	params.width = 0;
-	params.flags = HUD_SPR_MASKED | HUD_ELEM_ABSOLUTE_Y | HUD_ELEM_ABSOLUTE_X;
-	params.holdTime = 99999.0f;
-	params.color1 = RGBA(255, 255, 255, 255);
+	memset(&params, 0, sizeof(params));
+	params.spr.width = 0;
+	params.hud.flags = HUD_SPR_OPAQUE | HUD_SPR_MASKED | HUD_ELEM_MSG_PIXEL_POS | HUD_SPR_USE_CONFIG;
+	params.hud.holdTime = 99999.0f;
+	params.hud.color1 = RGB(255, 255, 255);
 
-	float sprScale = g_spr_scales[state.uiScale];
-	int sprHeight = int(sprScale * 6);
-	float baseX = -sprScale * 5 * 2;
-	float baseY = 50;
-	params.x = baseX;
-	params.y = baseY;
+	int sprHeight = 18;
+	float baseX = -30;
+	float baseY = 55;
+	params.hud.xPixels = baseX;
+	params.hud.yPixels = baseY;
 
 	if (state.lastHudKeys + 10.0f < gpGlobals->time || state.hudKeys != g_keys)
 	{
 		state.lastHudKeys = gpGlobals->time;
 		state.hudKeys = g_keys;
-		for (uint i = 0; i < 6; i++)
+		for (int i = 0; i < 6; i++)
 		{
-			params.channel = 9 + i;
-			params.frame = state.uiScale * 6 + i;
+			params.hud.channel = i;
 			if (i == 3) // skull keys
 			{
-				params.y = baseY - sprScale * 2;
-				params.x = baseX + sprScale * 9;
+				params.hud.xPixels = baseX - 20;
+				params.hud.yPixels = baseY - 3;
 			}
 
-			if (g_keys & (1 << i) == 0)
+			if ((g_keys & (1 << i)) == 0)
 			{
 				HUDSpriteParams offparams;
-				offparams.channel = params.channel;
-				g_PlayerFuncs.HudCustomSprite(plr, offparams);
+				memset(&offparams, 0, sizeof(offparams));
+				offparams.hud.channel = params.hud.channel;
+				UTIL_HudToggleElement(plr, params.hud.channel, false);
 				continue;
 			}
 
-			g_PlayerFuncs.HudCustomSprite(plr, params);
+			static const char* key_names[6] = { "key_0", "key_1", "key_2", "key_3", "key_4", "key_5" };
 
-			params.y += sprScale * 2 + sprHeight;
+			UTIL_HudCustomSprite(plr, params, key_names[i], true);
+
+			params.hud.yPixels += 2 + sprHeight;
 		}
 	}
-
-	//g_SoundSystem.StopSound(ent->edict(), CHAN_BODY, "player/pl_step3.wav");
-	//g_SoundSystem.StopSound(ent->edict(), CHAN_BODY, "player/pl_step6.wav");
-
-	//g_PlayerFuncs.HudToggleElement(plr, tile, false);
-
-	//ent->pev->view_ofs.z = 20; // original == 28
-	//ent->pev->scale = 0.7f;
-	//ent->pev->fuser4 = 2;
-	//println("HEIGHT: " + (ent->pev->origin.z + ent->pev->view_ofs.z) + " " + ent->pev->view_ofs.z);
-	return HOOK_CONTINUE;
-	*/
 
 	return HOOK_CONTINUE;
 }
@@ -483,15 +490,17 @@ void level_started(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useTy
 					g_total_monsters += 1;
 				}
 
-				ALERT(at_error, "TODO: Item init\n");
-				/*
 				if (string(STRING(ent->pev->classname)).find("item_doom_") == 0)
 				{
-					item_doom* item = cast<item_doom*>(CastToScriptClass(ent));
-					if (item.intermission)
+					CDoomItem* item = (CDoomItem*)ent;
+					if (item->intermission)
 						g_total_items += 1;
 				}
-				*/
+
+				if (string(STRING(ent->pev->classname)).find("ammo_doom_") == 0)
+				{
+					ent->pev->spawnflags |= SF_NORESPAWN;
+				}
 			}
 		}
 	} while (ent);
@@ -1032,18 +1041,6 @@ void new_lobby_player(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 	}
 }
 
-HOOK_RETURN_DATA PlayerUse(CBasePlayer* plr)
-{
-	if (plr->m_afButtonPressed & IN_USE) {
-		TraceResult tr = TraceLook(plr, 90);
-		CBaseEntity* phit = CBaseEntity::Instance(tr.pHit);
-		if (string(STRING(phit->pev->classname)) == "func_doom_door")
-			phit->Use(plr, plr, USE_TOGGLE);
-	}
-
-	return HOOK_CONTINUE;
-}
-
 bool CmdGiveAll(CBasePlayer* plr, const CommandArgs& args) {
 	g_keys = 0xff;
 	plr->GiveNamedItem("weapon_doom_fist");
@@ -1081,16 +1078,19 @@ HOOK_RETURN_DATA PlayerTakeDamage(CBasePlayer* plr, entvars_t* pevInflictor, ent
 	if (plr->pev->deadflag == DEAD_NO)
 	{
 		// no pain sound during death animation.
-		EMIT_SOUND_DYN(plr->edict(), CHAN_STATIC, "doom/dsplpain.wav", 1.0f, 1.0f, 0, 100);
+		EMIT_SOUND_DYN(plr->edict(), CHAN_BODY, "doom/dsplpain.wav", 1.0f, 1.0f, 0, 100);
 		UTIL_ScreenFade(plr, Vector(255, 0, 0), 0.2f, 0, 32, FFADE_IN);
 	}
 
 	return HOOK_CONTINUE;
 }
 
-HOOK_RETURN_DATA DoomBlood(Vector& vecSpot, int& bloodColor, float& flDamage) {
+void DoomBlood(Vector vecSpot) {
 	UTIL_SpriteSpray(vecSpot, Vector(0, 0, 1), g_blud_sprite, 1, 10, 0);
+}
 
+HOOK_RETURN_DATA DoomBloodHook(Vector& vecSpot, int& bloodColor, float& flDamage) {
+	DoomBlood(vecSpot);
 	//int spr1 = MODEL_INDEX("sprites/doom/blud.spr");
 	//int spr2 = MODEL_INDEX("sprites/blood.spr");
 	//UTIL_BloodSprite(vecOrigin, spr1, spr2, 70, 50);
@@ -1103,7 +1103,9 @@ HOOK_RETURN_DATA DoomSetModel(edict_t* edict, const char* model) {
 		"weaponbox"
 	};
 
-	if (watched_ents.hasKey(STRING(edict->v.classname))) {
+	const char* cname = STRING(edict->v.classname);
+
+	if (watched_ents.hasKey(cname)) {
 		if (UTIL_ModelIsSprite(edict->v.modelindex)) {
 			g_illuminate_ents.push_back(EHANDLE(edict));
 		}
@@ -1128,11 +1130,10 @@ void update_sprite_brightness() {
 extern "C" int DLLEXPORT PluginInit() {
 	static HLCOOP_PLUGIN_HOOKS g_hooks;
 
-	g_hooks.pfnPlayerUse = PlayerUse;
 	g_hooks.pfnClientJoin = ClientJoin;
 	g_hooks.pfnPlayerPostThink = PlayerPostThink;
 	g_hooks.pfnPlayerTakeDamage = PlayerTakeDamage;
-	g_hooks.pfnSpawnBlood = DoomBlood;
+	g_hooks.pfnSpawnBlood = DoomBloodHook;
 	g_hooks.pfnMapInit = MapInit;
 	g_hooks.pfnMapStart = MapActivate;
 	g_hooks.pfnSetModelPost = DoomSetModel;
@@ -1157,15 +1158,3 @@ extern "C" int DLLEXPORT PluginInit() {
 extern "C" void DLLEXPORT PluginExit() {
 	// nothing to clean up
 }
-
-class CNullEntity : public CBaseEntity
-{
-public:
-	virtual int	GetEntindexPriority() { return ENTIDX_PRIORITY_LOW; }
-	void Spawn(void) { UTIL_Remove(this); }
-};
-
-LINK_ENTITY_TO_CLASS(func_doom_door, CNullEntity)
-LINK_ENTITY_TO_CLASS(func_doom_water, CNullEntity)
-
-LINK_ENTITY_TO_CLASS(trigger_doom_teleport, CNullEntity)

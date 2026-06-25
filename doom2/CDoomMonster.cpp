@@ -258,8 +258,13 @@ int CDoomMonster::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, f
 		{
 			Vector delta = (pevAttacker->origin - pev->origin).Normalize()*32;
 			CBaseEntity* item = CBaseEntity::Create(dropItem, pev->origin + Vector(0, 0, 8), g_vecZero);
-			item->pev->velocity = Vector(delta.x, delta.y, 512);
-			item->pev->spawnflags |= SF_NORESPAWN;
+			if (item) {
+				item->pev->velocity = Vector(delta.x, delta.y, 512);
+				item->pev->spawnflags |= SF_NORESPAWN;
+			}
+			else {
+				ALERT(at_error, "Invalid drop item %s\n", dropItem);
+			}
 		}
 			
 		if (killPoints)

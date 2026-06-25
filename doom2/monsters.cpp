@@ -154,7 +154,7 @@ class CShotgunGuy : public CDoomMonster
 		this->hasMelee = false;
 		this->hasRanged = true;
 		this->painChance = 0.66f;
-		this->dropItem = "ammo_doom_shotgun";
+		this->dropItem = "weapon_doom_shotgun";
 
 		m_displayName = ALLOC_STRING("Shotgun Guy");
 		pev->health = 30;
@@ -221,7 +221,7 @@ class CHwDude : public CDoomMonster
 		this->constantAttack = true;
 		this->hullModel = "models/doom/null_wide.mdl";
 
-		this->dropItem = "ammo_doom_chaingun";
+		this->dropItem = "weapon_doom_chaingun";
 
 		m_displayName = ALLOC_STRING("Heavy Weapon Dude");
 		pev->health = 70;
@@ -1119,7 +1119,7 @@ LINK_ENTITY_TO_CLASS(monster_painelemental, CPainElemental)
 LINK_ENTITY_TO_CLASS(monster_baron, CBaron)
 LINK_ENTITY_TO_CLASS(monster_mancubus, CMancubus)
 LINK_ENTITY_TO_CLASS(monster_revenant, CRevenant)
-LINK_ENTITY_TO_CLASS(monster_archivile, CArchVile)
+LINK_ENTITY_TO_CLASS(monster_archvile, CArchVile)
 LINK_ENTITY_TO_CLASS(monster_shotgunguy, CShotgunGuy)
 LINK_ENTITY_TO_CLASS(monster_arachnotron, CArachnotron)
 LINK_ENTITY_TO_CLASS(monster_spiderdemon, CSpiderDemon)

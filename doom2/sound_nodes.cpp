@@ -75,7 +75,8 @@ vector<SoundNode*> reconstruct_path(unordered_map<int, int>& cameFrom, int curre
 	
     while (cameFrom.count(current))
 	{
-        path.push_back(getNodeByID(cameFrom[current]));
+		current = cameFrom[current];
+        path.push_back(getNodeByID(current));
 	}
 	
     return path;
