@@ -2,11 +2,13 @@
 #include "util.h"
 #include "CDoomMonster.h"
 #include "CBasePlayer.h"
+#include "CBasePlayerWeapon.h"
 #include "CSoundEnt.h"
 #include "doom_utils.h"
 #include "doom2.h"
 #include "te_effects.h"
 #include "weapons.h"
+#include "monsters.h"
 
 using namespace std;
 
@@ -112,6 +114,11 @@ void CDoomMonster::DelayAttack()
 void CDoomMonster::DoomSpawn()
 {
 	Precache();
+
+	if (!g_map_init_done) {
+		UTIL_Remove(this);
+		return;
+	}
 }
 
 void CDoomMonster::CreateRenderSprites() {
@@ -158,7 +165,7 @@ void CDoomMonster::Setup()
 	SetClassification(CLASS_ALIEN_MONSTER);
 	SetActivity(ANIM_IDLE);
 		
-	pev->view_ofs = Vector(0,0,28);
+	pev->view_ofs = Vector(0,0,56);
 		
 	if (canFly || true)
 		pev->origin.z -= 16;
@@ -212,88 +219,103 @@ void CDoomMonster::Wakeup()
 	dormant = false;
 	nextIdleSound = gpGlobals->time + RANDOM_FLOAT(5.0f, 10.0f);
 }
+
+void CDoomMonster::Killed(entvars_t* pevAttacker, int iGib) {
+	if (HasMemory(bits_MEMORY_KILLED)) {
+		return;
+	}
+
+	CBaseMonster::Killed(pevAttacker, GIB_NEVER);
+	pev->solid = SOLID_NOT; // immediately non-solid so other bullet tracers can pass thru
+	pev->deadflag = DEAD_DYING;
+	pev->health = 0;
+	pev->frame = 0;
+	pev->movetype = MOVETYPE_STEP;
+	m_isFadingOut = true; // prevent pvs corpse removal
+
+	SET_MODEL(edict(), bodySprite);
+	UTIL_Remove(m_hSprite);
+	pev->renderamt = 255;
+	pev->rendermode = 2;
+	if (isSpectre)
+	{
+		pev->renderamt = 48;
+	}
+
+	bool gib = iGib == GIB_ALWAYS;
+	SetActivity(gib ? ANIM_GIB : ANIM_DEAD);
+	h_enemy = NULL;
 	
+
+	if (canFly && deathBoom == 0)
+	{
+		pev->velocity.z = -0.1f;
+	}
+	UTIL_SetSize(pev, Vector(-1, -1, -1), Vector(1, 1, 1));
+
+	if (dropItem && dropItem[0])
+	{
+		Vector delta = (pevAttacker->origin - pev->origin).Normalize() * 32;
+		CBaseEntity* item = CBaseEntity::Create(dropItem, pev->origin + Vector(0, 0, 8), g_vecZero);
+
+		if (item) {
+			item->pev->velocity = Vector(delta.x, delta.y, 350);
+			item->pev->spawnflags |= SF_NORESPAWN;
+
+			CBasePlayerWeapon* wep = item->GetWeaponPtr();
+			if (wep) {
+				if (string(dropItem) == "weapon_doom_shotgun") {
+					wep->m_iDefaultAmmo = 4;
+				}
+				if (string(dropItem) == "weapon_doom_chaingun") {
+					wep->m_iDefaultAmmo = 10;
+				}
+			}
+		}
+		else {
+			ALERT(at_error, "Invalid drop item %s\n", dropItem);
+		}
+	}
+
+	if (killPoints)
+		g_kills += 1;
+
+	const char* snd = deathSounds[RANDOM_LONG(0, deathSounds.size() - 1)];
+	bool canGib = animInfo[ANIM_DEAD].frameIndices[0] != animInfo[ANIM_GIB].frameIndices[0];
+	if (gib && canGib)
+		snd = "doom/dsslop.wav";
+	EMIT_SOUND_DYN(edict(), CHAN_ITEM, snd, 1.0f, 0.5f, 0, 100);
+
+	DoomThink();
+}
+
 int CDoomMonster::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType )
 {
-	if (!IsAlive() || flDamage == 0)
-		return 0;
-	if (dmgImmunity & bitsDamageType)
-		return 0;
-		
-	if (string(STRING(pevAttacker->classname)) == "player")
-	{
-		float points = V_min(flDamage, pev->health)*0.05f;
-		pevAttacker->frags += points;
+	if ((bitsDamageType & DMG_BLAST) != 0 || flDamage > 100) {
+		bitsDamageType |= DMG_ALWAYSGIB;
 	}
-		
-	pev->health -= flDamage;
-		
-	if (pev->health <= 0)
-	{
-		if (m_iTriggerCondition == 4)
-			FireTargets(STRING(m_iszTriggerTarget), NULL, NULL, USE_TOGGLE);
-			
-		SET_MODEL(edict(), bodySprite);
-		UTIL_Remove(m_hSprite);
-		pev->renderamt = 255;
-		pev->rendermode = 2;
-		if (isSpectre)
-		{
-			pev->renderamt = 48;
-		}
-		pev->solid = SOLID_NOT;
-		bool gib = (bitsDamageType & DMG_BLAST) != 0 || pev->health < -100;
-		SetActivity(gib ? ANIM_GIB : ANIM_DEAD);
-		h_enemy = NULL;
-		pev->deadflag = DEAD_DYING;
-			
-		if (canFly && deathBoom == 0)
-		{
-			pev->movetype = MOVETYPE_TOSS;
-			pev->velocity.z = -0.1f;
-		}
-		UTIL_SetSize(pev, Vector(-1, -1, -1), Vector(1, 1, 1));
-			
-		if (dropItem && dropItem[0])
-		{
-			Vector delta = (pevAttacker->origin - pev->origin).Normalize()*32;
-			CBaseEntity* item = CBaseEntity::Create(dropItem, pev->origin + Vector(0, 0, 8), g_vecZero);
-			if (item) {
-				item->pev->velocity = Vector(delta.x, delta.y, 512);
-				item->pev->spawnflags |= SF_NORESPAWN;
-			}
-			else {
-				ALERT(at_error, "Invalid drop item %s\n", dropItem);
-			}
-		}
-			
-		if (killPoints)
-			g_kills += 1;
-			
-		const char* snd = deathSounds[RANDOM_LONG(0, deathSounds.size()-1)];
-		bool canGib = animInfo[ANIM_DEAD].frameIndices[0] != animInfo[ANIM_GIB].frameIndices[0];
-		if (gib && canGib)
-			snd = "doom/dsslop.wav";
-		EMIT_SOUND_DYN(edict(), CHAN_ITEM, snd, 1.0f, 0.5f, 0, 100);
-		
-		DoomThink();
+	else {
+		bitsDamageType &= ~DMG_ALWAYSGIB;
 	}
-	else
-	{
-		if (RANDOM_FLOAT(0, 1) <= painChance)
-		{
-			SetActivity(ANIM_PAIN);
-			//DelayAttack();
-			EMIT_SOUND_DYN(edict(), CHAN_ITEM, painSound, 1.0f, 0.5f, 0, 100);
-		}
-			
+
+	int ret = CBaseMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
+	
+	if (IsAlive()) {
 		CBaseEntity* attacker = CBaseEntity::Instance(pevAttacker);
-		SetEnemy( attacker );
+		SetEnemy(attacker);
 	}
 		
 	return 0;
 }
-	
+
+void CDoomMonster::PainSound(void) {
+	if (RANDOM_FLOAT(0, 1) <= painChance) {
+		SetActivity(ANIM_PAIN);
+		//DelayAttack();
+		EMIT_SOUND_DYN(edict(), CHAN_ITEM, painSound, 1.0f, 0.5f, 0, 100);
+	}
+}
+
 void CDoomMonster::SetEnemy(CBaseEntity* ent)
 {
 	if (ent  == NULL  || !ent->IsAlive() || (ent->pev->flags & FL_NOTARGET) != 0 || ent->entindex() == entindex())
@@ -690,37 +712,11 @@ void CDoomMonster::DoomThink()
 				canWalk = g_engfuncs.pfnWalkMove(edict(), pev->angles.y, walkSpeed*g_monster_scale, int(WALKMOVE_NORMAL));
 			}
 				
-			if (canWalk != 1)
+			if (canWalk != 1 && lastWallReflect + 0.2f < gpGlobals->time)
 			{
-				//TraceResult tr;
-					
-				//TraceResult tr_fall;
-				//Vector moveVel = forward*walkSpeed + verticalMove;
-					
-				//Vector targetPos = bodyPos + moveVel*g_monster_scale;
-				//UTIL_TraceHull( bodyPos, targetPos, dont_ignore_monsters, human_hull, edict(), &tr );
-					
-				//UTIL_TraceHull( bodyPos, bodyPos + Vector(0,0,-0.1f), dont_ignore_monsters, human_hull, edict(), &tr_fall );
-				//if (tr.fAllSolid != 0)
-				{
-					//te_beampoints(bodyPos, targetPos);
-					//ALERT(at_console, "ALL SOLID");
-				}
-						
-				//if (tr_fall.flFraction >= 1.0f && pev->velocity.z == 0)
-				//	pev->velocity.z = -0.1f;
-						
-				//te_beampoints(bodyPos, bodyPos + moveVel*g_monster_scale);
-				//te_beampoints(bodyPos + Vector(0,0,g_monster_center_z*g_world_scale), bodyPos + Vector(0,0,g_monster_center_z*g_world_scale) + moveVel*g_monster_scale);
-				//te_beampoints(bodyPos + Vector(0,0,-g_monster_center_z*g_world_scale), bodyPos + Vector(0,0,-g_monster_center_z*g_world_scale) + moveVel*g_monster_scale);
-									
-					
-				if (lastWallReflect + 0.2f < gpGlobals->time)
-				{
-					pev->angles.y += RANDOM_FLOAT(90, 270);
-					lastWallReflect = gpGlobals->time;
-					lastDirChange = gpGlobals->time;
-				}
+				pev->angles.y += RANDOM_FLOAT(90, 270);
+				lastWallReflect = gpGlobals->time;
+				lastDirChange = gpGlobals->time;
 			}
 		}
 			
@@ -906,6 +902,16 @@ void CDoomMonster::DoomThink()
 
 	UTIL_MakeVectors(pev->angles);
 
+	pev->rendermode = kRenderNormal;
+	pev->renderamt = 255;
+	
+
+	if (isSpectre) {
+		pev->rendermode = kRenderTransAlpha;
+		pev->renderamt = 48;
+		//lightColor = Vector(0, 0, 0); // doesn't work
+	}
+
 	if (m_hSprite) {
 		CDoomSprite* spr = (CDoomSprite*)m_hSprite.GetEntity();
 		spr->forwardDir = gpGlobals->v_forward;
@@ -914,10 +920,16 @@ void CDoomMonster::DoomThink()
 		spr->pev->frame = frame;
 		spr->pev->scale = pev->scale;
 		spr->pev->rendercolor = lightColor;
+		spr->pev->rendermode = pev->rendermode;
+		spr->pev->renderamt = pev->renderamt;
 	}
 	
 	oldFrameCounter = frameCounter;
 	oldFrameIdx = frameIdx;
 	pev->nextthink = gpGlobals->time + g_monster_think_delay;
 	//pev->nextthink = gpGlobals->time + 0.02857;
+}
+
+void CDoomMonster::UpdateOnRemove(void) {
+	UTIL_Remove(m_hSprite);
 }

@@ -86,7 +86,6 @@ void CDoomProjectile::Touch( CBaseEntity* pOther )
 	pev->nextthink = gpGlobals->time + 0.15;
 	pev->rendermode = 0;
 	pev->effects &= ~EF_NODRAW;
-	pev->velocity = g_vecZero;
 	pev->movetype = MOVETYPE_NONE;
 		
 	int damage = RANDOM_LONG(damageMin, damageMax);
@@ -102,12 +101,12 @@ void CDoomProjectile::Touch( CBaseEntity* pOther )
 	{
 		// do weird bfg tracer stuff
 		float range = 1024;
-		float spread = 45.0f;
+		float spread = 90.0f;
 		Vector dir = pev->velocity.Normalize();
 		Vector vecSrc = owner->pev->origin;
 		unordered_set<int> targets;
 			
-		for (int i = 0; i < 40; i++)
+		for (int i = 0; i < 40 * 4; i++) // original is 40 traces. Added more to account for vertical spread
 		{
 			Vector vecAiming = spreadDir(dir, spread, SPREAD_UNIFORM);
 
@@ -115,16 +114,18 @@ void CDoomProjectile::Touch( CBaseEntity* pOther )
 			TraceResult tr;
 			Vector vecEnd = vecSrc + vecAiming * range;
 			UTIL_TraceLine( vecSrc, vecEnd, dont_ignore_monsters, owner->edict(), &tr );
-			//te_beampoints(vecSrc, vecEnd);
+			//te_debug_beam(vecSrc, vecEnd, 1.0f);
 				
 			// do more fancy effects
 			if( tr.flFraction < 1.0 )
 			{
 				CBaseEntity* pHit = CBaseEntity::Instance( tr.pHit );
 					
-				if( pHit  && !pHit->IsBSPModel()) 
+				if (pHit && !pHit->IsBSPModel()) 
 				{
-					float rayDamage = RANDOM_LONG(47, 87);
+					// Actual damage is 1-8 16x. Averaging here instead, accounting for extra traces
+					//float rayDamage = RANDOM_LONG(16, 128);
+					float rayDamage = 32;
 					Vector oldRayVel = pHit->pev->velocity;	
 					pHit->TakeDamage(owner->pev, owner->pev, rayDamage, DMG_SHOCK);
 					pHit->pev->velocity = oldRayVel; // prevent high damage from launching unless we ask for it (unless DMG_LAUNCH)
@@ -139,8 +140,8 @@ void CDoomProjectile::Touch( CBaseEntity* pOther )
 		}
 			
 	}
-		
-	pev->velocity = Vector(0,0,0);
+
+	pev->velocity = g_vecZero;
 	EMIT_SOUND_DYN(edict(), CHAN_BODY, deathSound, 1.0f, 0.5f, 0, 100);
 }
 	

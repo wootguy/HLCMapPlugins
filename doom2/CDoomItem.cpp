@@ -140,7 +140,7 @@ void goggles(EHANDLE h_plr, bool flicker)
 
 void CDoomItem::ItemSpawn()
 {
-	pickupSnd = pickupSnd;
+	Precache();
 
 	// items spawn in the floor due to sven item code i guess
 	pev->movetype = MOVETYPE_FLY;
@@ -168,6 +168,9 @@ void CDoomItem::ItemSpawn()
 void CDoomItem::Precache()
 {
 	PRECACHE_MODEL("sprites/doom/objects.spr");
+	if (pickupSnd) {
+		PRECACHE_SOUND(pickupSnd);
+	}
 }
 
 bool CDoomItem::CustomPickup()

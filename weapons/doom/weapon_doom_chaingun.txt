@@ -32,38 +32,23 @@ drop_amount             = 50
 ; --------------------------------
 
 [primary_attack]
+flags                   = first_shot_accuracy
 ammo_cost               = 1
-cooldown                = 110ms
-cooldown_idle           = 110ms
+cooldown                = 220ms
+cooldown_idle           = 220ms
 accuracy                = 5.50
 
 [event.primary_attack.bullets]
-count                   = 1
+count                   = 2
 accuracy                = 5.50
 damage                  = 10
 damage_randomness       = 5
-flags                   = no_sound + no_particles
+burst_delay             = 110ms
+flags                   = first_shot_accuracy + no_sound + no_particles
 
-[event.primary_attack.weapon_anim]
-anims                   = 1
-
-[event.primary_clip_is_even.weapon_sprite_anim]
-frames                  = 1 0
+[event.primary_attack.weapon_sprite_anim]
+frames                  = 1 2
 fps                     = 8.33
-
-[event.primary_clip_is_odd.weapon_sprite_anim]
-frames                  = 2 0
-fps                     = 8.33
-
-[event.primary_attack.muzzle_flash]
-v_sprite_brighten       = 8
-
-[event.primary_attack.sound]
-volume_for_ai           = normal
-channel                 = weapon
-sound                   = doom/dspistol.wav
-attenuation             = 0.80
-distant_sound           = distant_9mm
 
 
 
@@ -83,6 +68,19 @@ fps                     = 1.00
 ; --------------------------------
 ; Reactionary events
 ; --------------------------------
+
+[event.bullet_fired.weapon_anim]
+anims                   = 1
+
+[event.bullet_fired.muzzle_flash]
+v_sprite_brighten       = 8
+
+[event.bullet_fired.sound]
+volume_for_ai           = normal
+channel                 = weapon
+sound                   = doom/dspistol.wav
+attenuation             = 0.80
+distant_sound           = distant_9mm
 
 [event.impact_primary_world.te_explosion]
 offset                  = 4

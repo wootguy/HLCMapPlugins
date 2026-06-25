@@ -37,7 +37,8 @@ void CDoomSprite::Spawn() {
 }
 
 void CDoomSprite::Precache() {
-	PRECACHE_MODEL((char*)STRING(pev->model));
+	if (pev->model)
+		PRECACHE_MODEL((char*)STRING(pev->model));
 }
 
 int CDoomSprite::AddToFullPack(struct entity_state_s* state, CBasePlayer* player) {

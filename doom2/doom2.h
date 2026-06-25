@@ -39,5 +39,6 @@ extern int g_keys;
 extern bool debug_mode;
 extern int g_item_gets;
 extern bool g_strict_keys;
+extern bool g_map_init_done;
 
 void DoomBlood(Vector vecSpot);

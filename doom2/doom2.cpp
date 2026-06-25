@@ -16,35 +16,18 @@
 using namespace std;
 
 // HL Port todo:
-// crazy hl weaponm bob
-// crazy drop items launch speed
-// anim textures for water
-// monsters / corpses are usable
-// door sound not playing if outside world
-// barrel dlight, also too dark ?
-// floating barrels map 2
-// too much ammo given with ammo_doom_Shotgun/chaingun
-// 2nd shot accuracy for chaingun
-// spectre mode not working pinkies map 3
-// shotungs not shooting thru window map 4
-// light toggles not working map 4
-// lamp in final room not lit map 4
-// intermission music not working
-// tp sound not working on low prio edict
-// no special effect for sol spherE?
-// dont remove corpses?
 // blood too bright and not animated
-// note precached: hell knight ball, revanent ball
-// bfg doesnt work
-// tp cooldown not working map 6 maybe at the green slime room
-// too many edicts map 2. delay spawn monsters and things
-// plasma gun has cooldown after stop firing
-// bullets shoot thru monsters
-// cyberdemon on circle of doom?
-// chaingun minimum burst fire of 2 (also perfect accuracy)
-// too much ammo given with weapon drops
 // backpack increases ammo capacity
 // projectiles dont collide in og
+// can use button thru doors (dead simple neo)
+// sound graph not working (tricks and traps cacodemon room)
+// sven mp5 for hud icon is weird
+// blue keycard stuck on elevator map9
+// net usage very high
+// pickup sound too loud and unf
+// no punch sound for world and different sprite?
+// hitbox wrong for hwdude
+// idle/console icon replaced with doom text
 
 // TODO (bugs I'm ignoring cuz 2 lazy):
 // pain elemental gets stuck when shooting shulls sometimes 
@@ -120,6 +103,7 @@ vector<const char*> g_map_music = {
 };
 const char* g_inter_music = "doom/intermission.mp3";
 const char* g_ep_music = "doom/episode.mp3";
+bool g_map_init_done = false;
 
 Vector g_spawn_room_pos;
 
@@ -158,6 +142,15 @@ string base36(int num)
 	return b36;
 }
 
+bool is_delay_spawned_cname(string cname) {
+	static StringSet delay_spawn_names = {
+		"func_doom_door", "func_doom_water", "func_illusionary", "trigger_doom_teleport", "func_wall"
+	};
+
+	return cname.find("monster_") == 0 || cname.find("ammo_") == 0 || cname.find("item_") == 0
+		|| cname.find("weapon_doom_") == 0 || delay_spawn_names.hasKey(cname.c_str());
+}
+
 HOOK_RETURN_DATA MapInit()
 {
 	g_wait_for_noobs = strstr(STRING(gpGlobals->mapname), "doom2_ep1") == 0;
@@ -180,10 +173,10 @@ HOOK_RETURN_DATA MapInit()
 	*/
 
 	for (int i = 0; i < g_map_music.size(); i++)
-		PRECACHE_SOUND_NULLENT(g_map_music[i]);
+		PRECACHE_GENERIC(UTIL_VarArgs("sound/%s", g_map_music[i]));
 
-	PRECACHE_SOUND_NULLENT(g_inter_music);
-	PRECACHE_SOUND_NULLENT(g_ep_music);
+	PRECACHE_GENERIC(UTIL_VarArgs("sound/%s", g_inter_music));
+	PRECACHE_GENERIC(UTIL_VarArgs("sound/%s", g_ep_music));
 	PRECACHE_SOUND_NULLENT("doom/dsplpain.wav");
 	PRECACHE_SOUND_NULLENT("doom/dspldeth.wav");
 	PRECACHE_SOUND_NULLENT("doom/dsfirsht.wav");
@@ -195,8 +188,7 @@ HOOK_RETURN_DATA MapInit()
 	return HOOK_CONTINUE;
 }
 
-HOOK_RETURN_DATA MapActivate()
-{
+void init_doors_and_buttons() {
 	vector<CBaseEntity*> doors;
 	vector<CBaseEntity*> buttons;
 
@@ -241,6 +233,19 @@ HOOK_RETURN_DATA MapActivate()
 			}
 		}
 	}
+}
+
+HOOK_RETURN_DATA MapActivate()
+{
+	g_map_init_done = true;
+
+	// don't spawn things until the map section starts, to reduce edict count
+	CBaseEntity* ent = NULL;
+	while ((ent = UTIL_FindEntityByClassname(ent, "*")) != NULL) {
+		if (is_delay_spawned_cname(STRING(ent->pev->classname))) {
+			UTIL_Remove(ent);
+		}
+	}
 
 	CBaseEntity* map_info = UTIL_FindEntityByTargetname(NULL, "map_info");
 	if (map_info)
@@ -260,14 +265,14 @@ HOOK_RETURN_DATA MapActivate()
 		{"delay", "0"},
 	});
 
-	CBaseEntity::Create("ambient_music", g_vecZero, g_vecZero, true, NULL, {
+	CBaseEntity::Create("ambient_music", g_spawn_room_pos, g_vecZero, true, NULL, {
 		{"targetname", "inter_music"},
 		{"volume", "10"},
 		{"message", g_inter_music},
 		{"spawnflags", "3"}, 
 	});
 
-	CBaseEntity::Create("ambient_music", g_vecZero, g_vecZero, true, NULL, {
+	CBaseEntity::Create("ambient_music", g_spawn_room_pos, g_vecZero, true, NULL, {
 		{"targetname", "ep_music"},
 		{"volume", "10"},
 		{"message", g_ep_music},
@@ -451,6 +456,34 @@ void level_started(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useTy
 	Vector level_min = minsEnt->pev->origin;
 	Vector level_max = maxsEnt->pev->origin;
 
+	// spawn next map ents
+	for (StringMap& ent : g_bsp.ents) {
+		string cname = ent.get("classname");
+
+		if (!is_delay_spawned_cname(cname)) {
+			continue;
+		}
+
+		Vector ori = UTIL_ParseVector(ent.get("origin"));
+		const char* model = ent.get("model");
+		bool shouldSpawn = false;
+
+		if (model && model[0] == '*') {
+			int modelIdx = atoi(model + 1);
+			BSPMODEL& model = g_bsp.models[modelIdx];
+			shouldSpawn = boxesIntersect(ori + model.nMins, ori + model.nMaxs, level_min, level_max);
+		}
+		else if (UTIL_PointInBox(ori, level_min, level_max)) {
+			shouldSpawn = true;
+		}
+
+		if (shouldSpawn) {
+			CBaseEntity::Create(cname.c_str(), ori, g_vecZero, true, NULL, ent);
+		}
+	}
+
+	init_doors_and_buttons();
+
 	CBaseEntity* ent = NULL;
 	do {
 		ent = UTIL_FindEntityByClassname(ent, "*");
@@ -567,8 +600,9 @@ void next_level()
 		//g_Scheduler.SetTimeout("episode_end", 1.0f);
 		FireTargets("change_level", NULL, NULL, USE_TOGGLE);
 	}
-	else
+	else {
 		g_Scheduler.SetTimeout(trigger_next_level, 3.0f);
+	}
 }
 
 void end_game()
@@ -970,7 +1004,7 @@ void intermission(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useTyp
 
 void ep_scroll_line(int lineNum, int stepsTaken, int maxStep)
 {
-	CBaseEntity* scroll = UTIL_FindEntityByTargetname(NULL, "ep_scroll" + lineNum);
+	CBaseEntity* scroll = UTIL_FindEntityByTargetname(NULL, UTIL_VarArgs("ep_scroll%d", lineNum));
 	if (scroll == NULL)
 		return;
 	scroll->pev->origin.x += 0.1f;

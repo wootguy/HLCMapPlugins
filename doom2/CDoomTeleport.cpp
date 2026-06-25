@@ -58,7 +58,6 @@ void CDoomTeleport::Precache()
 	
 void CDoomTeleport::Teleport(CBaseEntity* other)
 {
-	unordered_map<int, float>& lastTouches = g_last_touches[entindex()];
 
 	CBaseEntity* target = UTIL_FindEntityByTargetname(NULL, STRING(pev->target));
 	if (target )
@@ -89,14 +88,14 @@ void CDoomTeleport::Teleport(CBaseEntity* other)
 		CBaseEntity* ent = NULL;
 		do {
 			ent = UTIL_FindEntityByClassname(ent, "trigger_doom_teleport");
-			if (ent )
+			if (ent)
 			{
 				if (ent->Intersects(other))
 				{
 					// if ent will land inside another teleport trigger, then prevent it 
 					// from teleporting without re-entering the brush
 					CDoomTeleport* tele = (CDoomTeleport*)ent;
-					lastTouches[other->entindex()] = gpGlobals->time;
+					g_last_touches[ent->entindex()][other->entindex()] = gpGlobals->time;
 				}
 			}
 		} while (ent);
@@ -104,8 +103,8 @@ void CDoomTeleport::Teleport(CBaseEntity* other)
 		g_engfuncs.pfnMakeVectors(target->pev->angles);
 		g_Scheduler.SetTimeout(delay_tele_effect, 0.05f, other->pev->origin - offset + gpGlobals->v_forward*32);
 			
-		EMIT_SOUND_DYN(edict(), CHAN_STATIC, "doom/dstelept.wav", 1.0f, 1.0f, 0, 100);
-		EMIT_SOUND_DYN(target->edict(), CHAN_STATIC, "doom/dstelept.wav", 1.0f, 1.0f, 0, 100);
+		UTIL_EmitAmbientSound(edict(), target->pev->origin, "doom/dstelept.wav", 1.0f, ATTN_NORM, 0, 100);
+		UTIL_EmitAmbientSound(target->edict(), target->pev->origin, "doom/dstelept.wav", 1.0f, ATTN_NORM, 0, 100);
 			
 		other->pev->velocity = Vector(0,0,0);
 		other->pev->angles = target->pev->angles;

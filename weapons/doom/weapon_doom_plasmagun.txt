@@ -15,7 +15,7 @@ hud_folder              = doom
 slot                    = 5
 slot_position           = -1
 weight                  = 9
-thirdperson_anims       = python
+thirdperson_anims       = egon
 
 [primary_ammo]
 config                  = doom/ammo_doom_cells
@@ -34,6 +34,7 @@ drop_amount             = 20
 ammo_cost               = 1
 cooldown                = 75ms
 cooldown_idle           = 600ms
+cooldown_finish         = 600ms
 
 [event.primary_attack.projectile]
 type                    = other

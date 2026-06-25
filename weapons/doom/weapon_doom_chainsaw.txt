@@ -7,6 +7,7 @@ v_model                 = models/v_crowbar.mdl
 v_sprite                = sprites/doom/chainsaw.spr
 v_sprite_scale          = 5.00
 v_sprite_offset_x       = -5
+p_model                 = models/custom_weapons/cs16/p_chainsaw.mdl
 w_model                 = sprites/doom/objects.spr
 w_sprite_frame          = 46
 hull_min                = -8.00 -8.00 -4.00

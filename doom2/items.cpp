@@ -20,8 +20,15 @@ public:
 
 	int animDir = 1;
 
-	void Spawn()
+	void Spawn() override
 	{
+		Precache();
+
+		if (!g_map_init_done) {
+			UTIL_Remove(this);
+			return;
+		}
+
 		// set the model we actually want
 		//SET_MODEL(edict(), "models/doom/null.mdl");
 		//SET_MODEL(edict(), "models/w_357.mdl");
@@ -30,7 +37,7 @@ public:
 		//pev->frame = 5;
 		pev->scale = g_monster_scale;
 
-		pev->movetype = MOVETYPE_PUSHSTEP;
+		pev->movetype = MOVETYPE_TOSS;
 		pev->solid = SOLID_BBOX;
 		pev->health = 20;
 		pev->takedamage = DAMAGE_YES;
@@ -39,10 +46,10 @@ public:
 
 		UTIL_SetSize(pev, Vector(-16, -16, -4), Vector(16, 16, 40));
 		pev->nextthink = gpGlobals->time;
-		SetThink(&CDoomBarrel::Think);
+		SetThink(&CDoomBarrel::DropThink);
 	}
 
-	int TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
+	int TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override
 	{
 		if (dead)
 			return 0;
@@ -61,23 +68,34 @@ public:
 			pev->nextthink = gpGlobals->time + 0.17f;
 			EMIT_SOUND_DYN(edict(), CHAN_STATIC, "doom/dsbarexp.wav", 1.0f, 1.0f, 0, 100);
 
+			pev->rendercolor.x = V_max(pev->rendercolor.x, 200);
+			pev->rendercolor.y = V_max(pev->rendercolor.y, 160);
+			pev->rendercolor.z = V_max(pev->rendercolor.z, 100);
+
 			UTIL_DLight(pev->origin, 30, RGB(64, 40, 32), 3, 16);
 		}
 
 		return 0;
 	}
 
-	void Precache()
+	void Precache() override
 	{
 		PRECACHE_MODEL("sprites/doom/objects.spr");
 	}
 
-	bool CustomPickup()
-	{
-		return false;
+	void DropThink() {
+		TraceResult tr;
+		UTIL_TraceHull(pev->origin, pev->origin - Vector(0, 0, 2048), ignore_monsters, head_hull, edict(), &tr);
+
+		if (tr.flFraction < 1.0f) {
+			UTIL_SetOrigin(pev, tr.vecEndPos);
+		}
+
+		SetThink(&CDoomBarrel::BarrelThink);
+		pev->nextthink = gpGlobals->time;
 	}
 
-	void Think()
+	void BarrelThink()
 	{
 		pev->frame += animDir;
 		if (dead && pev->frame > animFrameMax)
@@ -125,6 +143,11 @@ class CDoomProp : public CBaseEntity
 	
 	void Spawn()
 	{
+		if (!g_map_init_done) {
+			UTIL_Remove(this);
+			return;
+		}
+
 		// set the model we actually want
 		//SET_MODEL(edict(), "models/doom/null.mdl");
 		//SET_MODEL(edict(), "models/w_357.mdl");
@@ -248,7 +271,7 @@ class CDoomProp : public CBaseEntity
 				break;
 		}
 		
-		pev->rendercolor = fullBright ? Vector(1, 1, 1) : GetLighting().ApplyGamma().ToVector();
+		pev->rendercolor = fullBright ? Vector(255, 255, 255) : GetLighting().ApplyGamma().ToVector();
 		pev->frame = frameStart;
 	}
 	

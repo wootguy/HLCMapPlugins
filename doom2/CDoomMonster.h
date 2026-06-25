@@ -125,7 +125,11 @@ public:
 	void Setup();
 	int SetActivity(int act);
 	void Wakeup();
+	BOOL ShouldGibMonster(int iGib) override { return FALSE; }
+	void Killed(entvars_t* pevAttacker, int iGib) override;
 	int TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType) override;
+	void PainSound(void) override;
+
 	void SetEnemy(CBaseEntity* ent);
 	void ClearEnemy();
 	void Sleep();
@@ -142,4 +146,5 @@ public:
 	void Revive();
 	bool ReviveNearbyDemon();
 	void DoomThink();
+	void UpdateOnRemove(void) override;
 };

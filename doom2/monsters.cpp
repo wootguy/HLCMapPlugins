@@ -564,6 +564,11 @@ class CBaron : public CDoomMonster
 		pev->nextthink = gpGlobals->time + 0.1;
 	}
 
+	void Precache() override {
+		CDoomMonster::Precache();
+		UTIL_PrecacheOther("doom_baronball");
+	}
+
 	void MeleeAttack(Vector aimDir)
 	{
 		if (Slash(aimDir, RANDOM_LONG(10, 80)))
@@ -619,6 +624,11 @@ class CHellKnight : public CDoomMonster
 
 		SetThink(&CHellKnight::Think);
 		pev->nextthink = gpGlobals->time + 0.1;
+	}
+
+	void Precache() override {
+		CDoomMonster::Precache();
+		UTIL_PrecacheOther("doom_baronball");
 	}
 
 	void MeleeAttack(Vector aimDir)
@@ -685,6 +695,11 @@ class CArchVile : public CDoomMonster
 
 		SetThink(&CArchVile::Think);
 		pev->nextthink = gpGlobals->time + 0.1;
+	}
+
+	void Precache() override {
+		CDoomMonster::Precache();
+		UTIL_PrecacheOther("doom_vilefire");
 	}
 
 	void CastFire()
@@ -790,6 +805,11 @@ class CRevenant : public CDoomMonster
 		pev->nextthink = gpGlobals->time + 0.1;
 	}
 
+	void Precache() override {
+		CDoomMonster::Precache();
+		UTIL_PrecacheOther("doom_revball");
+	}
+
 	void RangeAttackStart()
 	{
 		brighten = 8;
@@ -866,6 +886,11 @@ class CMancubus : public CDoomMonster
 
 		SetThink(&CMancubus::Think);
 		pev->nextthink = gpGlobals->time + 0.1;
+	}
+
+	void Precache() override {
+		CDoomMonster::Precache();
+		UTIL_PrecacheOther("doom_mancuball");
 	}
 
 	void ShootFireball(Vector origin, Vector addangles)
@@ -961,6 +986,11 @@ class CArachnotron : public CDoomMonster
 		pev->nextthink = gpGlobals->time + 0.1;
 	}
 
+	void Precache() override {
+		CDoomMonster::Precache();
+		UTIL_PrecacheOther("doom_spiderball");
+	}
+
 	void RangeAttack(Vector aimDir)
 	{
 		brighten = 8;
@@ -1024,6 +1054,11 @@ class CCyberdemon : public CDoomMonster
 
 		SetThink(&CCyberdemon::Think);
 		pev->nextthink = gpGlobals->time + 0.1;
+	}
+
+	void Precache() override {
+		CDoomMonster::Precache();
+		UTIL_PrecacheOther("doom_rocket");
 	}
 
 	void RangeAttack(Vector aimDir)

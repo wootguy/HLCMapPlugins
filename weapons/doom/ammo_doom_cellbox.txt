@@ -1,5 +1,5 @@
 [general]
-classname    = ammo_doom_cells
+classname    = ammo_doom_cellbox
 model        = sprites/doom/objects.spr
 model_body   = 33
 hull_min     = -8.00 -8.00 -4.00

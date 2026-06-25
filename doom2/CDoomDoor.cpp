@@ -223,7 +223,7 @@ int CDoomDoor::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, floa
 	
 void CDoomDoor::ButtonReset()
 {
-	EMIT_SOUND_DYN(edict(), CHAN_BODY, switchSnd, 1.0f, attn, 0, 100);
+	EMIT_SOUND_DYN(edict(), CHAN_STATIC, switchSnd, 1.0f, attn, 0, 100);
 	pev->frame = 0;
 }
 	
@@ -277,7 +277,7 @@ void CDoomDoor::Useit(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE us
 		if (pev->frame == 0 && m_toggle_state == TS_AT_BOTTOM)
 		{
 			pev->frame = 1;
-			EMIT_SOUND_DYN(edict(), CHAN_BODY, switchSnd, 1.0f, attn, 0, 100);
+			EMIT_SOUND_DYN(edict(), CHAN_STATIC, switchSnd, 1.0f, attn, 0, 100);
 			FireTargets(STRING(pev->target), pActivator, this, USE_TOGGLE);
 			if (m_flWait > 0)
 				g_Scheduler.SetTimeout(reset_but, m_flWait, EHANDLE(edict()));
@@ -323,7 +323,7 @@ int CDoomDoor::DoorActivate(int useType)
 	if (isCrusher && useType == USE_OFF)
 	{
 		if (pev->nextthink != -1 && (sounds == 2 || sounds == 3 || sounds == 4) && closeSnd && closeSnd[0])
-			EMIT_SOUND_DYN(edict(), CHAN_BODY, closeSnd, 1.0f, attn, 0, 100);
+			EMIT_SOUND_DYN(edict(), CHAN_STATIC, closeSnd, 1.0f, attn, 0, 100);
 		pev->nextthink = -1;
 		return 1;
 	}
@@ -342,7 +342,7 @@ int CDoomDoor::DoorActivate(int useType)
 void CDoomDoor::DoorGoUp()
 {
 	if (!isButton && openSnd && openSnd[0])
-		EMIT_SOUND_DYN(edict(), CHAN_BODY, openSnd, 1.0f, attn, 0, 100);
+		EMIT_SOUND_DYN(edict(), CHAN_STATIC, openSnd, 1.0f, attn, 0, 100);
 	m_toggle_state = TS_GOING_UP;
 	LinearMove(m_vecPosition2, pev->speed);
 		
@@ -359,10 +359,10 @@ void CDoomDoor::DoorGoUp()
 void CDoomDoor::DoorHitTop()
 {
 	if (openSnd)
-		STOP_SOUND(edict(), CHAN_BODY, openSnd);
+		STOP_SOUND(edict(), CHAN_STATIC, openSnd);
 
 	if ((sounds == 2 || sounds == 3 || sounds == 4) && closeSnd && closeSnd[0])
-		EMIT_SOUND_DYN(edict(), CHAN_BODY, closeSnd, 1.0f, attn, 0, 100);
+		EMIT_SOUND_DYN(edict(), CHAN_STATIC, closeSnd, 1.0f, attn, 0, 100);
 
 	m_toggle_state = TS_AT_TOP;
 	m_bIsReopening = false;
@@ -386,10 +386,10 @@ void CDoomDoor::DoorGoDown()
 		if (sounds == 2 || sounds == 3)
 		{
 			if (openSnd && openSnd[0])
-				EMIT_SOUND_DYN(edict(), CHAN_BODY, openSnd, 1.0f, attn, 0, 100);
+				EMIT_SOUND_DYN(edict(), CHAN_STATIC, openSnd, 1.0f, attn, 0, 100);
 		}
 		else if (closeSnd && closeSnd[0])
-			EMIT_SOUND_DYN(edict(), CHAN_BODY, closeSnd, 1.0f, attn, 0, 100);
+			EMIT_SOUND_DYN(edict(), CHAN_STATIC, closeSnd, 1.0f, attn, 0, 100);
 	}
 	m_toggle_state = TS_GOING_DOWN;
 	LinearMove( m_vecPosition1, pev->speed);
@@ -407,10 +407,10 @@ void CDoomDoor::DoorGoDown()
 void CDoomDoor::DoorHitBottom()
 {
 	if (openSnd)
-		STOP_SOUND(edict(), CHAN_BODY, openSnd);
+		STOP_SOUND(edict(), CHAN_STATIC, openSnd);
 
 	if ((sounds == 2 || sounds == 3) && closeSnd && closeSnd[0])
-		EMIT_SOUND_DYN(edict(), CHAN_BODY, closeSnd, 1.0f, attn, 0, 100);
+		EMIT_SOUND_DYN(edict(), CHAN_STATIC, closeSnd, 1.0f, attn, 0, 100);
 	m_toggle_state = TS_AT_BOTTOM;
 		
 	if (isCrusher)

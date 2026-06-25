@@ -52,6 +52,9 @@ class CDoomBfgBall : public CDoomProjectile {
 		//spawnSound = "doom/dsplasma.wav";
 		deathSound = "doom/dsrxplod.wav";
 		pev->model = ALLOC_STRING("sprites/doom/bal.spr");
+		is_bfg = true;
+
+		PRECACHE_MODEL("sprites/doom/bfe2.spr");
 
 		CDoomProjectile::Precache();
 	}
