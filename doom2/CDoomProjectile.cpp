@@ -15,7 +15,7 @@ void CDoomProjectile::Spawn()
 		size = 4; // too big and projectiles hit walls behind you that you're touching
 
 	pev->movetype = MOVETYPE_FLY;
-	pev->solid = SOLID_BBOX;
+	pev->solid = SOLID_TRIGGER;
 	UTIL_SetSize(pev, Vector(-size, -size, -size), Vector(size, size, size));
 
 	pev->angles.x *= -1; // TODO: ???
@@ -64,6 +64,10 @@ void CDoomProjectile::Touch( CBaseEntity* pOther )
 	//if (dead || (pOther->pev->classname == "fireball"))
 	if (dead)
 		return;
+
+	if (pOther->edict() == pev->owner || pOther->pev->solid == SOLID_TRIGGER) {
+		return; // don't touch owner or other projectiles
+	}
 			
 	if (is_vile_fire)
 	{

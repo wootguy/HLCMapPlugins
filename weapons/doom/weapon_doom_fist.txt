@@ -65,6 +65,9 @@ fps                     = 1.00
 flags                   = user_origin
 sound                   = doom/dspunch.wav
 
+[event.impact_primary_any.trigger]
+callback                = doom_weapon_attack
+
 [event.impact_primary_world.te_explosion]
 offset                  = 4
 sprite                  = sprites/doom/puff.spr

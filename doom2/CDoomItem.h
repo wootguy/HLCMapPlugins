@@ -4,20 +4,21 @@
 class CDoomItem : public CItem
 {
 public:
-	int itemFrame = 0;
+	int itemFrame;
 	int itemFrameMax = -1;
-	float giveHealth = 0;
+	float giveHealth;
 	float giveHealthMax = 100;
-	float giveArmor = 0;
+	float giveArmor;
 	float giveArmorMax = 200;
-	bool giveGod = false;
-	bool giveBerserk = false;
-	bool giveInvis = false;
-	bool giveSuit = false;
-	bool giveGoggles = false;
-	bool intermission = false;
-	bool giveBackpack = false;
+	bool giveGod;
+	bool giveBerserk;
+	bool giveInvis;
+	bool giveSuit;
+	bool giveGoggles;
+	bool intermission;
+	bool giveBackpack;
 	const char* pickupSnd = "doom/dsitemup.wav";
+	int modelIndexSw;
 
 	int animDir = 1;
 
@@ -32,4 +33,6 @@ public:
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 
 	void Touch(CBaseEntity* pOther);
+
+	int AddToFullPack(struct entity_state_s* state, CBasePlayer* player) override;
 };

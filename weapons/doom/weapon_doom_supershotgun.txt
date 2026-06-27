@@ -63,6 +63,9 @@ sound                   = doom/supershot.wav
 attenuation             = 0.80
 distant_sound           = distant_556
 
+[event.primary_attack.trigger]
+callback                = doom_weapon_attack
+
 
 
 ; --------------------------------

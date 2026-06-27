@@ -16,18 +16,16 @@
 using namespace std;
 
 // HL Port todo:
-// blood too bright and not animated
-// backpack increases ammo capacity
-// projectiles dont collide in og
-// can use button thru doors (dead simple neo)
-// sound graph not working (tricks and traps cacodemon room)
 // sven mp5 for hud icon is weird
-// blue keycard stuck on elevator map9
 // net usage very high
 // pickup sound too loud and unf
 // no punch sound for world and different sprite?
 // hitbox wrong for hwdude
 // idle/console icon replaced with doom text
+// intermission sfx stuttery with high ping
+// test hl client
+// manually offset software mode sprites by reading hw sprite origins
+// software mode sprites for weapons/ammo
 
 // TODO (bugs I'm ignoring cuz 2 lazy):
 // pain elemental gets stuck when shooting shulls sometimes 
@@ -48,6 +46,7 @@ using namespace std;
 // crushers should go past monsters || go up after a while
 // (doom door breaks regular doors): 10:11 AM - Streamfaux: Yeah better be waiting. Also you should investigate this just in case. Putting a door with a targetname && a button targgeting it should be enough to test. And I meanfunc_door && func_button.
 // teleport on exit logic (tricks && traps imp room)
+// backpack increases ammo capacity
 
 // NOTE: ep2 needs Normalized clip type || else you fall through level in tricks && traps near end-tele
 // NOTE: Compile options = clip economy + cliptype normalized + 25 min light + RAD no load textures + tex reflect 1.3 + 3 bounces
@@ -412,6 +411,15 @@ void player_killed(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useTy
 	state.lastSuit = state.lastGoggles = state.lastGod = state.lastInvis = 0;
 }
 
+void doom_weapon_attack(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float flValue) {
+	CBasePlayer* plr = pCaller->MyPlayerPointer();
+	if (!plr)
+		return;
+
+	PlayerState& state = getPlayerState(plr);
+	state.soundNode = getSoundNode(plr->pev->origin);
+}
+
 void secret_revealed(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float flValue)
 {
 	EMIT_SOUND_DYN(pActivator->edict(), CHAN_STATIC, "doom/dssecret.wav", 1.0f, ATTN_NONE, 0, 100);
@@ -483,6 +491,8 @@ void level_started(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useTy
 	}
 
 	init_doors_and_buttons();
+
+	createSoundGraph();
 
 	CBaseEntity* ent = NULL;
 	do {
@@ -1119,12 +1129,47 @@ HOOK_RETURN_DATA PlayerTakeDamage(CBasePlayer* plr, entvars_t* pevInflictor, ent
 	return HOOK_CONTINUE;
 }
 
-void DoomBlood(Vector vecSpot) {
-	UTIL_SpriteSpray(vecSpot, Vector(0, 0, 1), g_blud_sprite, 1, 10, 0);
+void DoomBlood(Vector vecSpot, float damage) {
+	SpriteAdvArgs args;
+	memset(&args, 0, sizeof(args));
+
+	args.modelIdx = g_blud_sprite;
+	args.scale = 10 * g_monster_scale;
+	args.framerate = 0;
+	args.vel = Vector(0, 0, RANDOM_LONG(40, 120));
+	args.acc = Vector(0, 0, -800);
+	args.collideBsp = true;
+	args.maxLife = 6;
+	args.useLightmap = true;
+
+	if (damage > 12) {
+		args.startFrame = 2;
+	}
+	else if (damage >= 9) {
+		args.startFrame = 1;
+	}
+
+	for (int i = 1; i <= gpGlobals->maxClients; i++) {
+		CBasePlayer* plr = UTIL_PlayerByIndex(i);
+		if (!plr) {
+			continue;
+		}
+		edict_t* ed = plr->edict();
+
+		if (UTIL_TestPVS(vecSpot, ed));
+
+		if (plr->IsSevenKewpClient()) {
+			UTIL_SpriteAdv(vecSpot, args, MSG_ONE_UNRELIABLE, NULL, ed);
+			ALERT(at_console, "Sent adv bytes: %d\n", LastMsgSize());
+		}
+		else {
+			UTIL_SpriteSpray(vecSpot, Vector(0, 0, 1), g_blud_sprite, 1, 10, 0, MSG_ONE_UNRELIABLE, ed);
+		}
+	}	
 }
 
 HOOK_RETURN_DATA DoomBloodHook(Vector& vecSpot, int& bloodColor, float& flDamage) {
-	DoomBlood(vecSpot);
+	DoomBlood(vecSpot, flDamage);
 	//int spr1 = MODEL_INDEX("sprites/doom/blud.spr");
 	//int spr2 = MODEL_INDEX("sprites/blood.spr");
 	//UTIL_BloodSprite(vecOrigin, spr1, spr2, 70, 50);
@@ -1183,6 +1228,7 @@ extern "C" int DLLEXPORT PluginInit() {
 	RegisterPluginEntCallback(level_started);
 	RegisterPluginEntCallback(secret_revealed);
 	RegisterPluginEntCallback(player_killed);
+	RegisterPluginEntCallback(doom_weapon_attack);
 
 	g_Scheduler.SetInterval(update_sprite_brightness, 0.05f , -1);
 

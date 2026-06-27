@@ -103,8 +103,8 @@ void CDoomTeleport::Teleport(CBaseEntity* other)
 		g_engfuncs.pfnMakeVectors(target->pev->angles);
 		g_Scheduler.SetTimeout(delay_tele_effect, 0.05f, other->pev->origin - offset + gpGlobals->v_forward*32);
 			
-		UTIL_EmitAmbientSound(edict(), target->pev->origin, "doom/dstelept.wav", 1.0f, ATTN_NORM, 0, 100);
-		UTIL_EmitAmbientSound(target->edict(), target->pev->origin, "doom/dstelept.wav", 1.0f, ATTN_NORM, 0, 100);
+		UTIL_EmitAmbientSound(ENT(0), target->pev->origin, "doom/dstelept.wav", 1.0f, ATTN_NORM, 0, 100);
+		UTIL_EmitAmbientSound(ENT(0), target->pev->origin, "doom/dstelept.wav", 1.0f, ATTN_NORM, 0, 100);
 			
 		other->pev->velocity = Vector(0,0,0);
 		other->pev->angles = target->pev->angles;

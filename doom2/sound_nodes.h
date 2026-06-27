@@ -13,10 +13,10 @@ struct NodeTarget
 
 struct NodeReach
 {
-	bool hasPath = false;
+	bool hasPath;
 	std::vector<EHANDLE> checkEnts; // these parts of the path need to be traced
-	float lastCheck = 0;
-	bool isClear = false;
+	float lastCheck;
+	bool isClear;
 
 	bool isReachable();
 };
@@ -25,7 +25,7 @@ struct SoundNode
 {
 	int id;
 	Vector pos;
-	bool hitsEntity = false;
+	bool hitsEntity;
 	std::vector<NodeTarget> targets;
 	std::unordered_map<int, NodeReach> reachability; // cached results of A* algorithm.
 };

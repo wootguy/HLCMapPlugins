@@ -37,7 +37,11 @@ public:
 class CDoomMonster : public CBaseMonster
 {
 public:
-	const char* bodySprite;
+	const char* bodySpriteName;
+	const char* bodySpriteHw; // hardware sprite (parallel upright with offset)
+	const char* bodySpriteSw; // software sprite (parallel with no offset)
+	int modelIndexHw;
+	int modelIndexSw;
 	std::vector<AnimInfo> animInfo;
 	AnimInfo currentAnim;
 
@@ -147,4 +151,5 @@ public:
 	bool ReviveNearbyDemon();
 	void DoomThink();
 	void UpdateOnRemove(void) override;
+	int AddToFullPack(struct entity_state_s* state, CBasePlayer* player) override;
 };

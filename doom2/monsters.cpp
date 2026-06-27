@@ -9,7 +9,7 @@ class CImp : public CDoomMonster
 {
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/troo.spr";
+		bodySpriteName = "troo";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 3, 0.25f, true)); // ANIM_MOVE
@@ -67,7 +67,7 @@ class CZombieMan : public CDoomMonster
 {
 	void Spawn()
 	{
-		this->bodySprite = "sprites/doom/poss.spr";
+		bodySpriteName = "poss";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 3, 0.25f, true)); // ANIM_MOVE
@@ -125,7 +125,7 @@ class CShotgunGuy : public CDoomMonster
 {
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/spos.spr";
+		bodySpriteName = "spos";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 3, 0.25f, true)); // ANIM_MOVE
@@ -184,7 +184,7 @@ class CHwDude : public CDoomMonster
 {
 	void Spawn()
 	{
-		this->bodySprite = "sprites/doom/cpos.spr";
+		bodySpriteName = "cpos";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 3, 0.25f, true)); // ANIM_MOVE
@@ -249,7 +249,7 @@ class CDemon : public CDoomMonster
 {
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/sarg.spr";
+		bodySpriteName = "sarg";
 
 		walkSpeed = 10.0f;
 
@@ -300,7 +300,7 @@ class CCacodemon : public CDoomMonster
 {
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/head.spr";
+		bodySpriteName = "head";
 
 		animInfo.push_back(AnimInfo(0, 0, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 0, 0.25f, true)); // ANIM_MOVE
@@ -357,7 +357,7 @@ class CLostSoul : public CDoomMonster
 {
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/skul.spr";
+		bodySpriteName = "skul";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.25f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 1, 0.25f, true)); // ANIM_MOVE
@@ -410,7 +410,7 @@ class CPainElemental : public CDoomMonster
 {	
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/pain.spr";
+		bodySpriteName = "pain";
 		
 		animInfo.push_back(AnimInfo(0, 0, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 2, 0.25f, true)); // ANIM_MOVE
@@ -534,7 +534,7 @@ class CBaron : public CDoomMonster
 {
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/boss.spr";
+		bodySpriteName = "boss";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 3, 0.25f, true)); // ANIM_MOVE
@@ -596,7 +596,7 @@ class CHellKnight : public CDoomMonster
 {
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/bos2.spr";
+		bodySpriteName = "bos2";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 3, 0.25f, true)); // ANIM_MOVE
@@ -660,7 +660,7 @@ class CArchVile : public CDoomMonster
 
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/vile.spr";
+		bodySpriteName = "vile";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 5, 0.5f, true)); // ANIM_MOVE
@@ -756,7 +756,7 @@ class CRevenant : public CDoomMonster
 {
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/skel.spr";
+		bodySpriteName = "skel";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 5, 0.5f, true)); // ANIM_MOVE
@@ -846,7 +846,7 @@ class CMancubus : public CDoomMonster
 
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/fatt.spr";
+		bodySpriteName = "fatt";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 5, 0.25f, true)); // ANIM_MOVE
@@ -942,7 +942,7 @@ class CArachnotron : public CDoomMonster
 {
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/bspi.spr";
+		bodySpriteName = "bspi";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 5, 0.25f, true)); // ANIM_MOVE
@@ -1013,7 +1013,7 @@ class CCyberdemon : public CDoomMonster
 {
 	void Spawn()
 	{
-		bodySprite = "sprites/doom/cybr.spr";
+		bodySpriteName = "cybr";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 3, 0.25f, true)); // ANIM_MOVE
@@ -1083,7 +1083,7 @@ class CSpiderDemon : public CDoomMonster
 {
 	void Spawn()
 	{
-		this->bodySprite = "sprites/doom/spid.spr";
+		bodySpriteName = "spid";
 
 		animInfo.push_back(AnimInfo(0, 1, 0.125f, true)); // ANIM_IDLE
 		animInfo.push_back(AnimInfo(0, 5, 0.25f, true)); // ANIM_MOVE

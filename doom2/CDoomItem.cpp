@@ -13,14 +13,6 @@
 #include "CWeaponCustom.h"
 #include "CDoomItem.h"
 
-void make_me_fall(EHANDLE h_ent)
-{
-	if (h_ent)
-	{
-		h_ent.GetEntity()->pev->movetype = MOVETYPE_TOSS;
-	}
-}
-
 void invulnerability(EHANDLE h_plr, bool flicker)
 {
 	if (!h_plr.GetEntity())
@@ -142,10 +134,6 @@ void CDoomItem::ItemSpawn()
 {
 	Precache();
 
-	// items spawn in the floor due to sven item code i guess
-	pev->movetype = MOVETYPE_FLY;
-	g_Scheduler.SetTimeout(make_me_fall, 1.0f, EHANDLE(edict()));
-
 	// set the model we actually want
 	SET_MODEL(edict(), "sprites/doom/objects.spr");
 	CItem::Spawn();
@@ -161,13 +149,15 @@ void CDoomItem::ItemSpawn()
 
 	UTIL_SetSize(pev, Vector(-8, -8, -4), Vector(8, 8, 8));
 
-	if (itemFrameMax != itemFrame)
-		pev->nextthink = gpGlobals->time;
+	if (itemFrameMax == itemFrame)
+		animDir = 0;
 }
 
 void CDoomItem::Precache()
 {
 	PRECACHE_MODEL("sprites/doom/objects.spr");
+	modelIndexSw = PRECACHE_MODEL("sprites/doom/sw/objects.spr");
+
 	if (pickupSnd) {
 		PRECACHE_SOUND(pickupSnd);
 	}
@@ -306,4 +296,15 @@ void CDoomItem::Touch(CBaseEntity* pOther)
 
 	if (giveBerserk)
 		UTIL_ScreenFade(pOther, Vector(255, 0, 0), 30.0f, 0, 32, FFADE_IN);
+}
+
+int CDoomItem::AddToFullPack(struct entity_state_s* state, CBasePlayer* player) {
+	if (player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE) {
+		state->origin.z += 8;
+		if (modelIndexSw) {
+			state->modelindex = modelIndexSw;
+		}
+	}
+
+	return 1;
 }

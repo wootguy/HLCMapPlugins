@@ -57,6 +57,9 @@ channel                 = weapon
 sound                   = doom/dsrlaunc.wav
 attenuation             = 0.80
 
+[event.primary_attack.trigger]
+callback                = doom_weapon_attack
+
 
 
 ; --------------------------------

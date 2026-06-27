@@ -2,6 +2,7 @@
 #include "util.h"
 #include "sound_nodes.h"
 #include "doom2.h"
+#include "CDoomDoor.h"
 
 using namespace std;
 
@@ -10,20 +11,17 @@ bool NodeReach::isReachable()
 	if (!hasPath)
 		return false;
 
-	ALERT(at_error, "Door node check\n");
-
-	/*
 	//println("CHECK " + checkEnts.length() + " DOORS");
 	for (int i = 0; i < checkEnts.size(); i++)
 	{
-		func_doom_door* door = cast<func_doom_door*>(CastToScriptClass(checkEnts[i].GetEntity()));
-		if (door && door.m_toggle_state == TS_AT_BOTTOM)
+		CDoomDoor* door = (CDoomDoor*)checkEnts[i].GetEntity();
+		if (door && door->m_toggle_state == TS_AT_BOTTOM)
 		{
 			//println("" + door->pev->targetname + " is blocking sound");
 			return false;
 		}
 	}
-	*/
+
 	return true;
 }
 
@@ -283,6 +281,12 @@ bool canHearSound(SoundNode* start, SoundNode* end, Vector b, CBaseEntity* liste
 
 void createSoundGraph()
 {	
+	for (int i = 0; i < g_sound_nodes.size(); i++) {
+		g_sound_nodes[i].reachability.clear();
+		g_sound_nodes[i].targets.clear();
+		g_sound_nodes[i].hitsEntity = false;
+	}
+
 	for (int i = 0; i < g_sound_nodes.size(); i++)
 	{
 		vector<EHANDLE> checkEntities;

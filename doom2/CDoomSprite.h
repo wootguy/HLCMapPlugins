@@ -9,6 +9,7 @@ public:
 	Vector forwardDir;
 	Vector rightDir;
 	bool oriented;		// if true, sprite displays a different frame depending on view point
+	int modelIndexSw; // software mode modelIdx (0 = use hw sprite)
 
 	void Spawn() override;
 	void Precache() override;

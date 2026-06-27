@@ -63,6 +63,9 @@ sound                   = doom/dspistol.wav
 attenuation             = 0.80
 distant_sound           = distant_9mm
 
+[event.primary_attack.trigger]
+callback                = doom_weapon_attack
+
 
 
 ; --------------------------------

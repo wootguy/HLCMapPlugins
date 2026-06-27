@@ -48,6 +48,14 @@ int CDoomSprite::AddToFullPack(struct entity_state_s* state, CBasePlayer* player
 		int angleIdx = GetSpriteAngle(pev->origin, forwardDir, rightDir, player->pev->origin);
 		state->frame = pev->frame * 8 + angleIdx;
 	}
+	if (player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE) {
+		state->origin = pev->aiment ? pev->aiment->v.origin + Vector(0,0,32) : state->origin;
+		state->aiment = 0;
+		state->movetype = MOVETYPE_NONE;
+		if (modelIndexSw) {
+			state->modelindex = modelIndexSw;
+		}
+	}
 
 	return 1;
 }

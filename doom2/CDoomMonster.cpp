@@ -19,9 +19,8 @@ float g_monster_center_z = 34;
 float g_monster_think_delay = 0.0572f;
 uint32_t g_monster_idx = 0;
 
-float g_stagger_think = 0;
-
 #define FL_MONSTER_DEAF 8
+#define ATTN_DOOM 0.6f
 
 AnimInfo::AnimInfo(int min, int max, float rate, bool loop)
 {
@@ -77,6 +76,11 @@ void CDoomMonster::KeyValue(KeyValueData* pkvd)
 	
 void CDoomMonster::Precache()
 {
+	if (bodySpriteName) {
+		bodySpriteHw = STRING(ALLOC_STRING(UTIL_VarArgs("sprites/doom/hw/%s.spr", bodySpriteName)));
+		bodySpriteSw = STRING(ALLOC_STRING(UTIL_VarArgs("sprites/doom/sw/%s.spr", bodySpriteName)));
+	}
+
 	for (int i = 0; i < idleSounds.size(); i++)
 	{
 		PRECACHE_SOUND(idleSounds[i]);
@@ -98,8 +102,10 @@ void CDoomMonster::Precache()
 		PRECACHE_SOUND(painSound);
 	if (walkSound)
 		PRECACHE_SOUND(walkSound);
-	if (bodySprite)
-		PRECACHE_MODEL(bodySprite);
+	if (bodySpriteHw)
+		modelIndexHw = PRECACHE_MODEL(bodySpriteHw);
+	if (bodySpriteSw)
+		modelIndexSw = PRECACHE_MODEL(bodySpriteSw);
 	if (hullModel)
 		PRECACHE_MODEL(hullModel);
 
@@ -113,6 +119,8 @@ void CDoomMonster::DelayAttack()
 	
 void CDoomMonster::DoomSpawn()
 {
+	pev->flags |= FL_MONSTER;
+
 	Precache();
 
 	if (!g_map_init_done) {
@@ -126,10 +134,16 @@ void CDoomMonster::CreateRenderSprites() {
 		return;
 
 	CBaseEntity* spr = CBaseEntity::Create("doom_sprite", pev->origin, g_vecZero, true);
-	SET_MODEL(spr->edict(), bodySprite);
+	SET_MODEL(spr->edict(), bodySpriteHw);
 	spr->pev->targetname = ALLOC_STRING(UTIL_VarArgs("m%ds", g_monster_idx++));
 	spr->pev->movetype = MOVETYPE_FOLLOW;
 	spr->pev->aiment = edict();
+
+	if (bodySpriteSw) {
+		CDoomSprite* dspr = (CDoomSprite*)spr;
+		dspr->modelIndexSw = MODEL_INDEX(bodySpriteSw);
+	}
+
 	m_hSprite = spr;
 }
 
@@ -176,11 +190,7 @@ void CDoomMonster::Setup()
 	pev->solid = SOLID_SLIDEBOX;
 	if (!killPoints) // monster was spawned by something, create sprites now to avoid invisible monster bug
 		CreateRenderSprites();
-	pev->nextthink = gpGlobals->time + g_stagger_think;
-
-	g_stagger_think += 0.01f;
-	if (g_stagger_think >= g_monster_think_delay)
-		g_stagger_think = 0;
+	pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.1f, 0.5f);
 			
 	lastDormantPos = pev->origin;
 	dormantNode = getSoundNode(pev->origin);
@@ -213,7 +223,7 @@ void CDoomMonster::Wakeup()
 	if (alertSounds.size() > 0)
 	{
 		const char* snd = alertSounds[RANDOM_LONG(0, alertSounds.size()-1)];
-		EMIT_SOUND_DYN(edict(), CHAN_BODY, snd, 1.0f, 1.0f, 0, 100);
+		EMIT_SOUND_DYN(edict(), CHAN_BODY, snd, 1.0f, ATTN_DOOM, 0, 100);
 	}
 		
 	dormant = false;
@@ -233,7 +243,7 @@ void CDoomMonster::Killed(entvars_t* pevAttacker, int iGib) {
 	pev->movetype = MOVETYPE_STEP;
 	m_isFadingOut = true; // prevent pvs corpse removal
 
-	SET_MODEL(edict(), bodySprite);
+	SET_MODEL(edict(), bodySpriteHw);
 	UTIL_Remove(m_hSprite);
 	pev->renderamt = 255;
 	pev->rendermode = 2;
@@ -284,7 +294,7 @@ void CDoomMonster::Killed(entvars_t* pevAttacker, int iGib) {
 	bool canGib = animInfo[ANIM_DEAD].frameIndices[0] != animInfo[ANIM_GIB].frameIndices[0];
 	if (gib && canGib)
 		snd = "doom/dsslop.wav";
-	EMIT_SOUND_DYN(edict(), CHAN_ITEM, snd, 1.0f, 0.5f, 0, 100);
+	EMIT_SOUND_DYN(edict(), CHAN_ITEM, snd, 1.0f, ATTN_DOOM, 0, 100);
 
 	DoomThink();
 }
@@ -312,7 +322,7 @@ void CDoomMonster::PainSound(void) {
 	if (RANDOM_FLOAT(0, 1) <= painChance) {
 		SetActivity(ANIM_PAIN);
 		//DelayAttack();
-		EMIT_SOUND_DYN(edict(), CHAN_ITEM, painSound, 1.0f, 0.5f, 0, 100);
+		EMIT_SOUND_DYN(edict(), CHAN_ITEM, painSound, 1.0f, ATTN_DOOM, 0, 100);
 	}
 }
 
@@ -429,7 +439,7 @@ bool CDoomMonster::isAttacking()
 
 void CDoomMonster::Revive()
 {
-	EMIT_SOUND_DYN(edict(), CHAN_ITEM, "doom/dsslop.wav", 1.0f, 0.5f, 0, 100);
+	EMIT_SOUND_DYN(edict(), CHAN_ITEM, "doom/dsslop.wav", 1.0f, ATTN_DOOM, 0, 100);
 	isCorpse = false;
 		
 	AnimInfo reverseAnim;
@@ -441,6 +451,7 @@ void CDoomMonster::Revive()
 	SetActivity(activity);
 	currentAnim = reverseAnim;
 	isBeingRevived = true;
+	m_afMemory = MEMORY_CLEAR;
 	DoomThink();
 }
 	
@@ -545,7 +556,7 @@ void CDoomMonster::DoomThink()
 	if (activity == ANIM_MOVE && walkSound && walkSound[0] && nextWalkSound < gpGlobals->time)
 	{
 		nextWalkSound = gpGlobals->time + walkSoundFreq;
-		EMIT_SOUND_DYN(edict(), CHAN_ITEM, walkSound, 1.0f, 0.5f, 0, 100);
+		EMIT_SOUND_DYN(edict(), CHAN_ITEM, walkSound, 1.0f, ATTN_DOOM, 0, 100);
 	}
 		
 	//ALERT(at_console, "FRAME " + frame + " " + currentAnim.minFrame + " " + currentAnim.maxFrame);
@@ -761,7 +772,7 @@ void CDoomMonster::DoomThink()
 					if (inMeleeRange)
 					{
 						if (meleeWindupSound && meleeWindupSound[0])
-							EMIT_SOUND_DYN(edict(), CHAN_BODY, meleeWindupSound, 1.0f, 0.5f, 0, 100);
+							EMIT_SOUND_DYN(edict(), CHAN_BODY, meleeWindupSound, 1.0f, ATTN_DOOM, 0, 100);
 						frame = SetActivity(ANIM_ATTACK);
 						MeleeAttackStart();
 					}
@@ -790,7 +801,7 @@ void CDoomMonster::DoomThink()
 						if (inMeleeRange)
 						{
 							if (meleeWindupSound && meleeWindupSound[0])
-								EMIT_SOUND_DYN(edict(), CHAN_BODY, meleeWindupSound, 1.0f, 0.5f, 0, 100);
+								EMIT_SOUND_DYN(edict(), CHAN_BODY, meleeWindupSound, 1.0f, ATTN_DOOM, 0, 100);
 							frame = SetActivity(ANIM_ATTACK);
 						}
 						else
@@ -823,7 +834,7 @@ void CDoomMonster::DoomThink()
 		if (nextIdleSound < gpGlobals->time)
 		{
 			const char* snd = idleSounds[RANDOM_LONG(0, idleSounds.size()-1)];
-			EMIT_SOUND_DYN(edict(), CHAN_ITEM, snd, 1.0f, 0.5f, 0, 100);
+			EMIT_SOUND_DYN(edict(), CHAN_ITEM, snd, 1.0f, ATTN_DOOM, 0, 100);
 			nextIdleSound = gpGlobals->time + RANDOM_FLOAT(5.0f, 10.0f);
 		}
 	}
@@ -932,4 +943,15 @@ void CDoomMonster::DoomThink()
 
 void CDoomMonster::UpdateOnRemove(void) {
 	UTIL_Remove(m_hSprite);
+}
+
+int CDoomMonster::AddToFullPack(struct entity_state_s* state, CBasePlayer* player) {
+	if (modelIndexHw == state->modelindex && player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE) {
+		state->origin.z += 8;
+		if (modelIndexSw) {
+			state->modelindex = modelIndexSw;
+		}
+	}
+
+	return 1;
 }

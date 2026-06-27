@@ -9,12 +9,14 @@
 #include "rgb.h"
 #include "weapons.h"
 #include "CDoomItem.h"
+#include "CBasePlayer.h"
 
 class CDoomBarrel : public CBaseEntity
 {
 public:
 	int animFrameStart = 6;
 	int animFrameMax = 7;
+	int modelIndexSw;
 
 	bool dead = false;
 
@@ -81,6 +83,7 @@ public:
 	void Precache() override
 	{
 		PRECACHE_MODEL("sprites/doom/objects.spr");
+		modelIndexSw = PRECACHE_MODEL("sprites/doom/sw/objects.spr");
 	}
 
 	void DropThink() {
@@ -119,6 +122,17 @@ public:
 		}
 		pev->nextthink = gpGlobals->time + 0.17f;
 	}
+
+	int AddToFullPack(struct entity_state_s* state, CBasePlayer* player) override {
+		if (player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE) {
+			state->origin.z += 19;
+			if (modelIndexSw) {
+				state->modelindex = modelIndexSw;
+			}
+		}
+
+		return 1;
+	}
 };
 
 class CDoomProp : public CBaseEntity
@@ -128,6 +142,7 @@ class CDoomProp : public CBaseEntity
 	int thing_type = 44;
 	int animDir = 1;
 	float animSpeed = 0.17f;
+	int modelIndexSw;
 	
 	void KeyValue(KeyValueData* pkvd)
 	{		
@@ -143,6 +158,8 @@ class CDoomProp : public CBaseEntity
 	
 	void Spawn()
 	{
+		Precache();
+
 		if (!g_map_init_done) {
 			UTIL_Remove(this);
 			return;
@@ -151,7 +168,7 @@ class CDoomProp : public CBaseEntity
 		// set the model we actually want
 		//SET_MODEL(edict(), "models/doom/null.mdl");
 		//SET_MODEL(edict(), "models/w_357.mdl");
-		SET_MODEL( edict(), "sprites/doom/objects.spr");
+		SET_MODEL( edict(), "sprites/doom/hw/objects.spr");
 		
 		//pev->frame = 5;
 		pev->scale = g_monster_scale;
@@ -277,7 +294,8 @@ class CDoomProp : public CBaseEntity
 	
 	void Precache()
 	{
-		PRECACHE_MODEL("sprites/doom/objects.spr");
+		PRECACHE_MODEL("sprites/doom/hw/objects.spr");
+		modelIndexSw = PRECACHE_MODEL("sprites/doom/sw/objects.spr");
 	}
 	
 	bool CustomPickup()
@@ -291,6 +309,17 @@ class CDoomProp : public CBaseEntity
 		if (pev->frame > frameMax)
 			pev->frame = frameStart;
 		pev->nextthink = gpGlobals->time + animSpeed;
+	}
+
+	int AddToFullPack(struct entity_state_s* state, CBasePlayer* player) override {
+		if (player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE) {
+			state->origin.z += 32;
+			if (modelIndexSw) {
+				state->modelindex = modelIndexSw;
+			}
+		}
+
+		return 1;
 	}
 };
 
@@ -492,6 +521,10 @@ class CDoomKeyBlue : public CDoomItem
 		itemFrame = 15;
 		itemFrameMax = 16;
 		ItemSpawn();
+	}
+
+	virtual void ItemThink() override {
+		CDoomItem::ItemThink();
 	}
 
 	bool CustomPickup()

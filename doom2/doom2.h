@@ -41,4 +41,4 @@ extern int g_item_gets;
 extern bool g_strict_keys;
 extern bool g_map_init_done;
 
-void DoomBlood(Vector vecSpot);
+void DoomBlood(Vector vecSpot, float damage);

@@ -430,7 +430,7 @@ void CDoomDoor::Blocked( CBaseEntity* pOther )
 	{
 		lastCrush = gpGlobals->time;
 		pOther->TakeDamage( pev, pev, pev->dmg, DMG_CRUSH );
-		DoomBlood(pOther->pev->origin + pOther->pev->view_ofs);
+		DoomBlood(pOther->pev->origin + pOther->pev->view_ofs, 999);
 	}
 
 	// if a door has a negative wait, it would never come back if blocked,
