@@ -1,6 +1,7 @@
 ﻿#include "extdll.h"
 #include "util.h"
 #include "CBasePlayerWeapon.h"
+#include "user_messages.h"
 
 /*
  * SOFLAM - AirStrike
@@ -99,7 +100,7 @@ class CSoflam : public CBasePlayerWeapon {
 
 		 if (CBasePlayerWeapon::AddToPlayer(pPlayer))
 		 {
-			 MESSAGE_BEGIN(MSG_ONE, gmsgWeapPickup, NULL, pPlayer->edict());
+			 MESSAGE_BEGIN(MSG_ONE, g_umsg.WeapPickup, NULL, pPlayer->edict());
 			 WRITE_BYTE(g_soflam_info.iId);
 			 MESSAGE_END();
 			 return TRUE;

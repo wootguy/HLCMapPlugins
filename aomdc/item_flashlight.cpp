@@ -139,7 +139,7 @@ class CItemFlashBattery : public CItem
 
 		EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM);
 
-		MESSAGE_BEGIN(MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev);
+		MESSAGE_BEGIN(MSG_ONE, g_umsg.ItemPickup, NULL, pPlayer->pev);
 		WRITE_STRING(STRING(pev->classname));
 		MESSAGE_END();
 
