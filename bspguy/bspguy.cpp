@@ -371,7 +371,7 @@ namespace bspguy {
 	
 		vector<CBaseEntity*> activateEnts;
 
-		for (int i = 0; i < g_bsp.ents.size(); i++) {
+		for (int i = 0; i < g_bsp.numEnts; i++) {
 			const char* mapSource = g_bsp.ents[i].get("$s_bspguy_map_source");
 			
 			if (mapSource && mapSource == mapName) {

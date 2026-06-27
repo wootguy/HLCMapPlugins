@@ -50,7 +50,8 @@ HOOK_RETURN_DATA MapInit() {
 	};
 
 	// spawn ammo entities now so weapons can get their max capacity
-	for (StringMap& kv : g_bsp.ents) {
+	for (int i = 0; i < g_bsp.numEnts; i++) {
+		StringMap& kv = g_bsp.ents[i];
 		const char* cname = kv.get("classname");
 
 		if (!cname || strcmp(cname, "weapon_custom_ammo")) {
@@ -61,7 +62,8 @@ HOOK_RETURN_DATA MapInit() {
 	}
 
 	// all weapon configs must be set up now or else the engine won't spawn map weapons properly
-	for (StringMap& kv : g_bsp.ents) {
+	for (int i = 0; i < g_bsp.numEnts; i++) {
+		StringMap& kv = g_bsp.ents[i];
 		const char* cname = kv.get("classname");
 
 		if (!cname || !configEnts.hasKey(cname)) {

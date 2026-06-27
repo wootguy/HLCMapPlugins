@@ -465,7 +465,8 @@ void level_started(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useTy
 	Vector level_max = maxsEnt->pev->origin;
 
 	// spawn next map ents
-	for (StringMap& ent : g_bsp.ents) {
+	for (int i = 0; i < g_bsp.numEnts; i++) {
+		StringMap& ent = g_bsp.ents[i];
 		string cname = ent.get("classname");
 
 		if (!is_delay_spawned_cname(cname)) {
