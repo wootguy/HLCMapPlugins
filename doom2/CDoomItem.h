@@ -19,6 +19,8 @@ public:
 	bool giveBackpack;
 	const char* pickupSnd = "doom/dsitemup.wav";
 	int modelIndexSw;
+	msprite_sv_t* headerHw;
+	msprite_sv_t* headerSw;
 
 	int animDir = 1;
 

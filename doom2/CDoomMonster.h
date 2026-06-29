@@ -40,6 +40,8 @@ public:
 	const char* bodySpriteName;
 	const char* bodySpriteHw; // hardware sprite (parallel upright with offset)
 	const char* bodySpriteSw; // software sprite (parallel with no offset)
+	msprite_sv_t* headerHw;
+	msprite_sv_t* headerSw;
 	int modelIndexHw;
 	int modelIndexSw;
 	std::vector<AnimInfo> animInfo;
@@ -115,7 +117,9 @@ public:
 	SoundNode* dormantNode; // save this to reduce CPU usage
 	Vector lastDormantPos;
 
-	EHANDLE m_hSprite; // sprite used for rendering (can't set self as a sprite as that breaks collision client-side)
+	// cached view vectors for sprite frame selection for vanilla clients
+	Vector sprForward;
+	Vector sprRight;
 
 	void KeyValue(KeyValueData* pkvd) override;
 
@@ -150,6 +154,5 @@ public:
 	void Revive();
 	bool ReviveNearbyDemon();
 	void DoomThink();
-	void UpdateOnRemove(void) override;
 	int AddToFullPack(struct entity_state_s* state, CBasePlayer* player) override;
 };

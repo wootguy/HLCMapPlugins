@@ -26,6 +26,9 @@ using namespace std;
 // test hl client
 // manually offset software mode sprites by reading hw sprite origins
 // software mode sprites for weapons/ammo
+// can crouch thru the floor in tricks and traps
+// hl client cant pick up dropped shottys as ammo
+// keycard hud for hl clients
 
 // TODO (bugs I'm ignoring cuz 2 lazy):
 // pain elemental gets stuck when shooting shulls sometimes 

@@ -102,10 +102,14 @@ void CDoomMonster::Precache()
 		PRECACHE_SOUND(painSound);
 	if (walkSound)
 		PRECACHE_SOUND(walkSound);
-	if (bodySpriteHw)
+	if (bodySpriteHw) {
 		modelIndexHw = PRECACHE_MODEL(bodySpriteHw);
-	if (bodySpriteSw)
+		headerHw = GET_SPRITE_PTR(modelIndexHw);
+	}
+	if (bodySpriteSw) {
 		modelIndexSw = PRECACHE_MODEL(bodySpriteSw);
+		headerSw = GET_SPRITE_PTR(modelIndexSw);
+	}
 	if (hullModel)
 		PRECACHE_MODEL(hullModel);
 
@@ -130,21 +134,8 @@ void CDoomMonster::DoomSpawn()
 }
 
 void CDoomMonster::CreateRenderSprites() {
-	if (m_hSprite.GetEntity())
-		return;
-
-	CBaseEntity* spr = CBaseEntity::Create("doom_sprite", pev->origin, g_vecZero, true);
-	SET_MODEL(spr->edict(), bodySpriteHw);
-	spr->pev->targetname = ALLOC_STRING(UTIL_VarArgs("m%ds", g_monster_idx++));
-	spr->pev->movetype = MOVETYPE_FOLLOW;
-	spr->pev->aiment = edict();
-
-	if (bodySpriteSw) {
-		CDoomSprite* dspr = (CDoomSprite*)spr;
-		dspr->modelIndexSw = MODEL_INDEX(bodySpriteSw);
-	}
-
-	m_hSprite = spr;
+	m_angleSpriteIndex = MODEL_INDEX(bodySpriteHw);
+	m_angleSpriteMode = ANGLE_SPRITE_8WAY;
 }
 
 void CDoomMonster::SetupHull()
@@ -244,7 +235,7 @@ void CDoomMonster::Killed(entvars_t* pevAttacker, int iGib) {
 	m_isFadingOut = true; // prevent pvs corpse removal
 
 	SET_MODEL(edict(), bodySpriteHw);
-	UTIL_Remove(m_hSprite);
+	m_angleSpriteIndex = 0;
 	pev->renderamt = 255;
 	pev->rendermode = 2;
 	if (isSpectre)
@@ -912,6 +903,8 @@ void CDoomMonster::DoomThink()
 	}
 
 	UTIL_MakeVectors(pev->angles);
+	sprForward = gpGlobals->v_forward;
+	sprRight = gpGlobals->v_right;
 
 	pev->rendermode = kRenderNormal;
 	pev->renderamt = 255;
@@ -923,17 +916,8 @@ void CDoomMonster::DoomThink()
 		//lightColor = Vector(0, 0, 0); // doesn't work
 	}
 
-	if (m_hSprite) {
-		CDoomSprite* spr = (CDoomSprite*)m_hSprite.GetEntity();
-		spr->forwardDir = gpGlobals->v_forward;
-		spr->rightDir = gpGlobals->v_right;
-		spr->oriented = true;
-		spr->pev->frame = frame;
-		spr->pev->scale = pev->scale;
-		spr->pev->rendercolor = lightColor;
-		spr->pev->rendermode = pev->rendermode;
-		spr->pev->renderamt = pev->renderamt;
-	}
+	pev->frame = frame;
+	pev->rendercolor = lightColor;
 	
 	oldFrameCounter = frameCounter;
 	oldFrameIdx = frameIdx;
@@ -941,16 +925,25 @@ void CDoomMonster::DoomThink()
 	//pev->nextthink = gpGlobals->time + 0.02857;
 }
 
-void CDoomMonster::UpdateOnRemove(void) {
-	UTIL_Remove(m_hSprite);
-}
-
 int CDoomMonster::AddToFullPack(struct entity_state_s* state, CBasePlayer* player) {
-	if (modelIndexHw == state->modelindex && player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE) {
-		state->origin.z += 8;
-		if (modelIndexSw) {
-			state->modelindex = modelIndexSw;
-		}
+	int frame = state->frame;
+
+	if (m_angleSpriteIndex && !player->IsSevenKewpClient()) {
+		// non-sevenkewp clients don't have the custom sprite renderer, so render the entity
+		// as a normal sprite instead of a null model with a sprite attachment. This breaks
+		// collision prediction but is otherwise good enough.
+		int angleFrame = CDoomSprite::GetSpriteAngle(pev->origin, sprForward, sprRight, player->pev->origin);
+		frame = state->frame * 8 + angleFrame;
+		state->modelindex = modelIndexHw;
+		state->frame = frame;
+	}
+
+	// software mode vanilla clients can't render sprite frames
+	// with offsets in them. So now I'm faking that with centered parallel sprites and an
+	// offset on the entity origin.
+	if (player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE) {
+		state->origin.z += CDoomSprite::SwFrameOffset(headerHw, headerSw, frame) * pev->scale;
+		state->modelindex = modelIndexSw;
 	}
 
 	return 1;

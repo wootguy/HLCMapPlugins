@@ -4,7 +4,7 @@
 #include "CDoomSprite.h"
 #include "doom_utils.h"
 
-int GetSpriteAngle(Vector spritePos, Vector spriteForward, Vector spriteRight, Vector lookPos)
+int CDoomSprite::GetSpriteAngle(Vector spritePos, Vector spriteForward, Vector spriteRight, Vector lookPos)
 {
 	Vector delta = spritePos - lookPos;
 	delta.z = 0;
@@ -58,6 +58,18 @@ int CDoomSprite::AddToFullPack(struct entity_state_s* state, CBasePlayer* player
 	}
 
 	return 1;
+}
+
+int CDoomSprite::SwFrameOffset(msprite_sv_t* headerHw, msprite_sv_t* headerSw, int frame) {
+	if (!headerHw || !headerSw) {
+		ALERT(at_error, "Missing sprite headers\n");
+		return 0;
+	}
+
+	frame = clamp(frame, 0, V_min(headerHw->numframes, headerSw->numframes) - 1);
+	mspriteframe_sv_t* frameHw = headerHw->frames[frame].frameptr_sv;
+	mspriteframe_sv_t* frameSw = headerSw->frames[frame].frameptr_sv;
+	return frameHw->up - frameSw->up;
 }
 
 LINK_ENTITY_TO_CLASS(doom_sprite, CDoomSprite)

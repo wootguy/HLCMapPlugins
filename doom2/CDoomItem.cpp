@@ -155,8 +155,11 @@ void CDoomItem::ItemSpawn()
 
 void CDoomItem::Precache()
 {
-	PRECACHE_MODEL("sprites/doom/objects.spr");
+	int modelIndexHw = PRECACHE_MODEL("sprites/doom/objects.spr");
 	modelIndexSw = PRECACHE_MODEL("sprites/doom/sw/objects.spr");
+
+	headerHw = GET_SPRITE_PTR(modelIndexHw);
+	headerSw = GET_SPRITE_PTR(modelIndexSw);
 
 	if (pickupSnd) {
 		PRECACHE_SOUND(pickupSnd);
@@ -300,7 +303,7 @@ void CDoomItem::Touch(CBaseEntity* pOther)
 
 int CDoomItem::AddToFullPack(struct entity_state_s* state, CBasePlayer* player) {
 	if (player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE) {
-		state->origin.z += 8;
+		state->origin.z += CDoomSprite::SwFrameOffset(headerHw, headerSw, pev->frame) * pev->scale;
 		if (modelIndexSw) {
 			state->modelindex = modelIndexSw;
 		}

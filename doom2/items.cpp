@@ -17,6 +17,8 @@ public:
 	int animFrameStart = 6;
 	int animFrameMax = 7;
 	int modelIndexSw;
+	msprite_sv_t* headerHw;
+	msprite_sv_t* headerSw;
 
 	bool dead = false;
 
@@ -82,8 +84,11 @@ public:
 
 	void Precache() override
 	{
-		PRECACHE_MODEL("sprites/doom/objects.spr");
+		int modelIndexHw = PRECACHE_MODEL("sprites/doom/objects.spr");
 		modelIndexSw = PRECACHE_MODEL("sprites/doom/sw/objects.spr");
+
+		headerHw = GET_SPRITE_PTR(modelIndexHw);
+		headerSw = GET_SPRITE_PTR(modelIndexSw);
 	}
 
 	void DropThink() {
@@ -125,7 +130,7 @@ public:
 
 	int AddToFullPack(struct entity_state_s* state, CBasePlayer* player) override {
 		if (player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE) {
-			state->origin.z += 19;
+			state->origin.z += CDoomSprite::SwFrameOffset(headerHw, headerSw, pev->frame) * pev->scale;
 			if (modelIndexSw) {
 				state->modelindex = modelIndexSw;
 			}
@@ -143,6 +148,8 @@ class CDoomProp : public CBaseEntity
 	int animDir = 1;
 	float animSpeed = 0.17f;
 	int modelIndexSw;
+	msprite_sv_t* headerHw;
+	msprite_sv_t* headerSw;
 	
 	void KeyValue(KeyValueData* pkvd)
 	{		
@@ -294,8 +301,11 @@ class CDoomProp : public CBaseEntity
 	
 	void Precache()
 	{
-		PRECACHE_MODEL("sprites/doom/hw/objects.spr");
+		int modelIndexHw = PRECACHE_MODEL("sprites/doom/hw/objects.spr");
 		modelIndexSw = PRECACHE_MODEL("sprites/doom/sw/objects.spr");
+
+		headerHw = GET_SPRITE_PTR(modelIndexHw);
+		headerSw = GET_SPRITE_PTR(modelIndexSw);
 	}
 	
 	bool CustomPickup()
@@ -313,7 +323,7 @@ class CDoomProp : public CBaseEntity
 
 	int AddToFullPack(struct entity_state_s* state, CBasePlayer* player) override {
 		if (player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE) {
-			state->origin.z += 32;
+			state->origin.z += CDoomSprite::SwFrameOffset(headerHw, headerSw, pev->frame) * pev->scale;
 			if (modelIndexSw) {
 				state->modelindex = modelIndexSw;
 			}

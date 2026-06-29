@@ -14,4 +14,12 @@ public:
 	void Spawn() override;
 	void Precache() override;
 	virtual int AddToFullPack(struct entity_state_s* state, CBasePlayer* player);
+
+	static int GetSpriteAngle(Vector spritePos, Vector spriteForward, Vector spriteRight, Vector lookPos);
+	
+	// calculate how much Z offset to apply to an entity for software mode vanilla clients who
+	// can't properly render sprite frames with offsets in them.
+	// headerHw = hardware mode sprite with the offset baked in
+	// headerSw = software mode sprite which has no offset
+	static int SwFrameOffset(msprite_sv_t* headerHw, msprite_sv_t* headerSw, int frame);
 };
