@@ -18,7 +18,6 @@ weight                  = 9
 thirdperson_anims       = egon
 
 [primary_ammo]
-config                  = doom/ammo_doom_cells
 type                    = cells
 default_give            = 40
 drop_entity             = ammo_doom_cells

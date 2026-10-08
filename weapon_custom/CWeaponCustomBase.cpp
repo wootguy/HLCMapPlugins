@@ -172,10 +172,10 @@ public:
 
 			WepEvt kickbackEvt = baseEvent.Type(WC_EVT_KICKBACK);
 			kickbackEvt.kickback.pushForce = push.Length();
-			kickbackEvt.kickback.back = clamp(norm.z * -100, -100, 100);
-			kickbackEvt.kickback.right = clamp(norm.x * 100, -100, 100);
+			kickbackEvt.kickback.back = V_clamp(norm.z * -100, -100, 100);
+			kickbackEvt.kickback.right = V_clamp(norm.x * 100, -100, 100);
 			kickbackEvt.kickback.up = 0;
-			kickbackEvt.kickback.globalUp = clamp(norm.y * 100, -100, 100);
+			kickbackEvt.kickback.globalUp = V_clamp(norm.y * 100, -100, 100);
 			AddEvent(kickbackEvt);
 		}
 
@@ -1088,10 +1088,10 @@ public:
 
 			WepEvt kickbackEvt = attackEvt.clone().Type(WC_EVT_KICKBACK);
 			kickbackEvt.kickback.pushForce = force;
-			kickbackEvt.kickback.back = clamp(dir.z * -100, -100, 100);
-			kickbackEvt.kickback.right = clamp(dir.x * 100, -100, 100);
+			kickbackEvt.kickback.back = V_clamp(dir.z * -100, -100, 100);
+			kickbackEvt.kickback.right = V_clamp(dir.x * 100, -100, 100);
 			kickbackEvt.kickback.up = 0;
-			kickbackEvt.kickback.globalUp = clamp(dir.y * 100, -100, 100);
+			kickbackEvt.kickback.globalUp = V_clamp(dir.y * 100, -100, 100);
 			AddEvent(kickbackEvt);
 		}
 		

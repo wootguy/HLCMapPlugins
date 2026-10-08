@@ -161,7 +161,7 @@ class CMancubusBall : public CDoomProjectile {
 		flash_color = Vector(255, 80, 32);
 		damageMin = 8;
 		damageMax = 64;
-		deathSound = "doom/dsbarexp.wav";
+		deathSound = "doom/dsfirxpl.wav";
 		pev->model = ALLOC_STRING("sprites/doom/manf.spr");
 		oriented = true;
 
@@ -179,7 +179,7 @@ class CSpiderBall : public CDoomProjectile {
 		flash_color = Vector(32, 255, 32);
 		damageMin = 5;
 		damageMax = 40;
-		deathSound = "doom/dsbarexp.wav";
+		deathSound = "doom/dsfirxpl.wav";
 		pev->model = ALLOC_STRING("sprites/doom/bal.spr");
 
 		CDoomProjectile::Precache();

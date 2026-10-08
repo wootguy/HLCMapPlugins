@@ -3,6 +3,7 @@
 #include "sound_nodes.h"
 #include "doom2.h"
 #include "CDoomDoor.h"
+#include <algorithm>
 
 using namespace std;
 

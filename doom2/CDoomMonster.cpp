@@ -127,6 +127,11 @@ void CDoomMonster::DoomSpawn()
 
 	Precache();
 
+	if ((pev->spawnflags & 8192)) {
+		Setup();
+		return;
+	}
+
 	if (!g_map_init_done) {
 		UTIL_Remove(this);
 		return;
@@ -140,11 +145,30 @@ void CDoomMonster::CreateRenderSprites() {
 
 void CDoomMonster::SetupHull()
 {
-	if (largeHull)
-		UTIL_SetSize(pev, Vector(-32, -32, -7), Vector(32, 32, 72));
+	if (strstr(hullModel, "null_tall.mdl")) {
+		UTIL_SetSize(pev, Vector(-24, -24, -8), Vector(24, 24, 112));
+	}
+	else if (strstr(hullModel, "null_baron.mdl")) {
+		UTIL_SetSize(pev, Vector(-24, -24, -8), Vector(24, 24, 96));
+	}
+	else if (strstr(hullModel, "null_fat.mdl")) {
+		UTIL_SetSize(pev, Vector(-32, -32, -8), Vector(32, 32, 80));
+	}
+	else if (strstr(hullModel, "null_wide.mdl")) {
+		UTIL_SetSize(pev, Vector(-20, -20, -8), Vector(20, 20, 72));
+	}
+	else if (strstr(hullModel, "null_huge.mdl")) {
+		UTIL_SetSize(pev, Vector(-80, -80, -8), Vector(80, 80, 88));
+	}
+	else if (strstr(hullModel, "null_large.mdl")) {
+		UTIL_SetSize(pev, Vector(-48, -48, -8), Vector(48, 48, 144));
+	}
+	else if (strstr(hullModel, "null_spider.mdl")) {
+		UTIL_SetSize(pev, Vector(-32, -32, -8), Vector(32, 32, 64));
+	}
 	else {
 		//UTIL_SetSize(pev, Vector(-12, -12, -7), Vector(12, 12, 42));
-		UTIL_SetSize(pev, Vector(-16, -16, -7), Vector(16, 16, 64));
+		UTIL_SetSize(pev, Vector(-16, -16, -8), Vector(16, 16, 72));
 	}
 }
 	
@@ -237,7 +261,7 @@ void CDoomMonster::Killed(entvars_t* pevAttacker, int iGib) {
 	SET_MODEL(edict(), bodySpriteHw);
 	m_angleSpriteIndex = 0;
 	pev->renderamt = 255;
-	pev->rendermode = 2;
+	pev->rendermode = kRenderTransTexture;
 	if (isSpectre)
 	{
 		pev->renderamt = 48;
@@ -911,7 +935,7 @@ void CDoomMonster::DoomThink()
 	
 
 	if (isSpectre) {
-		pev->rendermode = kRenderTransAlpha;
+		pev->rendermode = kRenderTransTexture;
 		pev->renderamt = 48;
 		//lightColor = Vector(0, 0, 0); // doesn't work
 	}
@@ -941,7 +965,7 @@ int CDoomMonster::AddToFullPack(struct entity_state_s* state, CBasePlayer* playe
 	// software mode vanilla clients can't render sprite frames
 	// with offsets in them. So now I'm faking that with centered parallel sprites and an
 	// offset on the entity origin.
-	if (player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE) {
+	if (player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE && !player->IsSevenKewpClient()) {
 		state->origin.z += CDoomSprite::SwFrameOffset(headerHw, headerSw, frame) * pev->scale;
 		state->modelindex = modelIndexSw;
 	}

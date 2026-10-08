@@ -19,7 +19,6 @@ weight                  = 5
 thirdperson_anims       = python
 
 [primary_ammo]
-config                  = doom/ammo_doom_bulletbox
 type                    = bullets
 default_give            = 25
 drop_entity             = ammo_doom_bulletbox

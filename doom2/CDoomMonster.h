@@ -99,7 +99,6 @@ public:
 	Vector dashVel;
 	float dashDamage;
 	float dashTimeout;
-	bool largeHull;
 	Vector gunPos = Vector(0, 0, 8); // offset relative to body position
 
 	EHANDLE h_enemy;

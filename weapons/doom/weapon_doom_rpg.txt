@@ -18,7 +18,6 @@ weight                  = 7
 thirdperson_anims       = python
 
 [primary_ammo]
-config                  = doom/ammo_doom_rocket
 type                    = rockets
 default_give            = 2
 drop_entity             = ammo_doom_rocket

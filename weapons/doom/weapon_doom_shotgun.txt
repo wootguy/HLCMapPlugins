@@ -18,7 +18,6 @@ weight                  = 4
 thirdperson_anims       = python
 
 [primary_ammo]
-config                  = doom/ammo_doom_shells
 type                    = shells
 default_give            = 12
 drop_entity             = ammo_doom_shells

@@ -32,6 +32,8 @@ public:
 
 	virtual void ItemThink() override;
 
+	virtual void ItemTouch(CBaseEntity* pOther) override { Touch(pOther); };
+
 	void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 
 	void Touch(CBaseEntity* pOther);

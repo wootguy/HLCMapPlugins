@@ -15,20 +15,9 @@
 
 using namespace std;
 
-// HL Port todo:
-// sven mp5 for hud icon is weird
-// net usage very high
-// pickup sound too loud and unf
-// no punch sound for world and different sprite?
-// hitbox wrong for hwdude
-// idle/console icon replaced with doom text
-// intermission sfx stuttery with high ping
-// test hl client
-// manually offset software mode sprites by reading hw sprite origins
-// software mode sprites for weapons/ammo
-// can crouch thru the floor in tricks and traps
-// hl client cant pick up dropped shottys as ammo
-// keycard hud for hl clients
+// major tod:
+// - dropping weird things on death
+// - floating items (crusher map armor by elev, potion in map with window shutters thing)
 
 // TODO (bugs I'm ignoring cuz 2 lazy):
 // pain elemental gets stuck when shooting shulls sometimes 
@@ -50,9 +39,15 @@ using namespace std;
 // (doom door breaks regular doors): 10:11 AM - Streamfaux: Yeah better be waiting. Also you should investigate this just in case. Putting a door with a targetname && a button targgeting it should be enough to test. And I meanfunc_door && func_button.
 // teleport on exit logic (tricks && traps imp room)
 // backpack increases ammo capacity
+// sven mp5 for hud icon is weird
+// pickup sound too loud and unf
+// no punch sound for world and different sprite?
+// hl weapons dont trigger sound graph monster reactions
+// net usage very high
 
 // NOTE: ep2 needs Normalized clip type || else you fall through level in tricks && traps near end-tele
 // NOTE: Compile options = clip economy + cliptype normalized + 25 min light + RAD no load textures + tex reflect 1.3 + 3 bounces
+// NOTE: export using floating point .map coords or else buttons are invisible sometimes
 
 float g_level_time = 0;
 int g_secrets = 0;
@@ -65,15 +60,6 @@ int g_keys = 0;
 int g_map_num = 1;
 bool g_strict_keys = false; // if false, only color of key matters when opening door
 
-const int UNLOCK_CHAINSAW = 1;
-const int UNLOCK_SHOTGUN = 2;
-const int UNLOCK_SUPER_SHOTGUN = 4;
-const int UNLOCK_CHAINGUN = 8;
-const int UNLOCK_RPG = 16;
-const int UNLOCK_PLASMA = 32;
-const int UNLOCK_BFG = 64;
-const int UNLOCK_PERFECT_REWARD = 128;
-
 bool loadedUnlocks = false;
 int g_rewards = 0;
 int g_unlocks = 0;
@@ -82,7 +68,7 @@ bool g_wait_for_noobs = true;
 bool g_friendly_fire = false;
 bool g_timer_started = false;
 float g_unblock_time = 0;
-float g_noob_delay = 20; // timer value when new player joins who hasn't accepted the bug disclaimer
+float g_noob_delay = 10; // timer value when new player joins who hasn't accepted the bug disclaimer
 
 bool g_game_over = false; // final map complete
 bool debug_mode = false;
@@ -112,23 +98,12 @@ Vector g_spawn_room_pos;
 // list of ents that need brightness updated manually
 vector<EHANDLE> g_illuminate_ents;
 
-class VisEnt
-{
-	bool visible;
-	EHANDLE sprite;
-
-	VisEnt() {}
-
-	VisEnt(bool visible, EHANDLE sprite)
-	{
-		this->visible = visible;
-		this->sprite = sprite;
-	}
-};
-
 unordered_map<uint64_t, PlayerState> g_player_states;
 
-int g_blud_sprite;
+int g_blud_sprite_hw;
+int g_blud_sprite_sw;
+
+ScheduledFunction g_timer_sched;
 
 string base36(int num)
 {
@@ -155,7 +130,11 @@ bool is_delay_spawned_cname(string cname) {
 
 HOOK_RETURN_DATA MapInit()
 {
-	g_wait_for_noobs = strstr(STRING(gpGlobals->mapname), "doom2_ep1") == 0;
+	g_map_init_done = false;
+	g_illuminate_ents.clear();
+
+	const char* mapname = STRING(gpGlobals->mapname);
+	g_wait_for_noobs = strstr(mapname, "doom2_ep1") == mapname;
 	/*
 	PrecacheModel("models/hlclassic/p_9mmhandgun.mdl");
 	PrecacheModel("models/hlclassic/p_egon.mdl");
@@ -182,9 +161,11 @@ HOOK_RETURN_DATA MapInit()
 	PRECACHE_SOUND_NULLENT("doom/dsplpain.wav");
 	PRECACHE_SOUND_NULLENT("doom/dspldeth.wav");
 	PRECACHE_SOUND_NULLENT("doom/dsfirsht.wav");
+	PRECACHE_SOUND_NULLENT("doom/dspdiehi.wav");
 	PRECACHE_SOUND_NULLENT("doom/dssecret.wav");
 
-	g_blud_sprite = PRECACHE_MODEL_NULLENT("sprites/doom/blud.spr");
+	g_blud_sprite_hw = PRECACHE_MODEL_NULLENT("sprites/doom/hw/blud.spr");
+	g_blud_sprite_sw = PRECACHE_MODEL_NULLENT("sprites/doom/sw/blud.spr");
 	PRECACHE_MODEL_NULLENT("sprites/doom/text.spr");
 
 	return HOOK_CONTINUE;
@@ -204,15 +185,6 @@ void init_doors_and_buttons() {
 				buttons.push_back(ent);
 			else
 				doors.push_back(ent);
-		}
-	} while (ent);
-
-	ent = NULL;
-	do {
-		ent = UTIL_FindEntityByClassname(ent, "env_sprite");
-		if (ent)
-		{
-			SET_MODEL(ent->edict(), "sprites/doom/text.spr");
 		}
 	} while (ent);
 
@@ -244,7 +216,7 @@ HOOK_RETURN_DATA MapActivate()
 	// don't spawn things until the map section starts, to reduce edict count
 	CBaseEntity* ent = NULL;
 	while ((ent = UTIL_FindEntityByClassname(ent, "*")) != NULL) {
-		if (is_delay_spawned_cname(STRING(ent->pev->classname))) {
+		if (is_delay_spawned_cname(STRING(ent->pev->classname)) && !(ent->pev->spawnflags & 8192)) {
 			UTIL_Remove(ent);
 		}
 	}
@@ -286,61 +258,29 @@ HOOK_RETURN_DATA MapActivate()
 	return HOOK_CONTINUE;
 }
 
-void clearTimer()
-{
-	ALERT(at_error, "TODO: timer\n");
-	/*
-	HUDNumDisplayParams params;
-	params.channel = 15;
-	params.flags = HUD_ELEM_HIDDEN;
-	g_PlayerFuncs.HudTimeDisplay(NULL, params);
-	*/
-}
-
 // thanks th_escape for le codes :>
 void updateTimer()
 {
-	ALERT(at_error, "TODO: timer\n");
-	/*
-	HUDNumDisplayParams params;
-
-	params.channel = 15;
-
-	params.flags = HUD_ELEM_SCR_CENTER_X | HUD_ELEM_DEFAULT_ALPHA |
-		HUD_TIME_MINUTES | HUD_TIME_SECONDS | HUD_TIME_COUNT_DOWN;
-		*/
-
 	float timeLeft = g_unblock_time - gpGlobals->time;
-	/*
-	params.value = timeLeft;
 
-	params.x = 0;
-	params.y = 0.06;
-	params.color1 = RGBA_SVENCOOP;
-	params.spritename = "stopwatch";
-
-	vector<CBaseEntity*> waitingPlayers;
-
-	CBaseEntity* ent = NULL;
-	do {
-		*ent = UTIL_FindEntityByClassname(ent, "player");
-		if (ent) {
-			CBasePlayer* plr = (CBasePlayer*)(ent);
-			waitingPlayers.push_back(ent);
-		}
-	} while (ent);
-
-	for (uint i = 0; i < waitingPlayers.length(); i++)
-	{
-		g_PlayerFuncs.HudTimeDisplay(NULL, params);
-	}
-	*/
+	hudtextparms_t params;
+	memset(&params, 0, sizeof(hudtextparms_t));
+	params.x = -1;
+	params.y = 0.1f;
+	params.r1 = 255;
+	params.g1 = 255;
+	params.b1 = 255;
+	params.a1 = 255;
+	params.holdTime = 1.2f;
+	params.fadeoutTime = 1.0f;
+	params.channel = 1;
 
 	if (timeLeft > 0) {
-		g_Scheduler.SetTimeout(updateTimer, 1.0f);
+		UTIL_HudMessageAll(params, UTIL_VarArgs("Waiting %ds for joiners\n", (int)ceilf(timeLeft)));
+		g_timer_sched = g_Scheduler.SetTimeout(updateTimer, 1.0f);
 	}
 	else {
-		clearTimer();
+		UTIL_HudMessageAll(params, "Rip and/or tear.");
 		FireTargets("ep_wall", NULL, NULL, USE_ON);
 		g_wait_for_noobs = false;
 		return;
@@ -352,6 +292,7 @@ void resetTimer()
 {
 	g_timer_started = true;
 	g_unblock_time = gpGlobals->time + g_noob_delay;
+	g_Scheduler.RemoveTimer(g_timer_sched);
 	updateTimer();
 }
 
@@ -359,48 +300,83 @@ HOOK_RETURN_DATA PlayerPostThink(CBasePlayer* plr)
 {
 	PlayerState& state = getPlayerState(plr);
 
-	HUDSpriteParams params;
-	memset(&params, 0, sizeof(params));
-	params.spr.width = 0;
-	params.hud.flags = HUD_SPR_OPAQUE | HUD_SPR_MASKED | HUD_ELEM_MSG_PIXEL_POS | HUD_SPR_USE_CONFIG;
-	params.hud.holdTime = 99999.0f;
-	params.hud.color1 = RGB(255, 255, 255);
-
-	int sprHeight = 18;
-	float baseX = -30;
-	float baseY = 55;
-	params.hud.xPixels = baseX;
-	params.hud.yPixels = baseY;
-
 	if (state.lastHudKeys + 10.0f < gpGlobals->time || state.hudKeys != g_keys)
 	{
 		state.lastHudKeys = gpGlobals->time;
 		state.hudKeys = g_keys;
-		for (int i = 0; i < 6; i++)
-		{
-			params.hud.channel = i;
-			if (i == 3) // skull keys
+
+		if (plr->IsSevenKewpClient()) {
+			HUDSpriteParams params;
+			memset(&params, 0, sizeof(params));
+			params.spr.width = 0;
+			params.hud.flags = HUD_SPR_OPAQUE | HUD_SPR_MASKED | HUD_ELEM_MSG_PIXEL_POS | HUD_SPR_USE_CONFIG;
+			params.hud.holdTime = 99999.0f;
+			params.hud.color1 = RGB(255, 255, 255);
+
+			int sprHeight = 18;
+			float baseX = -30;
+			float baseY = 55;
+			params.hud.xPixels = baseX;
+			params.hud.yPixels = baseY;
+
+			for (int i = 0; i < 6; i++)
 			{
-				params.hud.xPixels = baseX - 20;
-				params.hud.yPixels = baseY - 3;
+				params.hud.channel = i;
+				if (i == 3) // skull keys
+				{
+					params.hud.xPixels = baseX - 20;
+					params.hud.yPixels = baseY - 3;
+				}
+
+				if ((g_keys & (1 << i)) == 0)
+				{
+					HUDSpriteParams offparams;
+					memset(&offparams, 0, sizeof(offparams));
+					offparams.hud.channel = params.hud.channel;
+					UTIL_HudToggleElement(plr, params.hud.channel, false);
+					continue;
+				}
+
+				static const char* key_names[6] = { "key_0", "key_1", "key_2", "key_3", "key_4", "key_5" };
+				UTIL_HudCustomSprite(plr, params, key_names[i], true);
+
+				params.hud.yPixels += 2 + sprHeight;
+			}
+		}
+		else {
+			hudtextparms_t hlParams;
+			memset(&hlParams, 0, sizeof(hudtextparms_t));
+			hlParams.x = 0.95f;
+			hlParams.y = 0.1f;
+			hlParams.channel = 1;
+			hlParams.holdTime = 10.0f;
+			hlParams.fadeoutTime = 0.5f;
+			hlParams.r1 = 255;
+			hlParams.g1 = 255;
+			hlParams.b1 = 255;
+			hlParams.a1 = 255;
+
+			std::string hlString = "Keys: ";
+
+			bool anyKeys = false;
+			for (int i = 0; i < 6; i++) {
+				if ((g_keys & (1 << i))) {
+					static const char* key_names[6] = { "Blue", "Yellow", "Red", "BlueX", "YellowX", "RedX" };
+					if (anyKeys)
+						hlString += string(" + ");
+
+					hlString += key_names[i];
+					anyKeys = true;
+				}
 			}
 
-			if ((g_keys & (1 << i)) == 0)
-			{
-				HUDSpriteParams offparams;
-				memset(&offparams, 0, sizeof(offparams));
-				offparams.hud.channel = params.hud.channel;
-				UTIL_HudToggleElement(plr, params.hud.channel, false);
-				continue;
-			}
-
-			static const char* key_names[6] = { "key_0", "key_1", "key_2", "key_3", "key_4", "key_5" };
-
-			UTIL_HudCustomSprite(plr, params, key_names[i], true);
-
-			params.hud.yPixels += 2 + sprHeight;
+			if (anyKeys)
+				UTIL_HudMessage(plr, hlParams, hlString.c_str());
+			else
+				UTIL_HudMessage(plr, hlParams, "");
 		}
 	}
+
 
 	return HOOK_CONTINUE;
 }
@@ -677,11 +653,6 @@ void loner_check()
 	}
 }
 
-void unlock_weapon(bool notify)
-{
-
-}
-
 void unlock_item(bool notify, int type)
 {
 	if (g_rewards >= 10 || type == 0)
@@ -692,7 +663,7 @@ void unlock_item(bool notify, int type)
 		g_rewards++;
 	else
 	{
-		if (g_unlocks & type != 0)
+		if (g_unlocks & type)
 			return;
 		g_unlocks |= type;
 	}
@@ -799,7 +770,7 @@ void unlock_item(bool notify, int type)
 	if (isReward)
 		ckeys.put("targetname", "use_reward" + g_rewards);
 	else
-			ckeys.put("targetname", "use_unlock" + type);
+		ckeys.put("targetname", "use_unlock" + type);
 	CBaseEntity* equipuse = CBaseEntity::Create("game_player_equip", cori, g_vecZero, true, NULL, ckeys);
 
 	if (!notify) {
@@ -819,7 +790,7 @@ void unlock_item(bool notify, int type)
 	count->pev->frags = g_rewards;
 	count->pev->health = g_unlocks;
 
-	EMIT_SOUND_DYN(NULL, CHAN_STATIC, "doom/dssecret.wav", 1.0f, ATTN_NONE, 0, 100);
+	EMIT_SOUND_DYN(ENT(0), CHAN_STATIC, "doom/dssecret.wav", 1.0f, ATTN_NONE, 0, 100);
 	g_Scheduler.SetTimeout(printkeybindall, 0.0f, msg);
 	g_Scheduler.SetTimeout(printkeybindall, 1.0f, msg);
 
@@ -862,7 +833,7 @@ void tally_time(string item, int time, int targetTime, bool playSound)
 	if (time < targetTime)
 	{
 		if (playSound)
-			EMIT_SOUND_DYN(colon->edict(), CHAN_STATIC, "doom/dspistol.wav", 1.0f, 1.0f, 0, 100);
+			StartSound(secOnes->edict(), CHAN_STATIC, "doom/dspistol.wav", 1.0f, 1.0f, 0, 100, g_vecZero, 0xffffffff);
 		int step = V_max(targetTime / 15, 3);
 		g_Scheduler.SetTimeout(tally_time, 0.05, item, time + step, targetTime, !playSound);
 	}
@@ -933,7 +904,7 @@ void tally_score(string item, int percentage, int targetPercent, bool playSound)
 	if (percentage < targetPercent)
 	{
 		if (playSound)
-			EMIT_SOUND_DYN(ones->edict(), CHAN_STATIC, "doom/dspistol.wav", 1.0f, 1.0f, 0, 100);
+			StartSound(ones->edict(), CHAN_STATIC, "doom/dspistol.wav", 1.0f, 1.0f, 0, 100, g_vecZero, 0xffffffff);
 		g_Scheduler.SetTimeout(tally_score, 0.05, item, percentage + 13, targetPercent, !playSound);
 	}
 	else
@@ -1029,6 +1000,7 @@ void ep_scroll_line(int lineNum, int stepsTaken, int maxStep)
 	}
 	else
 	{
+		UTIL_Remove(scroll);
 		g_Scheduler.SetTimeout(ep_scroll_line, 0, lineNum + 1, 0, 50);
 	}
 }
@@ -1122,9 +1094,24 @@ bool CmdCheckScore(CBasePlayer* plr, const CommandArgs& args) {
 	return true;
 }
 
+bool CmdUnlock(CBasePlayer* plr, const CommandArgs& args) {
+	unlock_item(true, UNLOCK_PERFECT_REWARD);
+	return true;
+}
+
+HOOK_RETURN_DATA PlayerKilled(CBasePlayer* plr, entvars_t* pevAttacker, int& iGib) {
+	if (plr->pev->deadflag == DEAD_NO) {
+		bool willGib = (plr->pev->health < -40 && iGib != GIB_NEVER) || iGib == GIB_ALWAYS;
+		const char* snd = willGib ? "doom/dspdiehi.wav" : "doom/dspldeth.wav";
+		EMIT_SOUND_DYN(plr->edict(), CHAN_BODY, snd, 1.0f, 1.0f, 0, 100);
+	}
+
+	return HOOK_CONTINUE;
+}
+
+
 HOOK_RETURN_DATA PlayerTakeDamage(CBasePlayer* plr, entvars_t* pevInflictor, entvars_t* pevAttacker, float& flDamage, int& bitsDamageType) {
-	if (plr->pev->deadflag == DEAD_NO)
-	{
+	if (plr->pev->deadflag == DEAD_NO) {
 		// no pain sound during death animation.
 		EMIT_SOUND_DYN(plr->edict(), CHAN_BODY, "doom/dsplpain.wav", 1.0f, 1.0f, 0, 100);
 		UTIL_ScreenFade(plr, Vector(255, 0, 0), 0.2f, 0, 32, FFADE_IN);
@@ -1137,7 +1124,7 @@ void DoomBlood(Vector vecSpot, float damage) {
 	SpriteAdvArgs args;
 	memset(&args, 0, sizeof(args));
 
-	args.modelIdx = g_blud_sprite;
+	args.modelIdx = g_blud_sprite_hw;
 	args.scale = 10 * g_monster_scale;
 	args.framerate = 0;
 	args.vel = Vector(0, 0, RANDOM_LONG(40, 120));
@@ -1160,14 +1147,17 @@ void DoomBlood(Vector vecSpot, float damage) {
 		}
 		edict_t* ed = plr->edict();
 
-		if (UTIL_TestPVS(vecSpot, ed));
+		if (!UTIL_TestPVS(vecSpot, ed))
+			continue;
 
 		if (plr->IsSevenKewpClient()) {
 			UTIL_SpriteAdv(vecSpot, args, MSG_ONE_UNRELIABLE, NULL, ed);
-			ALERT(at_console, "Sent adv bytes: %d\n", LastMsgSize());
+			//ALERT(at_console, "Sent adv bytes: %d\n", LastMsgSize());
 		}
 		else {
-			UTIL_SpriteSpray(vecSpot, Vector(0, 0, 1), g_blud_sprite, 1, 10, 0, MSG_ONE_UNRELIABLE, ed);
+			bool sw = plr->m_clientRenderer == CLIENT_RENDERER_SOFTWARE && !plr->IsSevenKewpClient();
+			int spr = sw ? g_blud_sprite_sw : g_blud_sprite_hw;
+			UTIL_SpriteSpray(vecSpot, Vector(0, 0, 1), spr, 1, 10, 0, MSG_ONE_UNRELIABLE, ed);
 		}
 	}	
 }
@@ -1216,6 +1206,7 @@ extern "C" int DLLEXPORT PluginInit() {
 	g_hooks.pfnClientJoin = ClientJoin;
 	g_hooks.pfnPlayerPostThink = PlayerPostThink;
 	g_hooks.pfnPlayerTakeDamage = PlayerTakeDamage;
+	g_hooks.pfnPlayerKilled = PlayerKilled;
 	g_hooks.pfnSpawnBlood = DoomBloodHook;
 	g_hooks.pfnMapInit = MapInit;
 	g_hooks.pfnMapStart = MapActivate;
@@ -1225,6 +1216,7 @@ extern "C" int DLLEXPORT PluginInit() {
 
 	RegisterPluginCommand(".idkfa", CmdGiveAll, FL_CMD_CLIENT | FL_CMD_ADMIN);
 	RegisterPluginCommand(".score", CmdCheckScore, FL_CMD_CLIENT);
+	RegisterPluginCommand(".unlock", CmdUnlock, FL_CMD_CLIENT | FL_CMD_ADMIN);
 
 	RegisterPluginEntCallback(new_lobby_player);
 	RegisterPluginEntCallback(ep_text);

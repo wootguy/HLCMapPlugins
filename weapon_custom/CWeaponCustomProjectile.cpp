@@ -20,7 +20,7 @@ public:
 	int proj_type;
 
 	void Configure(CBasePlayer* attacker, CWeaponCustom* weapon, WepEvt& evt) override {
-		int attackIdx = clamp(weapon->GetAttackIdx(evt), 0, 3);
+		int attackIdx = V_clamp(weapon->GetAttackIdx(evt), 0, 3);
 
 		EHANDLE h_settings = *custom_weapons.get(STRING(weapon->pev->classname));
 

@@ -14,7 +14,8 @@ void CDoomProjectile::Spawn()
 	if (!size)
 		size = 4; // too big and projectiles hit walls behind you that you're touching
 
-	pev->movetype = MOVETYPE_FLY;
+	pev->movetype = MOVETYPE_BOUNCE;
+	pev->gravity = FLT_MIN;
 	pev->solid = SOLID_TRIGGER;
 	UTIL_SetSize(pev, Vector(-size, -size, -size), Vector(size, size, size));
 

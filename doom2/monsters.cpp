@@ -320,7 +320,6 @@ class CCacodemon : public CDoomMonster
 		this->canFly = true;
 		this->painChance = 0.5f;
 		this->hullModel = "models/doom/null_fat.mdl";
-		this->largeHull = true;
 
 		m_displayName = ALLOC_STRING("Cacodemon");
 		pev->health = 400;
@@ -431,7 +430,6 @@ class CPainElemental : public CDoomMonster
 		this->painChance = 0.5f;
 		this->deathBoom = 3;
 		this->hullModel = "models/doom/null_fat.mdl";
-		this->largeHull = true;
 		
 		m_displayName = ALLOC_STRING("Pain Elemental");
 		pev->health = 400;
@@ -553,7 +551,7 @@ class CBaron : public CDoomMonster
 		this->hasMelee = true;
 		this->hasRanged = true;
 		this->painChance = 0.20f;
-		this->hullModel = "models/doom/null_tall.mdl";
+		this->hullModel = "models/doom/null_baron.mdl";
 
 		m_displayName = ALLOC_STRING("Baron of Hell");
 		pev->health = 1000;
@@ -615,7 +613,7 @@ class CHellKnight : public CDoomMonster
 		this->hasMelee = true;
 		this->hasRanged = true;
 		this->painChance = 0.50f;
-		this->hullModel = "models/doom/null_tall.mdl";
+		this->hullModel = "models/doom/null_baron.mdl";
 
 		m_displayName = ALLOC_STRING("Hell Knight");
 		pev->health = 500;
@@ -686,7 +684,7 @@ class CArchVile : public CDoomMonster
 		this->painChance = 0.04f;
 		this->walkSpeed = 15.0f;
 		this->canRevive = true;
-		this->hullModel = "models/doom/null_tall.mdl";
+		this->hullModel = "models/doom/null_baron.mdl";
 
 		m_displayName = ALLOC_STRING("Arche-vile");
 		pev->health = 700;
@@ -877,7 +875,6 @@ class CMancubus : public CDoomMonster
 		this->constantAttack = true;
 		this->constantAttackMax = 3;
 		this->hullModel = "models/doom/null_fat.mdl";
-		this->largeHull = true;
 
 		m_displayName = ALLOC_STRING("Mancubus");
 		pev->health = 600;
@@ -974,7 +971,6 @@ class CArachnotron : public CDoomMonster
 		this->painChance = 0.50f;
 		this->walkSpeed = 12.0f;
 		this->constantAttack = true;
-		this->largeHull = true;
 		this->hullModel = "models/doom/null_spider.mdl";
 
 		m_displayName = ALLOC_STRING("Arachnotron");
@@ -1043,7 +1039,6 @@ class CCyberdemon : public CDoomMonster
 		this->constantAttack = true;
 		this->constantAttackMax = 3;
 		this->dmgImmunity = DMG_BLAST;
-		this->largeHull = true;
 		this->minRangeAttackDelay = 0.5f;
 		this->maxRangeAttackDelay = 1.5f;
 
@@ -1114,8 +1109,7 @@ class CSpiderDemon : public CDoomMonster
 		this->painChance = 0.16f;
 		this->walkSpeed = 12.0f;
 		this->constantAttack = true;
-		this->largeHull = true;
-		this->hullModel = "models/doom/null_huge.mdl";
+		this->hullModel = "models/doom/null_large.mdl";
 		this->dmgImmunity = DMG_BLAST;
 
 		m_displayName = ALLOC_STRING("Spiderdemon");

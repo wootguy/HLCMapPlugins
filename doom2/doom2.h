@@ -2,6 +2,15 @@
 #include <unordered_map>
 #include "sound_nodes.h"
 
+#define UNLOCK_CHAINSAW 1
+#define UNLOCK_SHOTGUN 2
+#define UNLOCK_SUPER_SHOTGUN 4
+#define UNLOCK_CHAINGUN 8
+#define UNLOCK_RPG 16
+#define UNLOCK_PLASMA 32
+#define UNLOCK_BFG 64
+#define UNLOCK_PERFECT_REWARD 128
+
 enum key_types
 {
 	KEY_BLUE = 1,
@@ -42,3 +51,5 @@ extern bool g_strict_keys;
 extern bool g_map_init_done;
 
 void DoomBlood(Vector vecSpot, float damage);
+
+void unlock_item(bool notify, int type);

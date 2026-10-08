@@ -302,7 +302,7 @@ void CDoomItem::Touch(CBaseEntity* pOther)
 }
 
 int CDoomItem::AddToFullPack(struct entity_state_s* state, CBasePlayer* player) {
-	if (player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE) {
+	if (player->m_clientRenderer == CLIENT_RENDERER_SOFTWARE && !player->IsSevenKewpClient()) {
 		state->origin.z += CDoomSprite::SwFrameOffset(headerHw, headerSw, pev->frame) * pev->scale;
 		if (modelIndexSw) {
 			state->modelindex = modelIndexSw;

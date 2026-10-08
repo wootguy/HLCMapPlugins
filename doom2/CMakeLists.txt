@@ -10,6 +10,8 @@ add_library(${PROJECT_NAME} SHARED
 	CDoomWater.h		CDoomWater.cpp
 	CDoomItem.h			CDoomItem.cpp
 	CDoomTeleport.h		CDoomTeleport.cpp
+	CDoomWeapon.cpp
+	CDoomAmmo.cpp
 	sound_nodes.h		sound_nodes.cpp
 	projectiles.cpp
 	monsters.cpp

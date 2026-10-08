@@ -66,7 +66,7 @@ int CDoomSprite::SwFrameOffset(msprite_sv_t* headerHw, msprite_sv_t* headerSw, i
 		return 0;
 	}
 
-	frame = clamp(frame, 0, V_min(headerHw->numframes, headerSw->numframes) - 1);
+	frame = V_clamp(frame, 0, V_min(headerHw->numframes, headerSw->numframes) - 1);
 	mspriteframe_sv_t* frameHw = headerHw->frames[frame].frameptr_sv;
 	mspriteframe_sv_t* frameSw = headerSw->frames[frame].frameptr_sv;
 	return frameHw->up - frameSw->up;
