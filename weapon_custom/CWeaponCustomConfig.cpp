@@ -476,6 +476,7 @@ void CWeaponCustomConfig::Spawn()
 				hideAmmo2 ? NULL : ammoType2,	// pszAmmo2
 				STRING(hud_path),				// pszName (path to HUD config)
 				clip_size(),					// iMaxClip
+				clip_size2,						// iMaxClip2
 				-1,								// iId (-1 = automatic)
 				0,								// iFlags
 				priority,						// iWeight

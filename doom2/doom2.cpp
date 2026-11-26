@@ -17,7 +17,15 @@ using namespace std;
 
 // major tod:
 // - dropping weird things on death
-// - floating items (crusher map armor by elev, potion in map with window shutters thing)
+// - floating items (crusher map armor by elev, potion in map with window shutters thing, refueling base grunt room)
+// - imps stuck map 2 river area
+// - wrong pickup sound for dropped shotty?
+// - have every weapon after respawn?
+// - spectres wrong rendermode on xash
+// - weapons overlap hud elements
+// - pinkies stuck crusher level secret wall
+// - max rockets too low
+// - revived monsters have double sprites and broken ai sometimes
 
 // TODO (bugs I'm ignoring cuz 2 lazy):
 // pain elemental gets stuck when shooting shulls sometimes 

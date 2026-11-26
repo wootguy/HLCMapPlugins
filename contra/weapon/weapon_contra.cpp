@@ -37,6 +37,7 @@ ItemInfo g_contra_wep_info = {
 	NULL,							// pszAmmo2
 	"weapon_contra",				// pszName (path to HUD config)
 	CONTRA_WEAPON_MAXAMMO,			// iMaxClip
+	0,								// iMaxClip2
 	-1,								// iId (-1 = automatic)
 	CONTRA_WEAPON_FLAG,				// iFlags
 	998,							// iWeight

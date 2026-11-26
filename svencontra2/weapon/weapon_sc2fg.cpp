@@ -10,6 +10,7 @@ ItemInfo g_wepinfo_sc2fg = {
     NULL,         					// pszAmmo2
     "svencontra2/weapon_sc2fg",     // pszName (path to HUD config)
     -1,             				// iMaxClip
+    0,								// iMaxClip2
     -1,								// iId (-1 = automatic)
     CONTRA_WEP_FLAGS,              	// iFlags
     CONTRA_WEP_WEIGHT,              // iWeight

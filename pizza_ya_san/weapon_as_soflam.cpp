@@ -32,6 +32,7 @@ ItemInfo g_soflam_info = {
 	NULL,							// pszAmmo2
 	"pizza_ya_san/weapon_as_soflam",// pszName (path to HUD config)
 	SOFLAM_MAX_CLIP,				// iMaxClip
+	0,								// iMaxClip2
 	-1,								// iId (-1 = automatic)
 	0,								// iFlags
 	SOFLAM_WEIGHT,					// iWeight
